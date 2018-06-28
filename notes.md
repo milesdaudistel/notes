@@ -17,11 +17,11 @@ Three ###:
 `Backtick` Use this to put things in a box.  Technically this is an inline code block.
 ***
 #Code Structures
-`Interface` This is a really overloaded term.  It doesn't have an exact definition, but is a bunch of concepts in different languages that are nearly identical.
+<details><summary>Interface</summary>
 
-In general, an interface is a bunch of method names you attach to a class.  Think of it like different types of cars.  Under the hood, different cars operate very differently, but if you know how to use the steering wheel, break, and gearbox, then you can drive just about any car without needing to know exactly how it works.
+Languages like Java and Go, and C++ all have very similar but not identical concepts called interfaces.
 
-TODO Get rid of the backticks inside the drop down.
+In general, an interface is a group of unimplemented method names.  Metaphorically, if you think of different classes as different types of cars, then an interface for those all of those classes might be a steering wheel, gas pedal, break pedal, and transmission.  Because all of these different types of cars have the same interface, you know how to drive any of them without having to understand how they work under the hood.  So if you know an interface, you know how to manipulate every class that implements that interface without knowing how it works under the hood.
 
 <details><summary>Pseudo Java Example</summary>
 
@@ -75,10 +75,10 @@ In this example, we don't know whether each vehicle in the array is a car or mot
 
 Interfaces aren't exactly the same in all languages.  In C++, there is no such thing as an explicit interface.  However, you could make something equivalent to an interface in C++ by creating an abstract class with purely virtual methods.  Then any class that inherits from this abstract class must implement these virtual methods.
 
-In Go, interfaces are explicitly declared and implicitly implemented.  This means you create a an interface by saying `type myInterface interface {...}` but unlike Java, there is no need to say `class X implements myInterface` in order for X to be able to use myInterface.
 
 <details>
 <summary>Go example</summary>
+In Go, interfaces are explicitly declared and implicitly implemented.  This means you create an interface by saying `type myInterface interface {...}` but unlike Java, there is no need to say `class X implements myInterface` in order for X to be able to use myInterface.
 
 	package main
 	import "fmt"
@@ -126,10 +126,25 @@ In Go, interfaces are explicitly declared and implicitly implemented.  This mean
 Here is an interface called geometry.  Both the rect and circle structs implement it without the need to say 'implements geometry'.  Go knows that rect and circle implement the geometry interface simply because both structs have an area and perim method.
 </details>
 
+</details>
+
+#Databases
+<details><summary>Database</summary>
+A database is a way to store data in tables.  Each column is a type of data, and each row is a collection of that data.  Columns might be things like names, ages, jobs, etc.  Put these columns together and you have a table, where each row will give you the name, age, and job of a single person.
+</details>
+
+<details><summary>SQL</summary>
+SQL stands for Structured Query Language.  It's a language purely for doing things with data in a database.
+</details>
+
+<details><summary>PostgreSQL</summary>
+PostgreSQL is an extension of SQL.  There are many extensions for SQL like MySQL and SQLite, but PostgreSQL is considered the most modular and advanced one.  For instance, it has support for nesting, which no other SQL implementation has.  What is nesting?  Couldn't tell you.
+</details>
+
 #Operating Systems
 <details>
 <summary>Why do Linux users always use thinkpads?</summary>
-Canonical and Red Hat certify which laptops can run Linux.  Pretty much all Thinkpads are certified.  If you have a laptop that is not certified to run Linux, there might not be a sound driver, or a wifi driver, and you're wrecked.  TODO insert picture of Thinkpad.
+Canonical and Red Hat certify which laptops can run Linux.  Pretty much all Thinkpads are certified.  If you have a laptop that is not certified to run Linux, there might not be a sound driver, or a wifi driver, and you're wrecked.
 </details>
 
 <details>
