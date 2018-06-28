@@ -1,6 +1,6 @@
 #Markdown
 `#` These are used to make headers.  The more you have, the smaller the header.
-adsfd
+
 >
 One #:  
 #Header
@@ -170,3 +170,12 @@ Of course, python virtual environments also solve this problem, but that's just 
 <summary>Python Virtual Environment</summary>
 Python VE's predate most container stuff that we know.  They're very similar, but outdated compared to containers.
 </details>
+
+#Financial Wizardry
+You need money, right? Quick advice: invest in ETFs, put money into your 401k, then your roth ira. Below is a chart from reddit. It's a little small, maybe open it separately.
+
+<details><summary>Personal Finances Chart</summary>
+![financechart](pics/financechart.jpg)
+</details>
+
+
