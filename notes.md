@@ -309,6 +309,65 @@ With the parenthesis in place, first we get the maximum temperature.  At this po
 
 </details>
 
+<details><summary>Views</summary>
+
+If you have a big table, and you find yourself making the same query over and over, you can turn it into a view of the table.  This just saves the query in a variable.  You could just make another table that contains only the information you want to see, but this takes up additional space.  Using a view means doing the query over and over again, which is less time efficient than making another table, but since most queries are pretty much instantaneous to users, time efficiency is not a concern.  However, if you have a bunch of really similar tables that you created from doing a bunch of queries, the space that those tables take up can increase really fast.
+
+Here's an example using our weather and cities tables:
+
+	CREATE VIEW myview AS
+	    SELECT city, temp_lo, temp_hi, prcp, date, location
+	        FROM weather, cities
+	        WHERE city = name;
+	
+	SELECT * FROM myview;
+
+</details>
+
+<details><summary>Foreign Keys</summary>
+Say you have the weather table, and cities table.  You want to make sure users can only add city data to the weather table if that city is already in the city table.  You can do this by first looking at every entry in the name/city column of the cities table and doing a comparison.  However, Postgres offers an easy solution:
+
+	CREATE TABLE cities (
+	        city     varchar(80) primary key,
+	        location point
+	);
+	
+	CREATE TABLE weather (
+	        city      varchar(80) references cities(city),
+	        temp_lo   int,
+	        temp_hi   int,
+	        prcp      real,
+	        date      date
+	);
+	
+So now city in the weather table will look in the cities table every time you try to insert new data into the weather table.  So whenever someone tries to insert a new city, say 'Berkeley', it will error out, as 'Berkeley' is a foreign key to the cities table, which only contains San Francisco and Hayward.
+
+</details>
+
+<details><summary>Transactions</summary>
+Remember atomicity from operating systems?  This is just that.  If we have a certain set of actions that we want to happen all or nothing, we label it as a transaction.  Consider the following example, where Alice gives Bob $100:
+
+	UPDATE accounts SET balance = balance - 100.00
+	    WHERE name = 'Alice';
+	UPDATE branches SET balance = balance - 100.00
+	    WHERE name = (SELECT branch_name FROM accounts WHERE name = 'Alice');
+	UPDATE accounts SET balance = balance + 100.00
+	    WHERE name = 'Bob';
+	UPDATE branches SET balance = balance + 100.00
+	    WHERE name = (SELECT branch_name FROM accounts WHERE name = 'Bob');
+	    
+	    
+It would be really bad if Alice lost 100, then the power got cut, and Bob didn't receive 100.  Or if Bob got 100, and Alice didn't lose 100.  Here's how to make the series of operations atomic:
+
+	BEGIN;
+	-- Insert transaction between Alice and Bob here
+	COMMIT;
+	
+Exactly how this works under the hood is covered in the concept of atomicity in Operating Systems.
+
+By default, all Postgres statements get wrapped with a BEGIN and COMMIT.
+
+</details>
 
 </details>
 
