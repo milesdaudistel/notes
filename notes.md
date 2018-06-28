@@ -111,8 +111,15 @@ Here is an interface called geometry.  Both the rect and circle structs implemen
 </details>
 
 #Databases
+
+TODO change this to be a quiz type thing.  You should be able to look at the summary and think about the contents without every seeing the contents.
+
+<details><summary>Table</summary>
+A table stores data in rows and columns.  Each column is a type of data, and each row is a collection of that data.  Columns might be things like names, ages, jobs, etc.  Put these columns together and you have a table, where each row will give you the name, age, and job of a single person.
+</details>
+
 <details><summary>Database</summary>
-A database is a way to store data in tables.  Each column is a type of data, and each row is a collection of that data.  Columns might be things like names, ages, jobs, etc.  Put these columns together and you have a table, where each row will give you the name, age, and job of a single person.
+A database is just a bunch of tables put together.  Maybe you have a table containing information about neighborhoods.  There could be a column for street names, house addresses, and the people who live at each house.  Each of those people corresponds to a row in the previous example.
 </details>
 
 <details><summary>SQL</summary>
@@ -120,7 +127,189 @@ SQL stands for Structured Query Language.  It's a language purely for doing thin
 </details>
 
 <details><summary>PostgreSQL</summary>
-PostgreSQL is an extension of SQL.  There are many extensions for SQL like MySQL and SQLite, but PostgreSQL is considered the most modular and advanced one.  For instance, it has support for nesting, which no other SQL implementation has.  What is nesting?  Couldn't tell you.
+PostgreSQL is an extension of SQL.  There are many extensions for SQL like MySQL and SQLite, but PostgreSQL is considered the most modular and advanced one.  For instance, it has support for nesting, which no other SQL implementation has.
+
+<details><summary>Creating a table</summary>
+
+	CREATE TABLE weather (
+	    city            varchar(80),
+	    temp_lo         int,           -- low temperature
+	    temp_hi         int,           -- high temperature
+	    prcp            real,          -- precipitation
+	    date            date
+	);
+
+Here we make a new table called weather.  City, temp\_lo, temp\_hi, prcp, and date are column names, to the right are their types, and everything about the -- are comments.  Note that date is a type, as well as a name.  Also note that white space doesn't matter, this could all be on one line.
+</details>
+
+<details><summary>Deleting a table</summary>
+
+	DROP TABLE weather;
+	
+This will destroy the table in the previous example.
+</details>
+
+<details><summary>Entering new data</summary>
+
+	weather (
+	    city            varchar(80),
+	    temp_lo         int,           -- low temperature
+	    temp_hi         int,           -- high temperature
+	    prcp            real,          -- precipitation
+	    date            date
+	);
+	
+Using this table again, if we want to insert new information, we can do it like so:
+
+	INSERT INTO weather VALUES ('San Francisco', 46, 50, 0.25, '1994-11-27');
+	
+This will insert a row in the table that looks like so:
+
+	city: 'San Francisco'   temp_lo: 46    temp_hi: 50    prcp: 0.25    date: '1994-11-27'
+
+However, entering data like this means we have to remember the order of the columns in the table.  Explicitly name the data, and you don't have to remember the order:
+
+	INSERT INTO weather (city, temp_lo, temp_hi, prcp, date)
+    VALUES ('San Francisco', 43, 57, 0.0, '1994-11-29');
+    
+Let's say it rained one day, but you forgot to measure prcp.  It's ok, you can just omit it:
+
+	INSERT INTO weather (date, city, temp_hi, temp_lo)
+    VALUES ('1994-11-29', 'Hayward', 54, 37);
+
+</details>
+
+<details><summary>Getting data</summary>
+We'll use this table, again called weather, for our example:
+
+	city      | temp_lo | temp_hi | prcp |    date
+	---------------+---------+---------+------+------------
+	 San Francisco |      46 |      50 | 0.25 | 1994-11-27
+	 San Francisco |      43 |      57 |    0 | 1994-11-29
+	 Hayward       |      37 |      54 |      | 1994-11-29
+	 
+Use SELECT to print out columns.
+
+	SELECT city, temp_lo FROM weather;
+	
+Will print out:
+
+		city        | temp_lo |
+	---------------+---------+
+	 San Francisco |      46 |
+	 San Francisco |      43 |
+	 Hayward       |      37 |
+	 
+Use * to specify all columns, and WHERE to specify rows.
+
+	SELECT * FROM weather WHERE city = 'San Francisco'
+	
+Will print out:
+
+	city      | temp_lo | temp_hi | prcp |    date
+	---------------+---------+---------+------+------------
+	 San Francisco |      46 |      50 | 0.25 | 1994-11-27
+	 San Francisco |      43 |      57 |    0 | 1994-11-29
+	 
+You can combine information in different ways as well.
+
+	SELECT city, (temp_hi+temp_lo)/2 AS temp_avg, date FROM weather;
+	
+In this example, the AS keyword means that we take the temperature calculation and print it out in a new column called temp\_avg, as follows.
+
+	     city      | temp_avg |    date
+	---------------+----------+------------
+	 San Francisco |       48 | 1994-11-27
+	 San Francisco |       50 | 1994-11-29
+	 Hayward       |       45 | 1994-11-29
+
+
+</details>
+
+<details><summary>Join Queries</summary>
+
+	city      | temp_lo | temp_hi | prcp |    date
+	---------------+---------+---------+------+------------
+	 San Francisco |      46 |      50 | 0.25 | 1994-11-27
+	 San Francisco |      43 |      57 |    0 | 1994-11-29
+	 Hayward       |      37 |      54 |      | 1994-11-29
+	 
+	 	name      | location
+	---------------+---------
+	 San Francisco |   (-194, 53)
+	 
+Here we'll use the same weather table as before, and now we have a second table called cities.
+
+Before, we only asked for data from one table at a time.  Now we're going to ask for data from two tables to be combined.  Let's say we wanted to get all the information we had on the city of San Francisco.  Our data is spread over multiple tables, like above.  We could get all of San Francisco's data in a single output as follows:
+
+	SELECT * FROM weather, cities WHERE city = name;
+
+Will print out:
+
+	city      | temp_lo | temp_hi | prcp |    date    |     name      | location
+	---------------+---------+---------+------+------------+---------------+-----------
+	 San Francisco |      46 |      50 | 0.25 | 1994-11-27 | San Francisco | (-194,53)
+	 San Francisco |      43 |      57 |    0 | 1994-11-29 | San Francisco | (-194,53)
+
+So now we have the temperatures, prcp, date, and location all in one place.  Notice that the city and name column are the same.  We could get rid of the redundant name column with this query:
+
+	SELECT city, temp_lo, temp_hi, prcp, date, location
+	    FROM weather, cities
+	    WHERE city = name;
+
+</details>
+
+<details><summary>Join Qualifiers</summary>
+
+	city      | temp_lo | temp_hi | prcp |    date
+	---------------+---------+---------+------+------------
+	 San Francisco |      46 |      50 | 0.25 | 1994-11-27
+	 San Francisco |      43 |      57 |    0 | 1994-11-29
+	 Hayward       |      37 |      54 |      | 1994-11-29
+	 
+	 	city      | location
+	---------------+---------
+	 San Francisco |   (-194, 53)
+	 
+Here are the 2 tables from before, with 1 difference:  the name column of the cities table is now called city.  Now both tables have a column called city.  How do you join on them?  Qualifying just means appending the table name to the column name so that Postgres can tell the difference.  Here's an example:
+
+	SELECT weather.city, temp_lo, temp_hi,
+	       prcp, date, location
+	    FROM weather, cities
+	    WHERE cities.city = weather.city;
+	    
+Here, weather.city and cities.city are the qualified terms.  Nothing else has to be qualified (though supposedly it's good style) since the other names aren't shared between the tables.
+	    
+	    
+</details>
+
+<details><summary>Agregate Functions</summary>
+
+Aggregate functions let you get a single number from an entire column or row.  Things like max, sum, and avg.
+
+<details><summary>In the weather table, how would you get the highest temperature overall?</summary>
+
+	SELECT max(temp_hi) FROM weather;
+
+</details>
+
+<details><summary>What about the city corresponding to the highest temperature?</summary>
+Incorrect:
+
+	SELECT city FROM weather WHERE temp_hi = max(temp_hi);
+	
+This won't work because WHERE decides what rows to include, and WHERE is also calculated before and agregate functions, such as max.  In order for max to happen before WHERE, we do this:
+
+	SELECT city FROM weather WHERE temp_hi = (SELECT max(temp_hi) FROM weather);
+	
+With the parenthesis in place, first we get the maximum temperature.  At this point, we don't know the corresponding city.  Now that we have the highest temperature, we then look through the whole table again to see which city has a temperature identical to this.
+
+</details>
+
+
+</details>
+
+
 </details>
 
 #Operating Systems
