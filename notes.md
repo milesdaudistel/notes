@@ -110,6 +110,46 @@ Here is an interface called geometry.  Both the rect and circle structs implemen
 
 </details>
 
+<details><summary>Why use getters and setters?</summary>
+	
+	class Doggo:
+		int bork = 4
+		
+Lets say you have this doggo class, and you don't want people to be able to change your bork.
+
+	class Doggo:
+		private int bork = 4
+		
+Cool.  But now no one knows about your bork but you.  You want people to be able to see your bork, but not change it.  You can do that with a public getter.
+
+	class Doggo:
+		private int bork = 4
+		
+		public Get():
+			return bork
+			
+Now everyone can use Get to see a copy of your bork.  They will be able to change the copy of their bork, but they won't be able to change yours.  So that's getters.
+
+What about setters?  Lets say you have some food, and it's ok to share it with people.
+
+	class Doggo:
+		private int bork = 4
+		private int fud = 2
+		
+		public int Get():
+			return bork
+		
+		public int Set():
+		
+
+	Doggo gb = Doggo()
+	go.
+	
+//TODO provide an example that shows that it's more mutable.  People calling the code won't have to go back and change it.
+ 
+
+</details>
+
 #Databases
 
 TODO change this to be a quiz type thing.  You should be able to look at the summary and think about the contents without every seeing the contents.
@@ -399,6 +439,125 @@ Of course, python virtual environments also solve this problem, but that's just 
 <details>
 <summary>Python Virtual Environment</summary>
 Python VE's predate most container stuff that we know.  They're very similar, but outdated compared to containers.
+</details>
+
+#Json
+
+Json is a data format that is able to be read by humans as well as any programming langauge.  It's used to pass data between different languages.
+
+<details><summary>JSON general format</summary>
+
+	object
+		{}
+		{ members }
+		
+	members
+		pair
+		pair , members
+		
+	pair
+		string : value
+	array
+		[]
+		[ elements ]
+	elements
+		value 
+		value , elements
+	value
+		string
+		number
+		object
+		array
+		true
+		false
+		null
+	
+	string
+		""
+		" chars "
+		
+	chars
+		char
+		char chars
+		
+	char
+		any-Unicode-character-
+	    except-"-or-\-or-
+	    control-character
+		\"
+		\\
+		\/
+		\b
+		\f
+		\n
+		\r
+		\t
+		\u four-hex-digits
+		
+	number
+		int
+		int frac
+		int exp
+		int frac exp
+		
+	int
+		digit
+		digit1-9 digits 
+		- digit
+		- digit1-9 digits
+	
+	frac
+		. digits
+		exp
+		e digits
+		
+	digits
+		digit
+		digit digits
+		
+	e
+		e
+		e+
+		e-
+		E
+		E+
+		E-
+</details>
+
+<details><summary>General examples</summary>
+
+	{ "yung arfy": {
+		"legs": 4
+		"bork": "arf arf"
+		"good boy": true
+		}
+		
+	  "ol borko": {
+		"legs": 3
+		"bork": "bOoOork"
+		"good boy": true
+		}
+		
+	  "precious": {
+		"legs": 4
+		"bork": "..."
+		"good boy": true
+		}
+	}
+
+	{"menu": {
+	  "id": "file",
+	  "value": "File",
+	  "popup": {
+	    "menuitem": [
+	      {"value": "New", "onclick": "CreateNewDoc()"},
+	      {"value": "Open", "onclick": "OpenDoc()"},
+	      {"value": "Close", "onclick": "CloseDoc()"}
+	    ]
+	  }
+	}}
+	
+	
 </details>
 
 #Financial Wizardry
