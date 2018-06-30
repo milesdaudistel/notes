@@ -624,6 +624,23 @@ This is a javascript method embedded in the same document as the above div eleme
 
 </details>
 
+#Javascript
+The function keyword can be used to define a function inside an expression
+
+	var getRectArea = function(width, height) {
+	    return width * height;
+	}
+	
+  componentDidMount() {
+    this.timerID = setInterval(
+      this.tick,
+      1000
+    );
+  }
+  
+  this.tick doesn't get called.  why?	
+
+
 #React.js
 React is a javascript library for UI stuff, and only UI stuff.  Node.js is for making a server (the client/server paradigm).  Angular is for both making a server and making a UI.  
 
@@ -655,7 +672,7 @@ This is not javascript, and it is not html.  It's jsx, which can be read by reac
 	  document.getElementById('root')
 	);
 	
-This looks a lot like javascript.  Most of this stuff is just regular javascript.  The element part could have been written as `const element = <h1> Hello, {formatName(user)}!</h1>;` but it's a little big to be on one line.  If you want your html portion to be on multiple lines, put it in parenthesis.  Also note that formatName(user) is in curly braces.  This indicates that we should treat it like regular javascript.
+jsx looks a lot like javascript.  Most of this stuff is just regular javascript.  The element part could have been written as `const element = <h1> Hello, {formatName(user)}!</h1>;` but it's a little big to be on one line.  If you want your html portion to be on multiple lines, put it in parenthesis.  Also note that formatName(user) is in curly braces.  This indicates that we should treat it like regular javascript.
 
 Just like you can put javascript into html with jsx, you can put html into your javascript.
 
@@ -690,7 +707,7 @@ React elements can't be updated, they are static.  In order to change a react we
 </details>
 
 <details><summary>components</summary>
-Components jsx wrappers to javascript functions.  They take in props (short for properties, same thing as parameters), and return react elements.  Props are strings, ints, elements, or other componenets.
+Components jsx wrappers to javascript functions.  They take in props (short for properties, same thing as parameters), and return react elements.  Props are strings, ints, elements, or other componenets.  Components cannot modify the value of their props.
 
 Here's an example component, Welcome:
 
@@ -710,9 +727,9 @@ An important note is that components must start with an upper case letter.  If t
 
 Here's an example with components in components:
 
-function Welcome(props) {
-  return <h1>Hello, {props.name}</h1>;
-}
+	function Welcome(props) {
+	  return <h1>Hello, {props.name}</h1>;
+	}
 	
 	function App() {
 	  return (
@@ -729,7 +746,22 @@ function Welcome(props) {
 	  document.getElementById('root')
 	);
 
-Here, App outputs Welcome 3 times.
+Here, App outputs a welcome for each person.
+
+
+clock example
+clock is a function
+	we want it to be self contained
+	the date shouldn't be a prop, clock should be able to modify it
+	shouldn't have to call interval, should also be internal to clock
+turn it into a class
+	but now that it's an object of class Clock, we need special methods for first time rendering.  use componentDidMount
+	need to clear the timer too.  componentWillUnmount.  wait, what's the point of this?  if we leave the page, won't the clock componenet just die anyway?
+	difference between state and just local variable?  Ah, state is for things that change frequently, local variables are for things that don't change frequently.  More efficient this way.  Since time updates every second, we want to put it in state.  State is for frequent, predictable changes.
+	
+() => function()
+
+is this a function call or a function definition?
 
 </details>
 
