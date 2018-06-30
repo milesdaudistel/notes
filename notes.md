@@ -125,27 +125,39 @@ Cool.  But now no one knows about your bork but you.  You want people to be able
 	class Doggo:
 		private int bork = 4
 		
-		public Get():
+		public int Get():
 			return bork
 			
 Now everyone can use Get to see a copy of your bork.  They will be able to change the copy of their bork, but they won't be able to change yours.  So that's getters.
 
-What about setters?  Lets say you have some food, and it's ok to share it with people.
+What about setters?  Lets say now that someone can ask doggo to quiet down by setting his bork to a lower volume.
+
+	class Doggo:
+		public int bork = 4
+		
+But what if someone sets doggo's bork to 0?  Then doggo would be sad because it couldn't bork at all.  And what about a negative volume?  That doesn't make any sense.  Let's introduce a setter that will stop people from doing dumb stuff like that.
 
 	class Doggo:
 		private int bork = 4
-		private int fud = 2
 		
 		public int Get():
 			return bork
+		public void Set(int volume):
+			if volume < 1:
+				print("BOOOOORK")
+			else:
+				bork = volume
 		
-		public int Set():
 		
+Ok, but what is the point of setters that are just:
 
-	Doggo gb = Doggo()
-	go.
-	
-//TODO provide an example that shows that it's more mutable.  People calling the code won't have to go back and change it.
+	class X:
+		public int y = 4
+		
+		public void Set(int z):
+			y = z
+		
+Why not let users access those directly?  I'll answer that question with a question: what if we later decide that we wanted to change the functionality of how a user is able to set a variable?  If we make x private, that would break everyone's code that is currently calling X.y.  So from the start, we should use a setter function so that people who want to use this class call X.Set(3).  This way, when we want to make a change, we don't break a bunch of other stuff.
  
 
 </details>
@@ -565,6 +577,58 @@ You need money, right? Quick advice: invest in ETFs, put money into your 401k, t
 
 <details><summary>Personal Finances Chart</summary>
 ![financechart](pics/financechart.jpg)
+</details>
+
+#Compilers
+
+<details><summary>Recursive Descent</summary>
+Easiest type of parsing.  Takes almost any context free grammar (left recursive and something else don't work without some kind of modification).
+
+Example Grammar
+
+	E -> T | T + E
+	T -> int | int * T | (E)
+	
+Example Functions
+
+	bool Term(Token tok) { return *next++ == tok; }
+	
+	bool E() { 
+		Token *save = next;
+		
+	
+	bool E_1() { return T(); }
+	bool E_2() { return T() && term('+') && E(); }
+	
+	bool T_1() { return term(INT); }
+	bool T_2() { return term(INT) && term('*') && T(); }
+	bool T_3() { return term('(') && E() && term(')'); }
+	
+	
+	 
+
+</details>
+
+<details><summary></summary>
+
+</details>
+
+<details><summary></summary>
+
+</details>
+
+<details><summary>Predictive Parsing</summary>
+"predicts" but doesn't actually.  just means it always takes the correct production.  never looks at any incorrect productions.  Can do this by taking fewer grammars than recursive descent.
+
+only accept ll(k) grammars.  left to right scan.  looks at the next k tokens.  then it can choose what production based on those k tokens it look at next.  in theory, k can be whatever arbitrary constant.  In reality, it's always 1.  Well, if it only look at the single next token, then how is that any different from recursive descent?
+
+oh, you have first and follow sets because everything is LL(1).  An LL(k) grammar would have a first(k) set and a follow set.  But since we're only bothering with LL(1), it's just first and follow.
+
+left factor the T and E grammar.  T has 2 things that begin with int.  If you only look at the first token, and it's an int, you couldn't choose between those 2 productions.  So you have to left factor.  Left factoring means you make it so that each production for a non-terminal has a unique token or something.
+
+Also how does it work for E?  They both start with T, but on top of that, they're non-terminal, so how can you even say that you can predict if you still have to call all of that stuff?
+
+Although it might work for LL(k), we can always convert to LL(1), so why not do that.
 </details>
 
 
