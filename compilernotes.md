@@ -25,6 +25,32 @@ We'll start off with this example:
 </details>
 
 <details><summary>DFA to Table Driven</summary>
+Consider this regex of all binary strings that end in 1:
+
+	(1|0)*1
+
+Whose DFA implementation is as follows:	
+
+![endsin1](pics/endsin1.png)
+
+We can convert this DFA into a table.  A table is easy to implement in code, as well as fast.  Here is a table equivalent to the DFA:
+
+         | 0 | 1 |
+      ---|---|---|
+ _**S**_ | T | U |
+ _**T**_ | T | U |
+ _**U**_ | T | U |
+ 
+ Say we have the input `0101`.  We are in state S, and the next input is 0, so we look at row S, column 0, whose entry is T.  This means we are now in state T.  
+ 
+ The next input is 1, so we look in row T, column 1, whose entry is U.  Now we are in state U.  
+ 
+ The next input is 0, so we look in row U, column 0, whose entry is T.  Now we are in state T.
+ 
+ The next input is 1, so we look in row T, column 1, whose entry is U.  Now we are in state U.
+ 
+ There is no more input, so we are done.  One thing that isn't in table that we need to somehow specify is that U is an accepting state, and S and T aren't.  Implemention is trivial and will be omitted :^)
+ 
 
 </details>
 
@@ -74,14 +100,12 @@ In this grammar, k=1 because you only have to look at the next token to decide w
 
 So LL(k) grammars don't have to backtrack, unlike most context-free grammars.
 
-All context-free grammars have an LL(k) equivalent.  Tools like ANTLR can transform these grammars automatically.
+Random facts:
 
-TODO explain left factoring, that other example of stuff that won't work with normal recursive descent.
-first and follow sets.  ll(k) uses first(k) sets and follow(k) sets, but since we only ever care about ll(1) grammars, it's just first and follow sets.  
+All context-free grammars have an LL(k) equivalent.  Tools like ANTLR can transform context-free grammars into LL(k) grammars automatically.
 
-What are first and follow set for?
-T[A, t] = ?
-Need to explain parsing tables in general.  I think he explained them for regular grammars.
+In practice, we'll always be looking at LL(1) grammars. LL(k>1) grammars don't matter.
+
 </details>
 
 
@@ -90,9 +114,27 @@ Consider this grammar that parses nested parenthesis:
 
 	E -> (E) | epsilon
 
-This isn't something you can describe with a regular grammar.  So LL(k) grammars are more general that regular grammars.  
+Regular grammars can't describe nested parens.  So LL(k) grammars are more general that regular grammars.  
 
 LL(k) grammars can be parsed in linear time just like regular grammars, unlike non-LL(k) context-free grammars.
+</details>
 
-I would say use regular grammars when you can, as they are more convenient, and use LL(k) grammars when you have to.
+<details><summary>First and Follow Sets</summary>
+
+Remember how we converted DFA's into tables?  Tables are simple to implement in code, and fast to execute.  Now we want to make a parsing table for LL(1) grammars.  To make an LL(1) parsing table, we need first and follow sets.
+</details>
+
+<details><summary>TODO</summary>
+explain regex and automata
+
+explain recursive descent
+
+recursive descent algorithm limitation ( logical or shortcircuitting)
+
+left recursion
+
+left factoring
+
+first and follow sets
+
 </details>
