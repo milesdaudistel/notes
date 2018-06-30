@@ -119,13 +119,69 @@ Regular grammars can't describe nested parens.  So LL(k) grammars are more gener
 LL(k) grammars can be parsed in linear time just like regular grammars, unlike non-LL(k) context-free grammars.
 </details>
 
-<details><summary>First and Follow Sets</summary>
+<details><summary>LL(1) Parsing tables</summary>
 
-Remember how we converted DFA's into tables?  Tables are simple to implement in code, and fast to execute.  Now we want to make a parsing table for LL(1) grammars.  To make an LL(1) parsing table, we need first and follow sets.
+Remember how we converted DFA's into tables?  Tables are simple to implement in code, and fast to execute.  Now we want to make a parsing table for LL(1) grammars.  
+
+In the DFA table, we had a current state, and a next token which would determine our next table lookup.  In our LL(1) table, we have a current non-terminal instead of a current state.  Each table lookup has this form:
+
+	T[A, t] = X
+	
+`T` is the table, `A` is the current non-terminal, `t` is the next token, and `X` is the terminal or non-terminal that we replace A with.
+
+In order to create the parsing table, we need to find a B for every combo of A and t.  We can find these X's by computing the first and follow sets for each A.
+
+<details><summary>First Sets</summary>
+`T[A, t] = B` if t is in the first set of B.  
+The first set of a non-terminal B is the set of all terminals that appear first in B's derivation.
+
+	A -> Bx | Cy
+	B -> 0 | 1
+	C -> a | epsilon
+	
+In this grammar, the first sets of A, B and C are:
+
+	A : { 0, 1, a, y }
+	B : { 0, 1 }
+	C : { a, epsilon }
+	
+B and C are trivial, so I'll skip those.  A's first set looks like it does because when A is derived all the way down to terminals, it could look like any of the following:
+
+	0x
+	1x
+	ay
+	y
+	
+Since we want the first terminal that can be derived from A, we end up with 0, 1, a, and y.
+
+So if we're at A, we will transition to B if `t=0` or `t=1`.
+TODO this is wrong.  What happens after we get to B?  We just die.
+
+In general, finding the first sets for each terminal and non-terminal in a grammar is as follows:
+
+	t : { t } // if t is a terminal symbol
+	First(Y) is a subset of First(X) if X -> Y....
+		or X -> ABCY....
+			and A, B, C can all be epsilon.
+	epsilon is an element of First(X) if:
+		X -> epsilon
+		or
+		X -> ABC
+			and A, B, C can all become epsilon
+
+
+
+
+
+</details>
+
+
 </details>
 
 <details><summary>TODO</summary>
 explain regex and automata
+
+explain terminology better.
 
 explain recursive descent
 

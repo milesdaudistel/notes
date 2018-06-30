@@ -1,3 +1,5 @@
+Always keep this in mind:  Writing notes is a physical record of your attempt to understand something.  Even if all your studies end up fruitless, you can at least prove to yourself that you tried your best.
+
 #Code Structures
 <details><summary>Interface</summary>
 
