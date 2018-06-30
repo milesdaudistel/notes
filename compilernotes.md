@@ -1,5 +1,32 @@
 #Compilers
 
+<details><summary>Notation</summary>
+We'll start off with this example:
+
+	E -> T | T + E
+	T -> int | int * T | (E)
+
+`grammar` the whole thing
+
+`E, T` nonterminals
+
+`int, *, (, )` terminals
+
+`E -> T` the first production of E
+
+`T -> int * T` the second production of T
+
+`|` used to separate the productions of the nonterminals
+
+`->` E can be converted to T
+
+`->*` X can be converted to Y in ? steps
+
+$\alpha$
+
+
+</details>
+
 <details><summary>Recursive Descent</summary>
 Easiest type of parsing.  Takes almost any context free grammar (left recursive and something else don't work without some kind of modification).
 
@@ -37,15 +64,15 @@ Example Functions
 </details>
 
 <details><summary>Predictive Parsing</summary>
-"predicts" but doesn't actually.  just means it always takes the correct production.  never looks at any incorrect productions.  Can do this by taking fewer grammars than recursive descent.
+predictive parsing means you left factor the grammar so that you never have to backtrack.  predictive parsing is a bad name because a prediction is a guess, but this thing is completely deterministic just like a normal recursive descent parser.  In fact, it's just as dumb, too.  It doesn't perform better because of a better algorithm, it performs better because it only takes ll(k) grammars.  Starts at the left, looks at the next k tokens.  In practice, it's always ll(1).  
 
-only accept ll(k) grammars.  left to right scan.  looks at the next k tokens.  then it can choose what production based on those k tokens it look at next.  in theory, k can be whatever arbitrary constant.  In reality, it's always 1.  Well, if it only look at the single next token, then how is that any different from recursive descent?
+ll(k) uses first(k) sets and follow(k) sets, but since we only ever care about ll(1) grammars, it's just first and follow sets.  
 
-oh, you have first and follow sets because everything is LL(1).  An LL(k) grammar would have a first(k) set and a follow set.  But since we're only bothering with LL(1), it's just first and follow.
+left factoring
 
-left factor the T and E grammar.  T has 2 things that begin with int.  If you only look at the first token, and it's an int, you couldn't choose between those 2 productions.  So you have to left factor.  Left factoring means you make it so that each production for a non-terminal has a unique token or something.
+Backtracking means you have to go back after you have matched tokens.  Calling E, which then calls T, which then looks for an int, and the int not matching, that is not backtracking, because you haven't matched anything yet.  It's only backtracking if you've matched an int, then move on to something else, then realize that you need to undo that match.  Maybe an example would work best.  Think of something that almost gets there, but then needs to go back after all its work.
 
-Also how does it work for E?  They both start with T, but on top of that, they're non-terminal, so how can you even say that you can predict if you still have to call all of that stuff?
-
-Although it might work for LL(k), we can always convert to LL(1), so why not do that.
+What are first and follow set for?
+T[A, t] = ?
+This means if we are currently looking at nonterminal A, and t is the next input token, what will we transition to?  The reason we want to know this is so we can build an LL(1) parsing table.  Need to look at recursive descent parsing table in order to understand how parsing tables work.
 </details>
