@@ -579,56 +579,202 @@ You need money, right? Quick advice: invest in ETFs, put money into your 401k, t
 ![financechart](pics/financechart.jpg)
 </details>
 
-#Compilers
+#HTML
+HTML stands for Hyper Text Markup Language.  All it does is display tet that you 'mark up' with tags and elements to change how it is displayed.  Since HTML's structure is just putting text between tags, it's very difficult to code anything substantial in HTML.  That's why we have javascript to embed complicated stuff into an HTML page.  For example, lets say wikipedia is written in pure HTML.  There's no way to log in to wikipedia, or play web games, etc.  In order to do those things, javascript is necessary, because it allows for more complex back and forth communication between the client and server.  In pure HTML over a TCP/IP connection, a client can only ask the server to send them different static web pages.  With javascript, the client can ask things like 'show me my account details' and javascript can communicate that back to the server.  Stuff like that.
 
-<details><summary>Recursive Descent</summary>
-Easiest type of parsing.  Takes almost any context free grammar (left recursive and something else don't work without some kind of modification).
+<details><summary>tag</summary>
+Tags are how you say how to format text in HTML.  They're the most basic thing.
 
-Example Grammar
+	<b><i> Hello </b></i>
+	
+results in
 
-	E -> T | T + E
-	T -> int | int * T | (E)
-	
-Example Functions
+<b><i> Hello </b></i>
 
-	bool Term(Token tok) { return *next++ == tok; }
+Since b means bold, and i means italic.  This is all that HTML does.  It just formats text and pictures in a way that is able to be transmitted over the internet.
+</details>
+
+<details><summary>element</summary>
+An element is just anything between two tags, the tags included.
+
+	<b><i> Hello </b></i>
 	
-	bool E() { 
-		Token *save = next;
-		
+This whole thing is an element.
+</details>
+
+<details><summary>attribute</summary>
+An attribute is something you add to a tag to specify more information.
+
+	<img src="my_img.jpg" width="500" height="200" alt="couldn't find her">
 	
-	bool E_1() { return T(); }
-	bool E_2() { return T() && term('+') && E(); }
-	
-	bool T_1() { return term(INT); }
-	bool T_2() { return term(INT) && term('*') && T(); }
-	bool T_3() { return term('(') && E() && term(')'); }
-	
-	
-	 
+This is an img element.  The tag is img and the attributes are src, width, etc.  Some attributes are required, like src, and others are optional, like width and height.  Also note that this is a `singleton` because it doesn't need a closing tag which would be something like 
+
+	</img>
 
 </details>
 
-<details><summary></summary>
+
+<details><summary>view source</summary>
+
+The view source is the code that makes up a web page.  If you wrote the page in pure HTML, it's exactly what you wrote.  However, it might be different if you wrote a template file, embeded javascript, etc.  In reality, most web pages are not pure html, so what you get is a bunch of 
 
 </details>
 
-<details><summary></summary>
+<details><summary>DOM</summary>
+The Document Object Model is the api for interacting with and changing html.  Javascript doesn't actually change html directly, it does it through the DOM.
+
+	<div id="container"></div>
+	
+Here is some random html.  It does not change by itself, or run, or do anything in particular.
+
+	<script>
+	  var container = document.getElementById("container");
+	  container.innerHTML = "New Content!";
+	</script>
+
+This is a javascript method embedded in the same document as the above div element.  It calls the DOM through `document.getElementById` in order to change the above div tag to say "New Content!"
 
 </details>
 
-<details><summary>Predictive Parsing</summary>
-"predicts" but doesn't actually.  just means it always takes the correct production.  never looks at any incorrect productions.  Can do this by taking fewer grammars than recursive descent.
+#Javascript
+The function keyword can be used to define a function inside an expression
 
-only accept ll(k) grammars.  left to right scan.  looks at the next k tokens.  then it can choose what production based on those k tokens it look at next.  in theory, k can be whatever arbitrary constant.  In reality, it's always 1.  Well, if it only look at the single next token, then how is that any different from recursive descent?
+	var getRectArea = function(width, height) {
+	    return width * height;
+	}
+	
+  componentDidMount() {
+    this.timerID = setInterval(
+      this.tick,
+      1000
+    );
+  }
+  
+  this.tick doesn't get called.  why?	
 
-oh, you have first and follow sets because everything is LL(1).  An LL(k) grammar would have a first(k) set and a follow set.  But since we're only bothering with LL(1), it's just first and follow.
 
-left factor the T and E grammar.  T has 2 things that begin with int.  If you only look at the first token, and it's an int, you couldn't choose between those 2 productions.  So you have to left factor.  Left factoring means you make it so that each production for a non-terminal has a unique token or something.
+#React.js
+React is a javascript library for UI stuff, and only UI stuff.  Node.js is for making a server (the client/server paradigm).  Angular is for both making a server and making a UI.  
 
-Also how does it work for E?  They both start with T, but on top of that, they're non-terminal, so how can you even say that you can predict if you still have to call all of that stuff?
+	const element = <h1>Hello, world!</h1>;
+	
+This is not javascript, and it is not html.  It's jsx, which can be read by react and translated into javascript.  It can do everything javascript can do.  Remember how javascript can be embedded in html?  You write html, then you write javascript, then you reference the js file in your html.  Markup(html) and logic(js) are separate.  In jsx, they are not separate, and that makes it easier to read and write UI stuff.
 
-Although it might work for LL(k), we can always convert to LL(1), so why not do that.
+
+
+<details><summary>basic syntax</summary>
+	
+	function formatName(user) {
+	  return user.firstName + ' ' + user.lastName;
+	}
+	
+	const user = {
+	  firstName: 'Harper',
+	  lastName: 'Perez'
+	};
+	
+	const element = (
+	  <h1>
+	    Hello, {formatName(user)}!
+	  </h1>
+	);
+	
+	ReactDOM.render(
+	  element,
+	  document.getElementById('root')
+	);
+	
+jsx looks a lot like javascript.  Most of this stuff is just regular javascript.  The element part could have been written as `const element = <h1> Hello, {formatName(user)}!</h1>;` but it's a little big to be on one line.  If you want your html portion to be on multiple lines, put it in parenthesis.  Also note that formatName(user) is in curly braces.  This indicates that we should treat it like regular javascript.
+
+Just like you can put javascript into html with jsx, you can put html into your javascript.
+
+	function getGreeting(user) {
+	  if (user) {
+	    return <h1>Hello, {formatName(user)}!</h1>;
+	  }
+	  return <h1>Hello, Stranger.</h1>;
+	}
+	
+This javascript-like function returns html stuff.
+
+To specify a tag attribute, put it in quotes.
+
+	const element = <div tabIndex="0"></div>;
+	
+Tag attributes can also be javascript stuff in curly braces.
+
+	const element = <img src={user.avatarUrl}/>;
+
 </details>
 
+<details><summary>elements</summary>
+jsx creates react elements, the basic building block of react, which get rendered to the DOM.  Elements describe what you want to see on the screen.
 
+	const element = <h1>Hello, world</h1>;
+	ReactDOM.render(element, document.getElementById('root'));
+
+This element is turned into a DOM root node by the render function.  Specifying to react that an element is a root node means that the react-specific DOM will take care of the root, and all of its children.  For most commercial apps, you'll need a combination of react and non-react stuff, so a root node doesn't just mean 'everything in this file'.
+
+React elements can't be updated, they are static.  In order to change a react web page, the element must be rerendered.
+</details>
+
+<details><summary>components</summary>
+Components jsx wrappers to javascript functions.  They take in props (short for properties, same thing as parameters), and return react elements.  Props are strings, ints, elements, or other componenets.  Components cannot modify the value of their props.
+
+Here's an example component, Welcome:
+
+	function Welcome(props) {
+	  return <h1>Hello, {props.name}</h1>;
+	}
+	
+	const element = <Welcome name="Sara" />;
+	ReactDOM.render(
+	  element,
+	  document.getElementById('root')
+	);
+
+Welcome takes in props, and returns a new element saying Hello, name.  Then const element is set to the return value of Welcome when passed the prop "Sara".
+
+An important note is that components must start with an upper case letter.  If they don't, jsx will not recognize them as components.
+
+Here's an example with components in components:
+
+	function Welcome(props) {
+	  return <h1>Hello, {props.name}</h1>;
+	}
+	
+	function App() {
+	  return (
+	    <div>
+	      <Welcome name="Sara" />
+	      <Welcome name="Cahal" />
+	      <Welcome name="Edite" />
+	    </div>
+	  );
+	}
+	
+	ReactDOM.render(
+	  <App />,
+	  document.getElementById('root')
+	);
+
+Here, App outputs a welcome for each person.
+
+
+clock example
+clock is a function
+	we want it to be self contained
+	the date shouldn't be a prop, clock should be able to modify it
+	shouldn't have to call interval, should also be internal to clock
+turn it into a class
+	but now that it's an object of class Clock, we need special methods for first time rendering.  use componentDidMount
+	need to clear the timer too.  componentWillUnmount.  wait, what's the point of this?  if we leave the page, won't the clock componenet just die anyway?
+	difference between state and just local variable?  Ah, state is for things that change frequently, local variables are for things that don't change frequently.  More efficient this way.  Since time updates every second, we want to put it in state.  State is for frequent, predictable changes.
+	
+() => function()
+
+is this a function call or a function definition?
+
+</details>
+
+TODO add stuff about american governemnt
