@@ -1,5 +1,4 @@
 #Compilers
-
 <details><summary>Notation</summary>
 We'll start off with this example:
 
@@ -155,7 +154,7 @@ B and C are trivial, so I'll skip those.  A's first set looks like it does becau
 Since we want the first terminal that can be derived from A, we end up with 0, 1, a, and y.
 
 So if we're at A, we will transition to B if `t=0` or `t=1`.
-TODO this is wrong.  What happens after we get to B?  We just die.
+TODO I this is wrong.  What happens after we get to B?  We just die.
 
 In general, finding the first sets for each terminal and non-terminal in a grammar is as follows:
 
@@ -191,17 +190,86 @@ Now we'll compute follow sets for this grammar:
 	X -> +E | epsilon
 	Y -> *T | epsilon
 	
-At the start, we have an empty set for E, T, X, and Y.  We'll say E is the start symbol, so E's set now contains $.  Then, starting at E's productions, we do the following:
+At the start, we have an empty set for E, T, X, and Y.  We'll say E is the start symbol, so E's set now contains `$`.  Then, starting at E's productions, we do the following:
 
-Looking at `E -> TX`
+<details><summary>Computing Follow Sets example</summary>
+In this example, keep in mind the final First Set from the previous example.
+
+Step 1:  Start at E
+
+	Follow(E) = { $ }
+	Follow(T) = { }
+	Follow(X) = { }
+	Follow(Y) = { }
+	Follow('(') = { }
+	Follow(')') = { }
+	Follow('+') = { }
+	Follow('*') = { }
+	Follow(int) = { }
+	
+Step 2:  Look at E -> TX
+
+	Follow(E) = { $ }
 	Follow(T) = { First(X) }
 	Follow(X) = { }
-Looking at `T -> (E)`
-	Follow('(') = { First(E) }
-	Follow(E) = { ')' }
+	Follow(Y) = { }
+	Follow('(') = { }
 	Follow(')') = { }
+	Follow('+') = { }
+	Follow('*') = { }
+	Follow(int) = { }
 	
-Etc.
+Step 3:  Look at T -> (E)
+
+	Follow(E) = { $, ')' }
+	Follow(T) = { }
+	Follow(X) = { }
+	Follow(Y) = { }
+	Follow('(') = { First(E) }
+	Follow(')') = { }
+	Follow('+') = { }
+	Follow('*') = { }
+	Follow(int) = { }
+	
+Step 4:  Look at T -> int Y
+
+	Follow(E) = { $, ')' }
+	Follow(T) = { }
+	Follow(X) = { }
+	Follow(Y) = { }
+	Follow('(') = { First(E) }
+	Follow(')') = { }
+	Follow('+') = { }
+	Follow('*') = { }
+	Follow(int) = { First(Y) }
+	
+Step 5:  Look at X -> +E
+
+	Follow(E) = { $, ')' }
+	Follow(T) = { }
+	Follow(X) = { }
+	Follow(Y) = { }
+	Follow('(') = { First(E) }
+	Follow(')') = { }
+	Follow('+') = { First(E) }
+	Follow('*') = { }
+	Follow(int) = { First(Y) }
+	
+Step 6:  Look at X -> epsilon
+
+	Follow(E) = { $, ')' }
+	Follow(T) = { }
+	Follow(X) = { }
+	Follow(Y) = { }
+	Follow('(') = { First(E) }
+	Follow(')') = { }
+	Follow('+') = { First(E) }
+	Follow('*') = { }
+	Follow(int) = { First(Y) }
+
+
+</details>
+
 	
 
 </details>
@@ -227,3 +295,9 @@ first and follow sets
 Consider trying to figure out some kind of step-by-step for certain things.  Like examples.  Consider the follow set example.
 
 </details>
+
+
+
+
+
+
