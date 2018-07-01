@@ -863,39 +863,35 @@ is this a function call or a function definition?
 </details>
 
 
+<a class="prev" onclick="plusSlidesNUM(-1)">&#10094;</a>
+<a class="next" onclick="plusSlidesNUM(1)">&#10095;</a>
 
-
-
-
-<a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-<a class="next" onclick="plusSlides(1)">&#10095;</a>
-
-<div class="mySlides">
+<div class="mySlidesNUM">
   <div>1 / 3</div>
   SLIDE 1
 </div>
 
-<div class="mySlides">
+<div class="mySlidesNUM">
   <div>2 / 3</div>
   SLIDE 2
 </div>
 
-<div class="mySlides">
+<div class="mySlidesNUM">
   <div>3 / 3</div>
   SLIDE 3
 </div>
 
 <script>
 var slideIndex = 1;
-showSlides(slideIndex);
+showSlidesNUM(slideIndex);
 
-function plusSlides(n) {
-  showSlides(slideIndex += n);
+function plusSlidesNUM(n) {
+  showSlidesNUM(slideIndex += n);
 }
 
-function showSlides(n) {
+function showSlidesNUM(n) {
   var i;
-  var slides = document.getElementsByClassName("mySlides");
+  var slides = document.getElementsByClassName("mySlidesNUM");
   if (n > slides.length) {slideIndex = 1}    
   if (n < 1) {slideIndex = slides.length}
   for (i = 0; i < slides.length; i++) {
@@ -904,3 +900,5 @@ function showSlides(n) {
   slides[slideIndex-1].style.display = "block";
 }
 </script>
+
+
