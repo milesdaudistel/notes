@@ -183,17 +183,39 @@ What this says is that t is in Follow(X) if Y's multiple-step derivation contain
 
 The start symbol S's follow set will contain only `$` (end of file).
 
-Now we'll compute follow sets for this grammar:
+<details><summary>TODO algorithm for computing follow sets</summary> 
+You should just ignore this part for now.  It's 
+Here is the general algorithm for getting follow sets, which we run on each production: 
+
+	for each  nonterminal on the right side of X -> ABC....Z:
+		Follow(A) += First(B)
+		if epsilon in First(B)
+			Follow(A) += First(C)
+			if epsilon in First(C)
+				....
+				if epsilon in First(Z)
+					Follow(A) += Follow(X)
+					
+		Follow(B) += First(C)
+		if epsilon in First(C)
+				....
+				if epsilon in First(Z)
+					Follow(B) += Follow(X)
+					
+		Do this for all of them
+		TODO should make a recursive version of this.  Also should have a portion that takes into account whether First(B) is already in Follow(A), etc.
+		
+
+
+Now we'll compute follow sets for this grammar, where E is the start symbol:
 
 	E -> TX
 	T -> (E) | int Y
 	X -> +E | epsilon
 	Y -> *T | epsilon
-	
-At the start, we have an empty set for E, T, X, and Y.  We'll say E is the start symbol, so E's set now contains `$`.  Then, starting at E's productions, we do the following:
 
-<details><summary>Computing Follow Sets example</summary>
-In this example, keep in mind the final First Set from the previous example.
+<details><summary>computing follow sets example</summary>
+In this example, keep in mind the first sets from the previous example.
 
 Step 1:  Start at E
 
@@ -211,7 +233,7 @@ Step 2:  Look at E -> TX
 
 	Follow(E) = { $ }
 	Follow(T) = { First(X) }
-	Follow(X) = { }
+	Follow(X) = { Follow(E) }
 	Follow(Y) = { }
 	Follow('(') = { }
 	Follow(')') = { }
@@ -222,11 +244,11 @@ Step 2:  Look at E -> TX
 Step 3:  Look at T -> (E)
 
 	Follow(E) = { $, ')' }
-	Follow(T) = { }
-	Follow(X) = { }
+	Follow(T) = { First(X) }
+	Follow(X) = { Follow(E) }
 	Follow(Y) = { }
 	Follow('(') = { First(E) }
-	Follow(')') = { }
+	Follow(')') = { Follow(T) }
 	Follow('+') = { }
 	Follow('*') = { }
 	Follow(int) = { }
@@ -234,42 +256,67 @@ Step 3:  Look at T -> (E)
 Step 4:  Look at T -> int Y
 
 	Follow(E) = { $, ')' }
-	Follow(T) = { }
-	Follow(X) = { }
-	Follow(Y) = { }
+	Follow(T) = { First(X) }
+	Follow(X) = { Follow(E) }
+	Follow(Y) = { Follow(T) }
 	Follow('(') = { First(E) }
-	Follow(')') = { }
+	Follow(')') = { Follow(T) }
 	Follow('+') = { }
 	Follow('*') = { }
 	Follow(int) = { First(Y) }
 	
 Step 5:  Look at X -> +E
 
-	Follow(E) = { $, ')' }
-	Follow(T) = { }
-	Follow(X) = { }
-	Follow(Y) = { }
+	Follow(E) = { $, ')', Follow(X) }
+	Follow(T) = { First(X) }
+	Follow(X) = { Follow(E) }
+	Follow(Y) = { Follow(T) }
 	Follow('(') = { First(E) }
-	Follow(')') = { }
+	Follow(')') = { Follow(T) }
 	Follow('+') = { First(E) }
 	Follow('*') = { }
 	Follow(int) = { First(Y) }
 	
 Step 6:  Look at X -> epsilon
 
-	Follow(E) = { $, ')' }
-	Follow(T) = { }
-	Follow(X) = { }
-	Follow(Y) = { }
+	Follow(E) = { $, ')', Follow(X) }
+	Follow(T) = { First(X) }
+	Follow(X) = { Follow(E) }
+	Follow(Y) = { Follow(T) }
 	Follow('(') = { First(E) }
-	Follow(')') = { }
+	Follow(')') = { Follow(T) }
 	Follow('+') = { First(E) }
 	Follow('*') = { }
+	Follow(int) = { First(Y) }
+	
+Step 7:  Look at Y -> * T
+
+	Follow(E) = { $, ')', Follow(X) }
+	Follow(T) = { First(X), Follow(Y) }
+	Follow(X) = { Follow(E) }
+	Follow(Y) = { Follow(T) }
+	Follow('(') = { First(E) }
+	Follow(')') = { Follow(T) }
+	Follow('+') = { First(E) }
+	Follow('*') = { First(T) }
+	Follow(int) = { First(Y) }
+	
+Step 8:  Look at Y -> epsilon
+
+	Follow(E) = { $, ')', Follow(X) }
+	Follow(T) = { First(X), Follow(Y) }
+	Follow(X) = { Follow(E) }
+	Follow(Y) = { Follow(T) }
+	Follow('(') = { First(E) }
+	Follow(')') = { Follow(T) }
+	Follow('+') = { First(E) }
+	Follow('*') = { First(T) }
 	Follow(int) = { First(Y) }
 
 
 </details>
 
+</details>
 	
 
 </details>
