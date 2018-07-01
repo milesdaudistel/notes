@@ -1,0 +1,23 @@
+Markdown stuff
+
+If a subsection is small enough, surround it with backticks
+
+`subsection header`
+subsection contents
+subsection contents
+
+If it's really large, put it between details tags
+<details><summary>subsection header</summary>
+subsection contents
+subsection contents
+</details>
+
+the slideTemplate file can be used to make ugly slideshows.  Currently have to copy and paste for each slideshow you want
+
+Latex sometimes doesn't work if there's a space after your $
+
+https://www.tablesgenerator.com/markdown_tables#
+Markdown table generator.  I usually check off compact mode.
+
+http://ironcreek.net/phpsyntaxtree/?
+for making syntax tree examples

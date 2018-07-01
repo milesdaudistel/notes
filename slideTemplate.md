@@ -1,32 +1,32 @@
-<a class="prev" onclick="plusSlidesINSERTNUM(-1)">&#10094;</a>
-<a class="next" onclick="plusSlidesINSERTNUM(1)">&#10095;</a>
+<a class="prev" onclick="plusSlidesSLIDESHOWNUM(-1)">&#10094;</a>
+<a class="next" onclick="plusSlidesSLIDESHOWNUM(1)">&#10095;</a>
 
-<div class="mySlidesINSERTNUM">
-  <div>1 / 3</div>
+<div class="mySlidesSLIDESHOWNUM">
+  <div>1 / NUMSLIDES</div>
   SLIDE 1
 </div>
 
-<div class="mySlidesINSERTNUM">
-  <div>2 / 3</div>
+<div class="mySlidesSLIDESHOWNUM">
+  <div>2 / NUMSLIDES</div>
   SLIDE 2
 </div>
 
-<div class="mySlidesINSERTNUM">
-  <div>3 / 3</div>
+<div class="mySlidesSLIDESHOWNUM">
+  <div>3 / NUMSLIDES</div>
   SLIDE 3
 </div>
 
 <script>
 var slideIndex = 1;
-showSlidesINSERTNUM(slideIndex);
+showSlidesSLIDESHOWNUM(slideIndex);
 
-function plusSlidesINSERTNUM(n) {
-  showSlidesINSERTNUM(slideIndex += n);
+function plusSlidesSLIDESHOWNUM(n) {
+  showSlidesSLIDESHOWNUM(slideIndex += n);
 }
 
-function showSlidesINSERTNUM(n) {
+function showSlidesSLIDESHOWNUM(n) {
   var i;
-  var slides = document.getElementsByClassName("mySlidesINSERTNUM");
+  var slides = document.getElementsByClassName("mySlidesSLIDESHOWNUM");
   if (n > slides.length) {slideIndex = 1}    
   if (n < 1) {slideIndex = slides.length}
   for (i = 0; i < slides.length; i++) {
