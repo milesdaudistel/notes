@@ -666,6 +666,8 @@ Example:
 	<p class="forest">Now we're in the forest again</p>
 	
 	<p class="ocean">Now we're in the ocean again</p>
+	
+Results in:
 
 <style>
 p.ocean {
@@ -690,7 +692,6 @@ p.forest {
 </details>
 
 </details>
-
 
 <details><summary>view source</summary>
 
@@ -861,4 +862,45 @@ is this a function call or a function definition?
 
 </details>
 
-TODO add stuff about american governemnt
+
+
+
+
+
+<a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+<a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+<div class="mySlides">
+  <div>1 / 3</div>
+  SLIDE 1
+</div>
+
+<div class="mySlides">
+  <div>2 / 3</div>
+  SLIDE 2
+</div>
+
+<div class="mySlides">
+  <div>3 / 3</div>
+  SLIDE 3
+</div>
+
+<script>
+var slideIndex = 1;
+showSlides(slideIndex);
+
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  slides[slideIndex-1].style.display = "block";
+}
+</script>
