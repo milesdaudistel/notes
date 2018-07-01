@@ -10,7 +10,7 @@ We'll start off with this example:
 `E, T` nonterminals
 
 `int, *, (, )` terminals
-
+install.packages("leaflet")
 `E -> T` the first production of E
 
 `T -> int * T` the second production of T
