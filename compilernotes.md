@@ -82,7 +82,7 @@ Example Functions
 
 
 <details><summary>Predictive Parsing and LL(k) grammars</summary>
-Predictive parsing is a confusing term.  Saying that you have a 'predictive parser' is not a statement about your parsing algorithm (recursive descent, shift reduce, etc).  Saying that you have a predictive parser means that the grammar your parser reads is an LL(k) grammar.  LL(k) grammars are a special kind of context-free grammars.  By looking at the next k tokens, we can narrow down the possible productions to 1 at every step.  This means there will never be any backtracking.
+Predictive parsing is a confusing term.  Saying that you have a 'predictive parser' is not a statement about your parsing algorithm (recursive descent, shift reduce, etc).  Saying that you have a predictive parser means that the grammar your parser reads is an LL(k) grammar.  LL(k) grammars are a special kind of context-free grammars.  By looking at the next k tokens, we can narrow down the possible productions to 1 at every step.  This means there will never be any backtracking, making it faster.
 
 Here is an example of a normal context-free grammar:
 
@@ -168,23 +168,19 @@ In general, finding the first sets for each terminal and non-terminal in a gramm
 		X -> ABC
 			and A, B, C can all become epsilon
 
-
-
-
-
 </details>
 
 <details><summary>Follow Sets</summary>
 Here's the definition of a follow set for non-terminal X:
 
-	Follow(X) = {t | Y ->* AXtB }
+	Follow(X) = { t | Y ->* AXtB }
 	
 What this says is that t is in Follow(X) if Y's multiple-step derivation contains X, and also has some terminal t after it.  
 
 The start symbol S's follow set will contain only `$` (end of file).
 
 <details><summary>TODO algorithm for computing follow sets</summary> 
-You should just ignore this part for now.  It's 
+You should just ignore this part for now.  It's not necessary to know how to make these first and follow sets.  Just know how to recognize them.  It's a complicated exponential runtime algorithm.
 Here is the general algorithm for getting follow sets, which we run on each production: 
 
 	for each  nonterminal on the right side of X -> ABC....Z:
@@ -312,15 +308,30 @@ Step 8:  Look at Y -> epsilon
 	Follow('+') = { First(E) }
 	Follow('*') = { First(T) }
 	Follow(int) = { First(Y) }
+	
+This is really long, so I'm not going to finish it.  It would have been nice to have the ability to do slideshows.  Stupid markdown.
 
 
 </details>
 
 </details>
 	
-
 </details>
 
+<details><summary>building the parsing table after you have first and follow sets</summary>
+TODO potentially put the first follow algorithms + examples here instead.
+TODO look at video LL1 parsing tables again.  The `T[A, t] = B` thing. How do you know what the next A is?  It's actually the leftmost nonterminal in your current derivation.  Going to have to go back and change that.  If the leftmost thing is a terminal, then `T['int', t]` is a pointless lookup, since you can just do a direct comparison:  `'int' == t`.  For simplicity you could do a table lookup, or maybe this is faster.  Whatever.  Just do what you think would be easier to explain.
+
+Now that we have the first and follow sets for each terminal and non-terminal, we can find all the t's for each `T[A, t] = B`.  
+
+	for all non-terminal combos A and B in your language:
+		for each t in First(B):
+			T[A, t] = B
+		if epsilon in First(B):
+			for each t in Follow(A):
+				T[A, t] = B
+
+</details>
 
 </details>
 
@@ -341,10 +352,84 @@ first and follow sets
 
 Consider trying to figure out some kind of step-by-step for certain things.  Like examples.  Consider the follow set example.
 
+Oh, the first and follow set examples:  maybe give them the way to do it by hand?  No need to show them the computer code to do it.
+
 </details>
 
 
 
+<p id="demo"></p>
+
+<script>
+document.getElementById("demo").innerHTML = "My First JavaScript";
+</script>
 
 
 
+
+
+
+
+
+
+
+<div class="slideshow-container">
+
+<div class="mySlides fade">
+  <div class="numbertext">1 / 3</div>
+  slide 1
+  <div class="text">Caption Text</div>
+</div>
+
+<div class="mySlides fade">
+  <div class="numbertext">2 / 3</div>
+  slide 2
+  <div class="text">Caption Two</div>
+</div>
+
+<div class="mySlides fade">
+  <div class="numbertext">3 / 3</div>
+  slide 3
+  <div class="text">Caption Three</div>
+</div>
+
+<a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+<a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+</div>
+<br>
+
+<div style="text-align:center">
+  <span class="dot" onclick="currentSlide(1)"></span> 
+  <span class="dot" onclick="currentSlide(2)"></span> 
+  <span class="dot" onclick="currentSlide(3)"></span> 
+</div>
+
+<script>
+var slideIndex = 1;
+showSlides(slideIndex);
+
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("dot");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";  
+  dots[slideIndex-1].className += " active";
+}
+</script>

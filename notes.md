@@ -594,6 +594,36 @@ results in
 <b><i> Hello </b></i>
 
 Since b means bold, and i means italic.  This is all that HTML does.  It just formats text and pictures in a way that is able to be transmitted over the internet.
+
+
+<details><summary>div tag</summary>
+The div tag just separates elements. It doesn't do much by itself, but adding attributes to it applies all those attributes to its children.
+Example:
+
+	<div style="background-color:lightblue">
+	  <h3>This is a heading in a div element</h3>
+	  <p>This is some text in a div element.</p>
+	</div>
+	
+	<p>This is some text that we don't want to be blue.</p>
+
+Results in:
+
+***
+
+<div style="background-color:lightblue">
+  <h3>This is a heading in a div element</h3>
+  <p>This is some text in a div element.</p>
+</div>
+	
+<p>This is some text that we don't want to be blue.</p>
+
+***
+
+So with div tags we were able to apply attributes selectively
+
+</details>
+
 </details>
 
 <details><summary>element</summary>
@@ -609,9 +639,55 @@ An attribute is something you add to a tag to specify more information.
 
 	<img src="my_img.jpg" width="500" height="200" alt="couldn't find her">
 	
-This is an img element.  The tag is img and the attributes are src, width, etc.  Some attributes are required, like src, and others are optional, like width and height.  Also note that this is a `singleton` because it doesn't need a closing tag which would be something like 
+This is an img element.  The tag is img and the attributes are src, width, etc.  Some attributes are required, like src, and others are optional, like width and height.  Also note that this is a `singleton` because it doesn't need a closing tag which would be something like `</img>`
 
-	</img>
+<details><summary>class attribute</summary>
+
+If an element has a class attribute, the element belongs to a group with all the other elements of the same class.  By itself, a class attribute doesn't do anything, but we can specify certain actions on all elements of a certain class.
+
+Example:
+
+	<style>
+	p.ocean {
+	    color: blue;
+	}
+	
+	p.forest {
+	    color: green;
+	}
+	</style>
+	
+	<p>A paragraph with no location.</p>
+	
+	<p class="forest">Now we're in the forest</p>
+	
+	<p class="ocean">Now we're in the ocean</p>
+	
+	<p class="forest">Now we're in the forest again</p>
+	
+	<p class="ocean">Now we're in the ocean again</p>
+
+<style>
+p.ocean {
+    color: blue;
+}
+
+p.forest {
+    color: green;
+}
+</style>
+
+<p>A paragraph with no location.</p>
+
+<p class="forest">Now we're in the forest</p>
+
+<p class="ocean">Now we're in the ocean</p>
+
+<p class="forest">Now we're in the forest again</p>
+
+<p class="ocean">Now we're in the ocean again</p>
+
+</details>
 
 </details>
 
@@ -635,6 +711,12 @@ Here is some random html.  It does not change by itself, or run, or do anything 
 	</script>
 
 This is a javascript method embedded in the same document as the above div element.  It calls the DOM through `document.getElementById` in order to change the above div tag to say "New Content!"
+
+</details>
+
+<details><summary>Slideshow tutorial</summary>
+
+
 
 </details>
 
