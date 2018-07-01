@@ -1,4 +1,5 @@
 #Compilers
+
 <details><summary>Notation</summary>
 We'll start off with this example:
 
@@ -10,7 +11,7 @@ We'll start off with this example:
 `E, T` nonterminals
 
 `int, *, (, )` terminals
-install.packages("leaflet")
+
 `E -> T` the first production of E
 
 `T -> int * T` the second production of T
@@ -34,13 +35,12 @@ Whose DFA implementation is as follows:
 
 We can convert this DFA into a table.  A table is easy to implement in code, as well as fast.  Here is a table equivalent to the DFA:
 
-|  | 0 | 1 |
----|---|---|
-|S | T | U |
-|T | T | U |
-|U | T | U |
-
-
+         | 0 | 1 |
+      ---|---|---|
+ _**S**_ | T | U |
+ _**T**_ | T | U |
+ _**U**_ | T | U |
+ 
  Say we have the input `0101`.  We are in state S, and the next input is 0, so we look at row S, column 0, whose entry is T.  This means we are now in state T.  
  
  The next input is 1, so we look in row T, column 1, whose entry is U.  Now we are in state U.  
