@@ -636,7 +636,7 @@ Fat Arrows (`=>`) are a way to create anonymous functions.  Example:
 
 	const z = (x, y) => { x * y};
 	
-Now z refers to an anonymous multiply function that takes in parameters x and y.  Also note that the `return` keyword can be omitted.
+Now z refers to an anonymous multiply function that takes in parameters x and y.  Also note that the return keyword can be omitted.  The last line of a fat arrow function is implicitly returned.  Another feature of fat arrows is that they don't provide a binding for the keyword this, and so this will retain its definition from the outer scope.
 	
 The `this` keyword refers to different things depending on the context.  On a global scope, it refers to the global object (the window).  In a class, it refers to the object of the class that is calling the method.  But what if you pass this as an argument to another function outside of that class?  The clock class component in the react.js section is a good example of this.  
 
@@ -655,7 +655,7 @@ The `this` keyword refers to different things depending on the context.  On a gl
 	  
 	}
 
-In this example, we pass the tick function of clock to setInterval, which is a function outside of clock.  Simply passing this.tick to setInterval will not work, because setInterval is a built in global method, so this will refer to the global object.  To fix this, we should instead pass `() => this.tick()`.
+In this example, we pass the tick function of clock to setInterval, which is a function outside of clock.  Simply passing this.tick to setInterval will not work, because setInterval is a built in global method, so this will refer to the global object.  To fix this, we should instead pass `() => this.tick()` to setInterval, which is just a fat arrow function that passes in no parameteres.  
 	
 </details>
 
@@ -815,24 +815,11 @@ This way, they don't have to know about setInterval or tick.  They can just call
 	
 In the constructor, we must always call super on our props.  Also, date is no longer a prop, which means we don't need a user to pass it in as a parameter.  Finally, this.state has a special meaning.  The state of a class component is meant to hold things that change frequently, and change consistantly (in a way that is predictable, like time, or when a user clicks on something).  Later we'll see something that doesn't go inside state.
 
-The componentDidMount and componentWillUnmount are called lifecycle hooks.  componentDidmount is called once at the first rendering.  
+The componentDidMount and componentWillUnmount are called lifecycle hooks.  componentDidmount is called once at the first rendering.  It passes the tick function to setInterval, and makes it tick every second.  componentWillUnmount will be called if the clock is ever removed from the DOM, stopping the every-second updates.  If we didn't do this, a user who navigates to the page with the clock multiple times will end up updating a whole bunch of clocks that they can't see, potentially slowing down their system.
 
+tick and render are the same as before.
 
-clock example
-clock is a function
-	we want it to be self contained
-	the date shouldn't be a prop, clock should be able to modify it
-	shouldn't have to call interval, should also be internal to clock
-turn it into a class
-	but now that it's an object of class Clock, we need special methods for first time rendering.  use componentDidMount.  Called right after it gets rendered (or mounted) correctly.
-	need to clear the timer too.  componentWillUnmount.  wait, what's the point of this?  if we leave the page, won't the clock componenet just die anyway?  Maybe the interval thing will still be around unless we explicitly clear it.  Then if we kept coming back to the page it would just set up more and more intervals.
-	difference between state and just local variable?  Ah, state is for things that change frequently, local variables are for things that don't change frequently.  More efficient this way.  Since time updates every second, we want to put it in state.  State is for frequent, predictable changes.
-	
-() => function()
-
-this is a function definition
-
-when you assign to onclick, it calls the function, and the return value of that function is the thing that will be called when onclick happens.  maybe it's so you can have a context-sensitive OnClick?  As in you create a function that returns different functions depending on the context?
+Finally, we have ReactDOM.render (which will call Clock's render function).  Notice that now all you have to do to set up a new clock is say `<Clock />`.  No need to explicitly call setInterval or reference tick.
 
 </details>
 
