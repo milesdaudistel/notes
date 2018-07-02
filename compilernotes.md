@@ -25,6 +25,44 @@ We'll start off with this example:
 
 </details>
 
+<details><summary>Lexing</summary>
+A lexer performs lexical analysis.  You take a stream of characters and group them together into tokens.
+
+`Token`
+The smallest unit of meaning in a program.  A keyword, a variable name, an operator, etc.
+
+	for x in range(4):
+		print(x)
+		
+In this example, the input consists of the character 'f', followed by 'o', followed by 'r', ' ', 'x', ' ', 'i', 'n', etc.  The lexer will take these characters and convert them into the single unit tokens FOR, ID, IN, etc.  Each of these tokens is a single unit. Conventionally, capital letters are used to denote tokens.
+
+'Regular expression'
+A regular expression is a pattern on which strings either match or don't match.
+
+	r"dog"
+	
+This is a regular expression in python syntax that matches only the string 'dog'.
+
+	r"x*"
+	
+This is a regular expression, also in python syntax, that matches '', 'x', 'xx', 'xxx', 'xxxx', etc, matching any number of x's in a row.
+
+There are 3 operators for regular expressions.  They are as follows:
+
+	r"ab" #concatenation, sticking chars together
+	r"a|b" #TODO, either a or b
+	r"a*" #kleene star, 0 or more a's
+	
+You can stick these operators together using parenthesis too.
+
+	r"(0|1)*"
+	
+This regex will match any string composed of 0's and 1's.
+
+So the purpose of regular expressions is to answer the question: TODO
+
+</details>
+
 <details><summary>DFA to Table Driven</summary>
 Consider this regex of all binary strings that end in 1:
 
