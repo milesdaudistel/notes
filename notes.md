@@ -632,21 +632,30 @@ The `function` keyword can be used to define a function inside an expression
 	    return width * height;
 	}
 	
+Fat Arrows (`=>`) are a way to create anonymous functions.  Example:
+
+	const z = (x, y) => { x * y};
+	
+Now z refers to an anonymous multiply function that takes in parameters x and y.  Also note that the `return` keyword can be omitted.
+	
 The `this` keyword refers to different things depending on the context.  On a global scope, it refers to the global object (the window).  In a class, it refers to the object of the class that is calling the method.  But what if you pass this as an argument to another function outside of that class?  The clock class component in the react.js section is a good example of this.  
 
 	class Clock extends React.Component {
+	
 	  /* omitted functions */
 	  	
 	  componentDidMount() {
 	    this.timerID = setInterval(
-	      () => this.tick(),
+	      this.tick,
 	      1000
 	    );
 	  }
+	  
 	  /* more omitted functions, including tick function */
-	);
+	  
+	}
 
-In this example, we pass the tick function of clock to setInterval, which is a function outside of clock.  
+In this example, we pass the tick function of clock to setInterval, which is a function outside of clock.  Simply passing this.tick to setInterval will not work, because setInterval is a built in global method, so this will refer to the global object.  To fix this, we should instead pass `() => this.tick()`.
 	
 </details>
 
