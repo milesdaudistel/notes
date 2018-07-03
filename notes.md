@@ -162,7 +162,7 @@ Think of threads as jobs, not as workers.  It's important that you can spawn as 
 
 </details>
 
-<details><summary>Events, Asynchronous Methods, Callbacks, Promises</summary>
+<details><summary>Events, Asynchronous Methods, Callbacks</summary>
 
 If a method is asynchronous, calling it will spawn another thread or process.  Imagine a user clicks on a desktop icon.  The method for opening up the app corresponding to the icon should be asynchronous, because if it wasn't, the user couldn't move their mouse after clicking the icon.  Asynchronous calls are important even if you only have 1 core.  Think of a thread as a job, and a core as a worker.  If you only have 1 worker, you can't have them work on just 1 job at a time.  That would be bad for the user.  So our 1 worker juggles multiple jobs at the same time, and users have the illusion that many operations are happening simultaneously.  
 
@@ -682,7 +682,7 @@ The `this` keyword refers to different things depending on the context.  On a gl
 	  
 	}
 
-In this example, we pass the tick function of clock to setInterval, which is a function outside of clock.  Simply passing this.tick to setInterval will not work, because setInterval is a built in global method, so this will refer to the global object.  To fix this, we should instead pass `() => this.tick()` to setInterval, which is just a fat arrow function that passes in no parameteres. 
+In this example, we pass the tick function of clock to setInterval, which is a function outside of clock.  Simply passing this.tick to setInterval will not work, because setInterval is a built in global method, so this will refer to the global object.  To fix this, we should instead pass `() => this.tick()` to setInterval, which is just a fat arrow function that passes in no parameters. 
 	
 </details>
 
@@ -837,14 +837,14 @@ Now we're going to look at why components are useful.  They can encapsulate more
 	
 The setInterval function will call tick every 1 second (1000 milliseconds).  The tick function will render a new clock, with a new date.  
 
-This will run, but it would be better if tick and setInterval were defined and called inside the clock.  If someone wanted to use the clock function outside of the file it was defined in, they would have to know of the existence of the tick function, as well as knowing to call setInterval(tick, 1000) in their own code.  Ideally, we would want users to be able to create a new clock like this:
+This will run, but it would be better if tick and setInterval were defined and called inside the clock.  If someone wanted to use the clock function outside of the file it was defined in, they would have to call setInterval(tick, 1000) in their own code.  Ideally, we would want users to be able to create a new clock like this:
 
 	ReactDOM.render(
 	  <Clock />,
 	  document.getElementById('root')
 	);
 	
-This way, they don't have to know about setInterval or tick.  They can just call the clock function and it runs.  To do this, we will create clock as a class component, rather than a function component.  Here is how it is done:
+This way, they can create a clock without needing to know about setInterval or tick.  To do this, we will create clock as a class component, rather than a function component.  Here is how it is done:
 
 	class Clock extends React.Component {
 	  constructor(props) {
@@ -884,18 +884,60 @@ This way, they don't have to know about setInterval or tick.  They can just call
 	  document.getElementById('root')
 	);
 	
-In the constructor, we must always call super on our props.  Also, date is no longer a prop, which means we don't need a user to pass it in as a parameter.  Finally, this.state has a special meaning.  The state of a class component is meant to hold things that change frequently, and change consistantly (in a way that is predictable, like time, or when a user clicks on something).  Later we'll see something that doesn't go inside state.
+In the constructor of a class component, we must always call super on our props.  Also, date is no longer a prop, which means we don't need a user to pass it in as a parameter.  Finally, this.state has a special meaning.  The state of a class component is meant to hold things that change frequently, and change consistantly (in a way that is predictable, like time, or when a user clicks on something).  Not everything should go in this.state, as we'll soon see.
 
 The componentDidMount and componentWillUnmount are called lifecycle hooks.  componentDidmount is called once at the first rendering.  It passes the tick function to setInterval, and makes it tick every second.  Notice that we put the value returned by setInterval into this.timerID, which is not a part of state.  This is because the timer object returned by setInterval will never change.  Since state is made to house attributes that change frequently, and the timers ID will never change, it should not go in state.
 
-componentWillUnmount will be called if the clock is ever removed from the DOM, stopping the every-second updates.  If we didn't do this, a user who navigates to the page with the clock multiple times will end up updating a whole bunch of clocks that they can't see, potentially slowing down their system.
+componentWillUnmount will be called if the clock is ever removed from the DOM (the screen).  Removing the clock from the DOM doesn't stop the every-second updates, it just stops the user from seeing the clock.  If we didn't completely destroy the clock, a user who navigates to the page with the clock multiple times will end up updating a whole bunch of clocks that they can't see, potentially slowing down their system.
 
 tick and render are the same as before.
 
 Finally, we have ReactDOM.render (which will call Clock's render function).  Notice that now all you have to do to set up a new clock is say `<Clock />`.  No need to explicitly call setInterval or reference tick.
 
+<details><summary>Component State</summary>
+
+As we saw in the clock example, only things that get modified frequently and consistently should go in the state.
+
+Do not modify the state directly.  For example, this will not re-render a component:
+
+	// Wrong
+	this.state.comment = 'Hello';
+
+Instead, use setState():
+
+	// Correct
+	this.setState({comment: 'Hello'});
+
+The only place where you can assign this.state is the constructor.
+
+`React state updates are asynchronous`  
+this.props and this.state may be updated asynchronously. you should not rely on their values for calculating the next state.
+
+For example, this code may fail to update the counter:
+
+	// Wrong
+	this.setState({
+	  counter: this.state.counter + this.props.increment,
+	});
+
+Think of calling setState as enquing an update, not necessarily performing it right away.  If this.state.counter = 0, and this.props.increment = 1, you would expect that calling this.setState 10 times would result in this.state.counter = 10.  However, it is possible that the addition this.state.counter + this.props.increment may happen without reassigning to counter right away.  Then you will have enqued 10 call to make this.state.counter = 0 + 1, and the final result will be 1.
+
+If you pass setState a function, it behaves differently.  setState will give the triplet (state, props, context) to your function.  state, etc are potentially different from this.state, etc, as they are handed to your function from the previous function in the queue.
+
+	// Correct
+	this.setState((prevState, props) => ({
+	  counter: prevState.counter + props.increment
+	}));
+	
+Only providing 2 parameters is fine, context will just be ignored.
+
 </details>
 
+</details>
 
+`preventDefault`
+Stops the default behavior of most things.  The default behavior of clicking a link is to redirect to that page.  You can prevent this and do something else when the link is clicked.
 
+`Synthetic Event`
+Events are different depending on what browser you're using.  Synthetic events wrap around these different events to make a uniform interface.
 
