@@ -1,3 +1,10 @@
+#Financial Wizardry
+You need money, right? Quick advice: invest in ETFs, put money into your 401k, then your roth ira. Below is a chart from reddit. It's a little small, maybe open it separately.
+
+<details><summary>Personal Finances Chart</summary>
+![financechart](pics/financechart.jpg)
+</details>
+
 #Code Structures
 <details><summary>Interface</summary>
 
@@ -143,10 +150,29 @@ What about setters?  Lets say you have some food, and it's ok to share it with p
 		
 
 	Doggo gb = Doggo()
-	go.
 	
 //TODO provide an example that shows that it's more mutable.  People calling the code won't have to go back and change it.
  
+
+</details>
+
+<details><summary>Threads</summary>
+
+Think of threads as jobs, not as workers.  It's important that you can spawn as many threads, or jobs as you want.  Your operating system has to output video, audio, listen for mouse clicks, keyboard input, watch power consumption, etc.  That's a lot more than 4 jobs.  If you could only run 4 jobs at a time the user would think their computer was super slow.  Well, not super slow, it just wouldn't function at all.
+
+</details>
+
+<details><summary>Events, Asynchronous Methods, Callbacks, Promises</summary>
+
+If a method is asynchronous, calling it will spawn another thread or process.  Imagine a user clicks on a desktop icon.  The method for opening up the app corresponding to the icon should be asynchronous, because if it wasn't, the user couldn't move their mouse after clicking the icon.  Asynchronous calls are important even if you only have 1 core.  Think of a thread as a job, and a core as a worker.  If you only have 1 worker, you can't have them work on just 1 job at a time.  That would be bad for the user.  So our 1 worker juggles multiple jobs at the same time, and users have the illusion that many operations are happening simultaneously.  
+
+An event is just 'something that has happened'; a mouse click, a keyboard input, a new email, etc.  Since these things happen all the time, we need asynchronous methods that can run concurrently in order to catch and handle all these events.
+
+But we don't just want async methods to catch events, we also want to tell them what to do with the events.  We can do this by passing the async method a callback function as a parameter.  An example is when you set onClick in an html tag.  The thing that you set onClick to is the callback function.  
+
+You might wonder 'Why do we need to pass a callback in as a parameter?  Why not just put that code directly into the asynchronous function?'  To answer that, think about this scenario:  you have a website that has a whole bunch of different clickable buttons.  Some buttons link you to other pages, some buttons open drop down menus, some display images.  All of these buttons have asynchronous functions behind them, waiting for clicks.  But when they get a click, they all do different things.  If you had to program all these buttons, it would be much easier to write the part of the program that listens for clicks once, rather than copying and pasting it again and again for every single button.  So the reason callback functions are so common is that asynchronous functions often just listen for events, so passing in the 'what to do after you get the event' logic as a parameter is easier than writing it directly into the asynchronous method.
+
+
 
 </details>
 
@@ -560,12 +586,7 @@ Json is a data format that is able to be read by humans as well as any programmi
 	
 </details>
 
-#Financial Wizardry
-You need money, right? Quick advice: invest in ETFs, put money into your 401k, then your roth ira. Below is a chart from reddit. It's a little small, maybe open it separately.
 
-<details><summary>Personal Finances Chart</summary>
-![financechart](pics/financechart.jpg)
-</details>
 
 #HTML
 HTML stands for Hyper Text Markup Language.  All it does is display tet that you 'mark up' with tags and elements to change how it is displayed.  Since HTML's structure is just putting text between tags, it's very difficult to code anything substantial in HTML.  That's why we have javascript to embed complicated stuff into an HTML page.  For example, lets say wikipedia is written in pure HTML.  There's no way to log in to wikipedia, or play web games, etc.  In order to do those things, javascript is necessary, because it allows for more complex back and forth communication between the client and server.  In pure HTML over a TCP/IP connection, a client can only ask the server to send them different static web pages.  With javascript, the client can ask things like 'show me my account details' and javascript can communicate that back to the server.  Stuff like that.
@@ -626,7 +647,13 @@ This is a javascript method embedded in the same document as the above div eleme
 
 #Javascript
 <details><summary>keywords</summary>
-The `function` keyword can be used to define a function inside an expression
+The `function` keyword can be used to define a function.
+
+	function myFunction(p1, p2) {
+	    return p1 * p2;
+	}
+
+It is also used to declare anonymous functions.
 
 	var getRectArea = function(width, height) {
 	    return width * height;
@@ -634,9 +661,9 @@ The `function` keyword can be used to define a function inside an expression
 	
 Fat Arrows (`=>`) are a way to create anonymous functions.  Example:
 
-	const z = (x, y) => { x * y};
+	const z = (x, y) => { x * y };
 	
-Now z refers to an anonymous multiply function that takes in parameters x and y.  Also note that the return keyword can be omitted.  The last line of a fat arrow function is implicitly returned.  Another feature of fat arrows is that they don't provide a binding for the keyword this, and so this will retain its definition from the outer scope.
+Now z refers to an anonymous multiply function that takes in parameters x and y.  Note the function gives back x * y; the return keyword is omitted.  The last line of a fat arrow function is implicitly returned.  Another feature of fat arrows is that they don't provide a binding for the keyword this, and so this will retain its definition from the outer scope.
 	
 The `this` keyword refers to different things depending on the context.  On a global scope, it refers to the global object (the window).  In a class, it refers to the object of the class that is calling the method.  But what if you pass this as an argument to another function outside of that class?  The clock class component in the react.js section is a good example of this.  
 
@@ -657,6 +684,50 @@ The `this` keyword refers to different things depending on the context.  On a gl
 
 In this example, we pass the tick function of clock to setInterval, which is a function outside of clock.  Simply passing this.tick to setInterval will not work, because setInterval is a built in global method, so this will refer to the global object.  To fix this, we should instead pass `() => this.tick()` to setInterval, which is just a fat arrow function that passes in no parameteres. 
 	
+</details>
+
+<details><summary>Classes / Prototypes</summary>
+
+javascript classes -> callbacks -> promises -> async functions -> react async states
+
+javascript doc on prototypes has examples that dont work, so all of the below is garbage.  Don't bother reading it until you find out how inheritance actually works.
+
+Javascript classes (here called prototypes) are looser than classes in C or Java.  A prototype creates objects just like classes, but a prototype's methods and fields can be modified, added to, or taken away from.  If a prototype gets modified, all of the children spawned from it get modified.  This includes other prototypes inheriting from it.
+
+	function myclass
+		bla bla(this)
+		
+	myclass.prototype = Object.create(myclass.prototype or some class that its inheriting from)
+	
+	var x = new myclass
+	
+myclass.prototype will get put into function myclass, which will then return an object and put it in x
+
+best way to implement inheritance is through the call method
+
+	function Worker(name, projs) {
+		this.name = name || "";
+		this.projs = projs || [];
+	}
+	
+	function Engineer(name, projs, mach) {
+	  Worker.call(this, name, projs);
+	  this.machine = mach || '';
+	}
+	
+	Worker.prototype.name = "Jerry";
+	
+	function Myclass(param1, param2) {
+		this.param1 = param1 || '';
+		this.param2 = param2 || '';
+	}
+	
+	var x = new Myclass(<nothing>, "myparam2");
+	
+In this example, we have a Worker class, and an Engineer class that inherits from Worker through the call method.  If a parameter is not specified, its value is whatever is to the right of the ||.  After we create these 
+	
+
+
 </details>
 
 
