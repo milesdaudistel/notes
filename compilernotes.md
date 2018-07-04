@@ -52,6 +52,8 @@ We can convert this DFA into a table.  A table is easy to implement in code, as 
  
  There is no more input, so we are done.  One thing that isn't in table that we need to somehow specify is that U is an accepting state, and S and T aren't.  Implemention is trivial and will be omitted :^)
  
+ So in general, you have a current state, and you have a next token of input.  You do a table look up based on those 2 things to find your next state.  If at any point you try to do a table lookup and find nothing, that means the string does not match.  If we had the string `ab`, we would look in row S, and we wouldn't find a column corresponding to `a`, and our algorithm would return false, saying the string does not match our regular expression.
+ 
 
 </details>
 
@@ -74,17 +76,24 @@ Example token tree output from parser:
 
 Obviously we know the order of operations for the original character stream, but the computer doesn't.  If we told the computer to calculate the final result directly from the token stream, the output would be `(((2+3)*2)+3)=13` instead of the expected `2+(3*2)+3=11`.  This is why a parser is necessary.
 
+<details><summary>Context Free Grammars</summary>
+The regular grammars that we've looked at so far are a subset of Context Free Grammars.  So all regular grammars are context free grammars, 
 
+</details>
 
+<details><summary>Derivation</summary>
+The term derivation refers to both the tree output of parsing, as well as the process of making the tree.
+</details>
 
-Easiest type of parsing.  The way recursive descent works is we get a big list (or stream) of tokens from the lexer.  We look at these tokens one at a time, forming them into a tree.
+<details><summary>Recursive Descent</summary>
+Recursive Descent is the simplest type of parsing algorithm.  The way recursive descent works is we get a big list (or stream) of tokens from the lexer.  We look at these tokens one at a time, forming them into a tree.
 
-`Example Grammar for recursive descent`
+Example Grammar for recursive descent:
 
 	E -> T | T + E
 	T -> int | int * T | (E)
 	
-`Recursive Descent Functions`
+Recursive Descent Functions:
 
 	bool Term(Token tok) { return *next++ == tok; }
 	
@@ -101,7 +110,10 @@ Easiest type of parsing.  The way recursive descent works is we get a big list (
 	
 
 	
-`recursive descent limitations`
+Recursive descent limitations:
+TODO
+
+</details>
 
 </details>
 
@@ -170,6 +182,157 @@ Its parsing table will look like this:
 
 Blanks in the table mean error.
 
+We can create a parse tree using this table by starting at E, and looking at the first terminal in our input, we do a table lookup.  Whatever we find, we add to our tree with E as the root.  Since it's a leftmost derivation, we travel the branches in a pre-order fashion until we hit a leaf node that is a non-terminal.  Then we look at the next terminal, and do another table look up.
+
+Input stream:
+
+	(3 * 4) + 2
+
+Derivation:
+
+	E -> T X -> (E) X -> (T X) X -> (int Y X) X -> (int * T X) X -> (int * int Y X) X -> (int * int X) X 
+	-> (int * int) X -> (int * int) + E -> (int * int) + T X -> (int * int) + int Y X -> (int * int) + int X
+	-> (int * int) + int
+
+These derivation steps are going to be gone through using the table.
+TODO might want to put more captions on each of these steps so that people get a better idea of how it corresponds to the table.
+
+<details><summary>Step-by-step derivation</summary>
+
+<a class="prev" onclick="plusSlides2(-1)">&#10094;</a>
+<a class="next" onclick="plusSlides2(1)">&#10095;</a>
+
+<div class="mySlides2">
+<div>1 / 14</div>
+<pre>
+(3*4)+2
+&#8593;
+</pre>
+<img src="pics/ETXY1.png">
+</div>
+
+<div class="mySlides2">
+<div>2 / 14</div>
+<pre>
+(3*4)+2
+&#8593;
+</pre>
+<img src="pics/ETXY2.png">
+</div>
+
+<div class="mySlides2">
+<div>3 / 14</div>
+<pre>
+(3*4)+2
+ &#8593;
+</pre>
+<img src="pics/ETXY3.png">
+Now that we've derived the '(', we can move on to the second token of input, '3'.
+</div>
+
+<div class="mySlides2">
+<div>4 / 14</div>
+<pre>
+(3*4)+2
+ &#8593;
+</pre>
+<img src="pics/ETXY4.png">
+</div>
+
+<div class="mySlides2">
+<div>5 / 14</div>
+<pre>
+(3*4)+2
+  &#8593;
+</pre>
+<img src="pics/ETXY5.png">
+</div>
+
+<div class="mySlides2">
+<div>6 / 14</div>
+<pre>
+(3*4)+2
+   &#8593;
+</pre>
+<img src="pics/ETXY6.png">
+</div>
+
+<div class="mySlides2">
+<div>7 / 14</div>
+<pre>
+(3*4)+2
+    &#8593;
+</pre>
+<img src="pics/ETXY7.png">
+</div>
+
+<div class="mySlides2">
+<div>8 / 14</div>
+<pre>
+(3*4)+2
+    &#8593;
+</pre>
+<img src="pics/ETXY8.png">
+Since the row 'Y', column ')' entry is 'epsilon', Y is nothing, and we do not need to represent it anymore.
+</div>
+
+<div class="mySlides2">
+<div>9 / 14</div>
+<pre>
+(3*4)+2
+     &#8593;
+</pre>
+<img src="pics/ETXY9.png">
+After we delete the X that turned out to be an epsilon, we hit the ')', and consume it.  Only writing this because it may not be immediately clear.
+</div>
+
+<div class="mySlides2">
+<div>10 / 14</div>
+<pre>
+(3*4)+2
+     &#8593;
+</pre>
+<img src="pics/ETXY10.png">
+</div>
+
+<div class="mySlides2">
+<div>11 / 14</div>
+<pre>
+(3*4)+2
+     &#8593;
+</pre>
+<img src="pics/ETXY11.png">
+</div>
+
+<div class="mySlides2">
+<div>12 / 14</div>
+<pre>
+(3*4)+2
+      &#8593;
+</pre>
+<img src="pics/ETXY12.png">
+</div>
+
+<div class="mySlides2">
+<div>13 / 14</div>
+<pre>
+(3*4)+2
+      &#8593;
+</pre>
+<img src="pics/ETXY13.png">
+</div>
+
+<div class="mySlides2">
+<div>14 / 14</div>
+<pre>
+(3*4)+2
+      &#8593;
+</pre>
+<img src="pics/ETXY14.png">
+Here is our finished parse tree.  We can turn it into an AST by getting rid of all the non-terminals, which I don't feel like doing.
+</div>
+
+</details>
 
 
 
@@ -188,7 +351,7 @@ How the table is constructed.
 	
 `T` is the table, `A` is the current non-terminal, `t` is the next token, and `X`
 
-TODO how is the parsing table really created?  What 2 things do we have, what 3rd thing are we looking for?  Iterate over each position in the table?  Iterate over all possible terminals?  
+TODO how is the parsing table really created?  What 2 things do we have, what 3rd thing are we looking for?  Iterate over each position in the table?  Iterate over all possible terminals?  And why can we have 2 things (like a TX) in the parsing table?
 
 In order to create the parsing table, we need to find a B for every combo of A and t.  We can find these X's by computing the first and follow sets for each A.
 
@@ -307,7 +470,9 @@ Now that we have the first and follow sets for each terminal and non-terminal, w
 Give a really quick overview of the parts of a compiler.  Lexer, parser, semantic analyzer, code generation.
 Explain that assembly is binary.  Recall your 61C project where you made a processor that ran on binary.
 
-explain regex and automata
+explain regex and automata.  "in your head, you separate the tokens like this:  (for) (x) (in) ... but for all the computer knows the tokens should be separated like this: (f) (or x) (i)(n) ..."
+
+Need good image manipulation software.  Much easier than the slideshow you made.
 
 explain terminology better.
 
@@ -332,7 +497,7 @@ Oh, the first and follow set examples:  maybe give them the way to do it by hand
 <a class="next" onclick="plusSlides1(1)">&#10095;</a>
 
 <div class="mySlides1">
-Step 1 / NUMSLIDES:  Start at E
+Step 1 / 14:  Start at E
 <pre>
 Follow(E) = { $ }
 Follow(T) = { }
@@ -347,7 +512,7 @@ Follow(int) = { }
 </div>
 
 <div class="mySlides1">
-Step 2 / NUMSLIDES:  Look at E -> TX
+Step 2 / 14:  Look at E -> TX
 <pre>
 Follow(E) = { $ }
 Follow(T) = { First(X) }
@@ -362,7 +527,7 @@ Follow(int) = { }
 </div>
 
 <div class="mySlides1">
-Step 3 / NUMSLIDES:  Look at T -> (E)
+Step 3 / 14:  Look at T -> (E)
 <pre>
 Follow(E) = { $, ')' }
 Follow(T) = { First(X) }
@@ -376,7 +541,7 @@ Follow(int) = { }
 </pre>
 </div>
 
-<div class="mySlides1">Step 4 / NUMSLIDES:  Look at T -> int Y
+<div class="mySlides1">Step 4 / 14:  Look at T -> int Y
 <pre>
 Follow(E) = { $, ')' }
 Follow(T) = { First(X) }
@@ -390,7 +555,7 @@ Follow(int) = { First(Y) }
 </pre>
 </div>
 	
-<div class="mySlides1">Step 5 / NUMSLIDES:  Look at X -> +E
+<div class="mySlides1">Step 5 / 14:  Look at X -> +E
 <pre>
 Follow(E) = { $, ')', Follow(X) }
 Follow(T) = { First(X) }
@@ -405,7 +570,7 @@ Follow(int) = { First(Y) }
 </div>
 
 
-<div class="mySlides1">Step 6 / NUMSLIDES:  Look at X -> epsilon
+<div class="mySlides1">Step 6 / 14:  Look at X -> epsilon
 <pre>
 Follow(E) = { $, ')', Follow(X) }
 Follow(T) = { First(X) }
@@ -419,7 +584,7 @@ Follow(int) = { First(Y) }
 </pre>
 </div>
 
-<div class="mySlides1">Step 7 / NUMSLIDES:  Look at Y -> * T
+<div class="mySlides1">Step 7 / 14:  Look at Y -> * T
 <pre>
 Follow(E) = { $, ')', Follow(X) }
 Follow(T) = { First(X), Follow(Y) }
@@ -433,7 +598,7 @@ Follow(int) = { First(Y) }
 </pre>
 </div>
 
-<div class="mySlides1">Step 8 / NUMSLIDES:  Look at Y -> epsilon
+<div class="mySlides1">Step 8 / 14:  Look at Y -> epsilon
 <pre>
 Follow(E) = { $, ')', Follow(X) }
 Follow(T) = { First(X), Follow(Y) }
@@ -466,3 +631,24 @@ function showSlides1(n) {
   slides[slideIndex-1].style.display = "block";
 }
 </script>
+
+<script>
+var slideIndex = 1;
+showSlides2(slideIndex);
+
+function plusSlides2(n) {
+  showSlides2(slideIndex += n);
+}
+
+function showSlides2(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides2");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  slides[slideIndex-1].style.display = "block";
+}
+</script>
+
