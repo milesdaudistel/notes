@@ -1,9 +1,3 @@
-Always keep this in mind:  Writing notes is a physical record of your attempt to understand something.  Even if all your studies end up fruitless, you can at least prove to yourself that you tried your best.
-#Mac
-<details><summary>Mac Shortcut Keys</summary>
-![keys](pics/macshortcuts.png)
-</details>
-
 #Code Structures
 <details><summary>Interface</summary>
 
@@ -131,39 +125,27 @@ Cool.  But now no one knows about your bork but you.  You want people to be able
 	class Doggo:
 		private int bork = 4
 		
-		public int Get():
+		public Get():
 			return bork
 			
 Now everyone can use Get to see a copy of your bork.  They will be able to change the copy of their bork, but they won't be able to change yours.  So that's getters.
 
-What about setters?  Lets say now that someone can ask doggo to quiet down by setting his bork to a lower volume.
-
-	class Doggo:
-		public int bork = 4
-		
-But what if someone sets doggo's bork to 0?  Then doggo would be sad because it couldn't bork at all.  And what about a negative volume?  That doesn't make any sense.  Let's introduce a setter that will stop people from doing dumb stuff like that.
+What about setters?  Lets say you have some food, and it's ok to share it with people.
 
 	class Doggo:
 		private int bork = 4
+		private int fud = 2
 		
 		public int Get():
 			return bork
-		public void Set(int volume):
-			if volume < 1:
-				print("BOOOOORK")
-			else:
-				bork = volume
 		
+		public int Set():
 		
-Ok, but what is the point of setters that are just:
 
-	class X:
-		public int y = 4
-		
-		public void Set(int z):
-			y = z
-		
-Why not let users access those directly?  I'll answer that question with a question: what if we later decide that we wanted to change the functionality of how a user is able to set a variable?  If we make x private, that would break everyone's code that is currently calling X.y.  So from the start, we should use a setter function so that people who want to use this class call X.Set(3).  This way, when we want to make a change, we don't break a bunch of other stuff.
+	Doggo gb = Doggo()
+	go.
+	
+//TODO provide an example that shows that it's more mutable.  People calling the code won't have to go back and change it.
  
 
 </details>
@@ -598,36 +580,6 @@ results in
 <b><i> Hello </b></i>
 
 Since b means bold, and i means italic.  This is all that HTML does.  It just formats text and pictures in a way that is able to be transmitted over the internet.
-
-
-<details><summary>div tag</summary>
-The div tag just separates elements. It doesn't do much by itself, but adding attributes to it applies all those attributes to its children.
-Example:
-
-	<div style="background-color:lightblue">
-	  <h3>This is a heading in a div element</h3>
-	  <p>This is some text in a div element.</p>
-	</div>
-	
-	<p>This is some text that we don't want to be blue.</p>
-
-Results in:
-
-***
-
-<div style="background-color:lightblue">
-  <h3>This is a heading in a div element</h3>
-  <p>This is some text in a div element.</p>
-</div>
-	
-<p>This is some text that we don't want to be blue.</p>
-
-***
-
-So with div tags we were able to apply attributes selectively
-
-</details>
-
 </details>
 
 <details><summary>element</summary>
@@ -643,59 +595,12 @@ An attribute is something you add to a tag to specify more information.
 
 	<img src="my_img.jpg" width="500" height="200" alt="couldn't find her">
 	
-This is an img element.  The tag is img and the attributes are src, width, etc.  Some attributes are required, like src, and others are optional, like width and height.  Also note that this is a `singleton` because it doesn't need a closing tag which would be something like `</img>`
+This is an img element.  The tag is img and the attributes are src, width, etc.  Some attributes are required, like src, and others are optional, like width and height.  Also note that this is a `singleton` because it doesn't need a closing tag which would be something like 
 
-<details><summary>class attribute</summary>
-
-If an element has a class attribute, the element belongs to a group with all the other elements of the same class.  By itself, a class attribute doesn't do anything, but we can specify certain actions on all elements of a certain class.
-
-Example:
-
-	<style>
-	p.ocean {
-	    color: blue;
-	}
-	
-	p.forest {
-	    color: green;
-	}
-	</style>
-	
-	<p>A paragraph with no location.</p>
-	
-	<p class="forest">Now we're in the forest</p>
-	
-	<p class="ocean">Now we're in the ocean</p>
-	
-	<p class="forest">Now we're in the forest again</p>
-	
-	<p class="ocean">Now we're in the ocean again</p>
-	
-Results in:
-
-<style>
-p.ocean {
-    color: blue;
-}
-
-p.forest {
-    color: green;
-}
-</style>
-
-<p>A paragraph with no location.</p>
-
-<p class="forest">Now we're in the forest</p>
-
-<p class="ocean">Now we're in the ocean</p>
-
-<p class="forest">Now we're in the forest again</p>
-
-<p class="ocean">Now we're in the ocean again</p>
+	</img>
 
 </details>
 
-</details>
 
 <details><summary>view source</summary>
 
@@ -719,27 +624,40 @@ This is a javascript method embedded in the same document as the above div eleme
 
 </details>
 
-<details><summary>Slideshow tutorial</summary>
-
-
-
-</details>
-
 #Javascript
-The function keyword can be used to define a function inside an expression
+<details><summary>keywords</summary>
+The `function` keyword can be used to define a function inside an expression
 
 	var getRectArea = function(width, height) {
 	    return width * height;
 	}
 	
-  componentDidMount() {
-    this.timerID = setInterval(
-      this.tick,
-      1000
-    );
-  }
-  
-  this.tick doesn't get called.  why?	
+Fat Arrows (`=>`) are a way to create anonymous functions.  Example:
+
+	const z = (x, y) => { x * y};
+	
+Now z refers to an anonymous multiply function that takes in parameters x and y.  Also note that the return keyword can be omitted.  The last line of a fat arrow function is implicitly returned.  Another feature of fat arrows is that they don't provide a binding for the keyword this, and so this will retain its definition from the outer scope.
+	
+The `this` keyword refers to different things depending on the context.  On a global scope, it refers to the global object (the window).  In a class, it refers to the object of the class that is calling the method.  But what if you pass this as an argument to another function outside of that class?  The clock class component in the react.js section is a good example of this.  
+
+	class Clock extends React.Component {
+	
+	  /* omitted functions */
+	  	
+	  componentDidMount() {
+	    this.timerID = setInterval(
+	      this.tick,
+	      1000
+	    );
+	  }
+	  
+	  /* more omitted functions, including tick function */
+	  
+	}
+
+In this example, we pass the tick function of clock to setInterval, which is a function outside of clock.  Simply passing this.tick to setInterval will not work, because setInterval is a built in global method, so this will refer to the global object.  To fix this, we should instead pass `() => this.tick()` to setInterval, which is just a fat arrow function that passes in no parameteres. 
+	
+</details>
 
 
 #React.js
@@ -826,44 +744,87 @@ Welcome takes in props, and returns a new element saying Hello, name.  Then cons
 
 An important note is that components must start with an upper case letter.  If they don't, jsx will not recognize them as components.
 
-Here's an example with components in components:
+Now we're going to look at why components are useful.  They can encapsulate more than a simple jsx function is capable of.  Consider the following example of a clock function:
 
-	function Welcome(props) {
-	  return <h1>Hello, {props.name}</h1>;
-	}
-	
-	function App() {
+	function Clock(props) {
 	  return (
 	    <div>
-	      <Welcome name="Sara" />
-	      <Welcome name="Cahal" />
-	      <Welcome name="Edite" />
+	      <h1>Hello, world!</h1>
+	      <h2>It is {props.date.toLocaleTimeString()}.</h2>
 	    </div>
 	  );
 	}
 	
+	function tick() {
+	  ReactDOM.render(
+	    <Clock date={new Date()} />,
+	    document.getElementById('root')
+	  );
+	}
+	
+	setInterval(tick, 1000);
+	
+The setInterval function will call tick every 1 second (1000 milliseconds).  The tick function will render a new clock, with a new date.  
+
+This will run, but it would be better if tick and setInterval were defined and called inside the clock.  If someone wanted to use the clock function outside of the file it was defined in, they would have to know of the existence of the tick function, as well as knowing to call setInterval(tick, 1000) in their own code.  Ideally, we would want users to be able to create a new clock like this:
+
 	ReactDOM.render(
-	  <App />,
+	  <Clock />,
 	  document.getElementById('root')
 	);
-
-Here, App outputs a welcome for each person.
-
-
-clock example
-clock is a function
-	we want it to be self contained
-	the date shouldn't be a prop, clock should be able to modify it
-	shouldn't have to call interval, should also be internal to clock
-turn it into a class
-	but now that it's an object of class Clock, we need special methods for first time rendering.  use componentDidMount
-	need to clear the timer too.  componentWillUnmount.  wait, what's the point of this?  if we leave the page, won't the clock componenet just die anyway?
-	difference between state and just local variable?  Ah, state is for things that change frequently, local variables are for things that don't change frequently.  More efficient this way.  Since time updates every second, we want to put it in state.  State is for frequent, predictable changes.
 	
-() => function()
+This way, they don't have to know about setInterval or tick.  They can just call the clock function and it runs.  To do this, we will create clock as a class component, rather than a function component.  Here is how it is done:
 
-is this a function call or a function definition?
+	class Clock extends React.Component {
+	  constructor(props) {
+	    super(props);
+	    this.state = {date: new Date()};
+	  }
+	
+	  componentDidMount() {
+	    this.timerID = setInterval(
+	      () => this.tick(),
+	      1000
+	    );
+	  }
+	
+	  componentWillUnmount() {
+	    clearInterval(this.timerID);
+	  }
+	
+	  tick() {
+	    this.setState({
+	      date: new Date()
+	    });
+	  }
+	
+	  render() {
+	    return (
+	      <div>
+	        <h1>Hello, world!</h1>
+	        <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+	      </div>
+	    );
+	  }
+	}
+	
+	ReactDOM.render(
+	  <Clock />,
+	  document.getElementById('root')
+	);
+	
+In the constructor, we must always call super on our props.  Also, date is no longer a prop, which means we don't need a user to pass it in as a parameter.  Finally, this.state has a special meaning.  The state of a class component is meant to hold things that change frequently, and change consistantly (in a way that is predictable, like time, or when a user clicks on something).  Later we'll see something that doesn't go inside state.
+
+The componentDidMount and componentWillUnmount are called lifecycle hooks.  componentDidmount is called once at the first rendering.  It passes the tick function to setInterval, and makes it tick every second.  Notice that we put the value returned by setInterval into this.timerID, which is not a part of state.  This is because the timer object returned by setInterval will never change.  Since state is made to house attributes that change frequently, and the timers ID will never change, it should not go in state.
+
+componentWillUnmount will be called if the clock is ever removed from the DOM, stopping the every-second updates.  If we didn't do this, a user who navigates to the page with the clock multiple times will end up updating a whole bunch of clocks that they can't see, potentially slowing down their system.
+
+tick and render are the same as before.
+
+Finally, we have ReactDOM.render (which will call Clock's render function).  Notice that now all you have to do to set up a new clock is say `<Clock />`.  No need to explicitly call setInterval or reference tick.
 
 </details>
+
+
 
 
