@@ -665,7 +665,7 @@ Fat Arrows (`=>`) are a way to create anonymous functions.  Example:
 	
 Now z refers to an anonymous multiply function that takes in parameters x and y.  Note the function gives back x * y; the return keyword is omitted.  The last line of a fat arrow function is implicitly returned.  Another feature of fat arrows is that they don't provide a binding for the keyword this, and so this will retain its definition from the outer scope.
 	
-The `this` keyword refers to different things depending on the context.  On a global scope, it refers to the global object (the window).  In a class, it refers to the object of the class that is calling the method.  But what if you pass this as an argument to another function outside of that class?  The clock class component in the react.js section is a good example of this.  
+Unlike the rest of javascript, the 'this' keyword is dynamically scoped for some reason.  On a global scope, it refers to the global object (the window).  In a class, it refers to the object of the class that is calling the method.  But what if you pass this as an argument to another function outside of that class?  The clock class component in the react.js section is a good example of this.  
 
 	class Clock extends React.Component {
 	
@@ -684,6 +684,30 @@ The `this` keyword refers to different things depending on the context.  On a gl
 
 In this example, we pass the tick function of clock to setInterval, which is a function outside of clock.  Simply passing this.tick to setInterval will not work, because setInterval is a built in global method, so this will refer to the global object.  To fix this, we should instead pass `() => this.tick()` to setInterval, which is just a fat arrow function that passes in no parameters. 
 	
+</details>
+
+<details><summary>important functions</summary>
+
+`bind`
+takes in a variable / function / class and outputs a 'bound' version of that thing.  A 'bound' variable / function / class changes the 'this' keyword to be lexically scoped for that specific function.
+
+	var module = {
+	  x: 42,
+	  getX: function() {
+	    return this.x;
+	  }
+	}
+	
+	var unboundGetX = module.getX;
+	console.log(unboundGetX()); // The function gets invoked at the global scope
+	// expected output: undefined
+	
+	var boundGetX = unboundGetX.bind(module);
+	console.log(boundGetX());
+	// expected output: 42
+
+In general, I believe the way you bind a function is function.bind(scope that you want to bind function to).
+
 </details>
 
 <details><summary>Classes / Prototypes</summary>
@@ -940,4 +964,55 @@ Stops the default behavior of most things.  The default behavior of clicking a l
 
 `Synthetic Event`
 Events are different depending on what browser you're using.  Synthetic events wrap around these different events to make a uniform interface.
+
+<details><summary>controlled components</summary>
+
+html form elements like input and select have their own state.  We want react to control the state to make this simple.  In react, these are called controlled components.
+
+In pure html:
+
+	<form>
+	  <label>
+	    Name:
+	    <input type="text" name="name" />
+	  </label>
+	  <input type="submit" value="Submit" />
+	</form>
+	
+In react:
+
+	class NameForm extends React.Component {
+	  constructor(props) {
+	    super(props);
+	    this.state = {value: ''};
+	
+	    this.handleChange = this.handleChange.bind(this);
+	    this.handleSubmit = this.handleSubmit.bind(this);
+	  }
+	
+	  handleChange(event) {
+	    this.setState({value: event.target.value});
+	  }
+	
+	  handleSubmit(event) {
+	    alert('A name was submitted: ' + this.state.value);
+	    event.preventDefault();
+	  }
+	
+	  render() {
+	    return (
+	      <form onSubmit={this.handleSubmit}>
+	        <label>
+	          Name:
+	          <input type="text" value={this.state.value} onChange={this.handleChange} />
+	        </label>
+	        <input type="submit" value="Submit" />
+	      </form>
+	    );
+	  }
+	}
+	
+
+
+</details>
 
