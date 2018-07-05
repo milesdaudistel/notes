@@ -25,23 +25,25 @@ We'll start off with this example:
 
 </details>
 
-<details><summary>Problems with current formal language theory</summary>
+<details><summary>Lexing</summary>
+Imagine you have a program as follows:
 
-It seems that there are a lot of things that are unclear about formal language theory, or automata theory, or whatever.  After all, it's very recent.  The first implementation of a high-level language, Fortran, was in 1957.  That seems long ago, but compare that to, I don't know, when the first analytical machines came into being.  Below are some smart people arguing over stuff on stack overflow:
+	for (i=0, i< 100, i++) {
+		print(i)
+	}
+	
+To a compiler, your program currently looks like an array of characters with no further meaning: 
+	
+	[f, o, r, , (, i, =, 0, ,, i, <, 1, 0, 0, , i, +, +, ), ....]
+	
+The first thing the compiler does is take this stream of characters and turn it into a stream of tokens, like so:
 
-https://mathoverflow.net/questions/172739/inherent-ambiguity-of-the-context-sensitive-language-l-aibicidjejfj-b
+	[for, (, i, =, 0, i, <, 100, i, ++, ), ....]
+	
+A token is just a clump of characters that has meaning to the compiler.  'f', 'o', 'r' has no meaning to a compiler, but 'for' does.  
 
-https://cs.stackexchange.com/questions/51189/ambiguity-vs-context-sensitivity
+We tell the compiler how to clump characters together with regular expressions.
 
-It seems to me that there is little point in thinking about context sensitivity and ambiguity in a light other than something to be rid of whenever possible.  Many would argue that context-sensitivity is not something to be avoided like the plague.  After all, C and C++ are context sensitive.
-
-In practice, your grammars won't be context-free.  But since context-free grammars take O(n) time to parse, you want to make your grammar as close to this as possible.  Give an example of when a context sensitive grammar would take like O(n^2) or something.  show that a regular grammar parse tree is a stick or something.  So you can't have anything like ifs, fors, anything more than local scope with regular grammars.  
-
-I will formally define context-free grammars, regular grammars, and ambiguity.  Anything above that, such as context-sensitive grammars, will not be covered.  Although many consider C and C++ context sensitive grammars today, they were previously implemented using bison, which supposedly only generates context free grammars.
-
-A context free grammar is a grammar that can be described with backus nar form.
-
-imagine the input stream as [f, o, r, ...]. We want to turn this into [for, x, in, ...].  
 </details>
 
 <details><summary>DFA to Table Driven</summary>
@@ -98,7 +100,11 @@ Obviously we know the order of operations for the original character stream, but
 The regular grammars that we've looked at so far are a subset of Context Free Grammars.  So all regular grammars are CFGs, but not all CFG's are regular grammars.  Maybe explain what a context sensitive grammar is?  Then explain that anything above that is like english; disputable.  Then explain that a regular grammar can also have the same Backus Nar Form as the other stuff.  Then explain why Backus Nar form can formulate all formal grammars.  Perhaps use the meaning function.
 
 A formal language / grammar is one where everyone agrees on the same set of rules.
-A formal grammar / language can be ambiguous.  While everyone agrees on the rules, the rules don't cover all possible cases.  
+A formal grammar / language can be ambiguous.  While everyone agrees on the rules, the rules don't cover all possible cases.
+
+In practice, your grammars won't be context-free.  But since context-free grammars take O(n) time to parse, you want to make your grammar as close to this as possible.  Give an example of when a context sensitive grammar would take like O(n^2) or something.  show that a regular grammar parse tree is a stick or something.  So you can't have anything like ifs, fors, anything more than local scope with regular grammars.  Give an example of when C/C++ are context sensitive, and why those examples don't result in too bad slow down.  Also say how you would solve that problem?
+
+
 
 </details>
 
@@ -137,8 +143,6 @@ TODO
 </details>
 
 </details>
-
-
 
 <details><summary>Predictive Parsing and LL(k) grammars</summary>
 Predictive parsing is a confusing term.  Saying that you have a 'predictive parser' is not a statement about your parsing algorithm (recursive descent, shift reduce, etc).  Saying that you have a predictive parser means that the grammar your parser reads is an LL(k) grammar.  LL(k) grammars are a special kind of context-free grammars.  By looking at the next k tokens, we can narrow down the possible productions to 1 at every step.  This means there will never be any backtracking, making it faster.
