@@ -25,6 +25,25 @@ We'll start off with this example:
 
 </details>
 
+<details><summary>Problems with current formal language theory</summary>
+
+It seems that there are a lot of things that are unclear about formal language theory, or automata theory, or whatever.  After all, it's very recent.  The first implementation of a high-level language, Fortran, was in 1957.  That seems long ago, but compare that to, I don't know, when the first analytical machines came into being.  Below are some smart people arguing over stuff on stack overflow:
+
+https://mathoverflow.net/questions/172739/inherent-ambiguity-of-the-context-sensitive-language-l-aibicidjejfj-b
+
+https://cs.stackexchange.com/questions/51189/ambiguity-vs-context-sensitivity
+
+It seems to me that there is little point in thinking about context sensitivity and ambiguity in a light other than something to be rid of whenever possible.  Many would argue that context-sensitivity is not something to be avoided like the plague.  After all, C and C++ are context sensitive.
+
+In practice, your grammars won't be context-free.  But since context-free grammars take O(n) time to parse, you want to make your grammar as close to this as possible.  Give an example of when a context sensitive grammar would take like O(n^2) or something.  show that a regular grammar parse tree is a stick or something.  So you can't have anything like ifs, fors, anything more than local scope with regular grammars.  
+
+I will formally define context-free grammars, regular grammars, and ambiguity.  Anything above that, such as context-sensitive grammars, will not be covered.  Although many consider C and C++ context sensitive grammars today, they were previously implemented using bison, which supposedly only generates context free grammars.
+
+A context free grammar is a grammar that can be described with backus nar form.
+
+imagine the input stream as [f, o, r, ...]. We want to turn this into [for, x, in, ...].  
+</details>
+
 <details><summary>DFA to Table Driven</summary>
 Consider this regex of all binary strings that end in 1:
 
@@ -76,7 +95,10 @@ Example token tree output from parser:
 Obviously we know the order of operations for the original character stream, but the computer doesn't.  If we told the computer to calculate the final result directly from the token stream, the output would be `(((2+3)*2)+3)=13` instead of the expected `2+(3*2)+3=11`.  This is why a parser is necessary.
 
 <details><summary>Context Free Grammars</summary>
-The regular grammars that we've looked at so far are a subset of Context Free Grammars.  So all regular grammars are context free grammars, 
+The regular grammars that we've looked at so far are a subset of Context Free Grammars.  So all regular grammars are CFGs, but not all CFG's are regular grammars.  Maybe explain what a context sensitive grammar is?  Then explain that anything above that is like english; disputable.  Then explain that a regular grammar can also have the same Backus Nar Form as the other stuff.  Then explain why Backus Nar form can formulate all formal grammars.  Perhaps use the meaning function.
+
+A formal language / grammar is one where everyone agrees on the same set of rules.
+A formal grammar / language can be ambiguous.  While everyone agrees on the rules, the rules don't cover all possible cases.  
 
 </details>
 
@@ -576,6 +598,11 @@ Now that we have the first and follow sets for each terminal and non-terminal, w
 </details>
 
 <details><summary>TODO</summary>
+Clean up everything.  No more drop downs, unless absolutely necessary.
+
+I feel like if you explain simply why LL(k) grammars don't matter, and more generally why you only ever need 1 token of lookahead, then all the rest of this stuff should fall into place.  Just simply explain why 1 token of lookahead should be all that is necessary.  Then, once you understand that only 1 token of lookahead is ever needed, explain why that's not entirely true, and that you USUALLY only ever need 1 token of lookahead.  GLR parsers USUALLY only look ahead 1 token.  And cut down on the definitions.
+Once you compare all of these definitions and really hone in on what this stuff is, you should be able to figure out the perfect tools and implementation for your grammar.
+
 Give a really quick overview of the parts of a compiler.  Lexer, parser, semantic analyzer, code generation.
 Explain that assembly is binary.  Recall your 61C project where you made a processor that ran on binary.
 
@@ -767,7 +794,16 @@ transitions are made based on the top of the stack.  Since the stack can have bo
 The upcoming terminal is to determine whether to shift or to reduce.  It is also used to determine what transition to take if you are reducing (in other words, if you need to know what is in the follow of the top of your stack).
 
 goto[i, A] = j if state i ->(A) state j.
-If you're in state i, and A is the symbol on top of the stack, go to state j.  This is our DFA table.
+If you're in state i, and A is the symbol on top of the stack, go to state j.  This is our DFA table.  To be clear, our DFA table doesn't tell us how to make the parse tree.  We also have an action table that depends on our DFA table, and tells us how to make the parse tree.
+
+action[i, a] = shift / reduce
+If you are in state i, and terminal a is the first thing to the right of the |, then you shift a into the left.
+
+So you combine the goto and action tables together, putting the tuple <a, j> onto the stack.
+
+3:42 of SLR improvements has the whole algorithm.
+
+
 
 
 
