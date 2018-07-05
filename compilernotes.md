@@ -25,42 +25,23 @@ We'll start off with this example:
 
 </details>
 
-<details><summary>Lexing</summary>
-A lexer performs lexical analysis.  You take a stream of characters and group them together into tokens.
+<details><summary>Problems with current formal language theory</summary>
 
-`Token`
-The smallest unit of meaning in a program.  A keyword, a variable name, an operator, etc.
+It seems that there are a lot of things that are unclear about formal language theory, or automata theory, or whatever.  After all, it's very recent.  The first implementation of a high-level language, Fortran, was in 1957.  That seems long ago, but compare that to, I don't know, when the first analytical machines came into being.  Below are some smart people arguing over stuff on stack overflow:
 
-	for x in range(4):
-		print(x)
-		
-In this example, the input consists of the character 'f', followed by 'o', followed by 'r', ' ', 'x', ' ', 'i', 'n', etc.  The lexer will take these characters and convert them into the single unit tokens FOR, ID, IN, etc.  Each of these tokens is a single unit. Conventionally, capital letters are used to denote tokens.
+https://mathoverflow.net/questions/172739/inherent-ambiguity-of-the-context-sensitive-language-l-aibicidjejfj-b
 
-'Regular expression'
-A regular expression is a pattern on which strings either match or don't match.
+https://cs.stackexchange.com/questions/51189/ambiguity-vs-context-sensitivity
 
-	r"dog"
-	
-This is a regular expression in python syntax that matches only the string 'dog'.
+It seems to me that there is little point in thinking about context sensitivity and ambiguity in a light other than something to be rid of whenever possible.  Many would argue that context-sensitivity is not something to be avoided like the plague.  After all, C and C++ are context sensitive.
 
-	r"x*"
-	
-This is a regular expression, also in python syntax, that matches '', 'x', 'xx', 'xxx', 'xxxx', etc, matching any number of x's in a row.
+In practice, your grammars won't be context-free.  But since context-free grammars take O(n) time to parse, you want to make your grammar as close to this as possible.  Give an example of when a context sensitive grammar would take like O(n^2) or something.  show that a regular grammar parse tree is a stick or something.  So you can't have anything like ifs, fors, anything more than local scope with regular grammars.  
 
-There are 3 operators for regular expressions.  They are as follows:
+I will formally define context-free grammars, regular grammars, and ambiguity.  Anything above that, such as context-sensitive grammars, will not be covered.  Although many consider C and C++ context sensitive grammars today, they were previously implemented using bison, which supposedly only generates context free grammars.
 
-	r"ab" #concatenation, sticking chars together
-	r"a|b" #TODO, either a or b
-	r"a*" #kleene star, 0 or more a's
-	
-You can stick these operators together using parenthesis too.
+A context free grammar is a grammar that can be described with backus nar form.
 
-	r"(0|1)*"
-	
-This regex will match any string composed of 0's and 1's.
-
-So the purpose of regular expressions is to answer the question: TODO
-
+imagine the input stream as [f, o, r, ...]. We want to turn this into [for, x, in, ...].  
 </details>
 
 <details><summary>DFA to Table Driven</summary>
@@ -90,6 +71,7 @@ We can convert this DFA into a table.  A table is easy to implement in code, as 
  
  There is no more input, so we are done.  One thing that isn't in table that we need to somehow specify is that U is an accepting state, and S and T aren't.  Implemention is trivial and will be omitted :^)
  
+ So in general, you have a current state, and you have a next token of input.  You do a table look up based on those 2 things to find your next state.  If at any point you try to do a table lookup and find nothing, that means the string does not match.  If we had the string `ab`, we would look in row S, and we wouldn't find a column corresponding to `a`, and our algorithm would return false, saying the string does not match our regular expression.
 
 </details>
 
@@ -112,17 +94,27 @@ Example token tree output from parser:
 
 Obviously we know the order of operations for the original character stream, but the computer doesn't.  If we told the computer to calculate the final result directly from the token stream, the output would be `(((2+3)*2)+3)=13` instead of the expected `2+(3*2)+3=11`.  This is why a parser is necessary.
 
+<details><summary>Context Free Grammars</summary>
+The regular grammars that we've looked at so far are a subset of Context Free Grammars.  So all regular grammars are CFGs, but not all CFG's are regular grammars.  Maybe explain what a context sensitive grammar is?  Then explain that anything above that is like english; disputable.  Then explain that a regular grammar can also have the same Backus Nar Form as the other stuff.  Then explain why Backus Nar form can formulate all formal grammars.  Perhaps use the meaning function.
 
+A formal language / grammar is one where everyone agrees on the same set of rules.
+A formal grammar / language can be ambiguous.  While everyone agrees on the rules, the rules don't cover all possible cases.  
 
+</details>
 
-Easiest type of parsing.  The way recursive descent works is we get a big list (or stream) of tokens from the lexer.  We look at these tokens one at a time, forming them into a tree.
+<details><summary>Derivation</summary>
+The term derivation refers to both the tree output of parsing, as well as the process of making the tree.
+</details>
 
-`Example Grammar for recursive descent`
+<details><summary>Recursive Descent</summary>
+Recursive Descent is the simplest type of parsing algorithm.  The way recursive descent works is we get a big list (or stream) of tokens from the lexer.  We look at these tokens one at a time, forming them into a tree.
+
+Example Grammar for recursive descent:
 
 	E -> T | T + E
 	T -> int | int * T | (E)
 	
-`Recursive Descent Functions`
+Recursive Descent Functions:
 
 	bool Term(Token tok) { return *next++ == tok; }
 	
@@ -139,7 +131,10 @@ Easiest type of parsing.  The way recursive descent works is we get a big list (
 	
 
 	
-`recursive descent limitations`
+Recursive descent limitations:
+TODO
+
+</details>
 
 </details>
 
@@ -208,27 +203,169 @@ Its parsing table will look like this:
 
 Blanks in the table mean error.
 
+We can create a parse tree using this table by starting at E, and looking at the first terminal in our input, we do a table lookup.  Whatever we find, we add to our tree with E as the root.  Since it's a leftmost derivation, we travel the branches in a pre-order fashion until we hit a leaf node that is a non-terminal.  Then we look at the next terminal, and do another table look up.
 
+Input stream:
 
+	(3 * 4) + 2
+
+Derivation:
+
+	E -> T X -> (E) X -> (T X) X -> (int Y X) X -> (int * T X) X -> (int * int Y X) X -> (int * int X) X 
+	-> (int * int) X -> (int * int) + E -> (int * int) + T X -> (int * int) + int Y X -> (int * int) + int X
+	-> (int * int) + int
+
+These derivation steps are going to be gone through using the table.
+TODO might want to put more captions on each of these steps so that people get a better idea of how it corresponds to the table.
+
+<details><summary>Step-by-step derivation</summary>
+
+<a class="prev" onclick="plusSlides2(-1)">&#10094;</a>
+<a class="next" onclick="plusSlides2(1)">&#10095;</a>
+
+<div class="mySlides2">
+<div>1 / 14</div>
+<pre>
+(3*4)+2
+&#8593;
+</pre>
+<img src="pics/ETXY1.png">
+</div>
+
+<div class="mySlides2">
+<div>2 / 14</div>
+<pre>
+(3*4)+2
+&#8593;
+</pre>
+<img src="pics/ETXY2.png">
+</div>
+
+<div class="mySlides2">
+<div>3 / 14</div>
+<pre>
+(3*4)+2
+ &#8593;
+</pre>
+<img src="pics/ETXY3.png">
+Now that we've derived the '(', we can move on to the second token of input, '3'.
+</div>
+
+<div class="mySlides2">
+<div>4 / 14</div>
+<pre>
+(3*4)+2
+ &#8593;
+</pre>
+<img src="pics/ETXY4.png">
+</div>
+
+<div class="mySlides2">
+<div>5 / 14</div>
+<pre>
+(3*4)+2
+  &#8593;
+</pre>
+<img src="pics/ETXY5.png">
+</div>
+
+<div class="mySlides2">
+<div>6 / 14</div>
+<pre>
+(3*4)+2
+   &#8593;
+</pre>
+<img src="pics/ETXY6.png">
+</div>
+
+<div class="mySlides2">
+<div>7 / 14</div>
+<pre>
+(3*4)+2
+    &#8593;
+</pre>
+<img src="pics/ETXY7.png">
+</div>
+
+<div class="mySlides2">
+<div>8 / 14</div>
+<pre>
+(3*4)+2
+    &#8593;
+</pre>
+<img src="pics/ETXY8.png">
+Since the row 'Y', column ')' entry is 'epsilon', Y is nothing, and we do not need to represent it anymore.
+</div>
+
+<div class="mySlides2">
+<div>9 / 14</div>
+<pre>
+(3*4)+2
+     &#8593;
+</pre>
+<img src="pics/ETXY9.png">
+After we delete the X that turned out to be an epsilon, we hit the ')', and consume it.  Only writing this because it may not be immediately clear.
+</div>
+
+<div class="mySlides2">
+<div>10 / 14</div>
+<pre>
+(3*4)+2
+     &#8593;
+</pre>
+<img src="pics/ETXY10.png">
+</div>
+
+<div class="mySlides2">
+<div>11 / 14</div>
+<pre>
+(3*4)+2
+     &#8593;
+</pre>
+<img src="pics/ETXY11.png">
+</div>
+
+<div class="mySlides2">
+<div>12 / 14</div>
+<pre>
+(3*4)+2
+      &#8593;
+</pre>
+<img src="pics/ETXY12.png">
+</div>
+
+<div class="mySlides2">
+<div>13 / 14</div>
+<pre>
+(3*4)+2
+      &#8593;
+</pre>
+<img src="pics/ETXY13.png">
+</div>
+
+<div class="mySlides2">
+<div>14 / 14</div>
+<pre>
+(3*4)+2
+      &#8593;
+</pre>
+<img src="pics/ETXY14.png">
+Here is our finished parse tree.  We can turn it into an AST by getting rid of all the non-terminals, which I don't feel like doing.
+</div>
+
+</details>
 
 `How parsing tables are constructed`
 
+Looking at our parsing table again, we know that if our current non-terminal is 'T', and our current terminal is '(', we should choose the production '(E)', and if an 'int' is our terminal, we should choose the production 'int Y'.  What we don't know is how to make a parsing table like this.  How should we know to assign T['T', '('] -> '(E)' in the first place?  Now we will show you.
 
 In the DFA table, we had a current state, and a next token which would determine our next table lookup.  In our LL(1) table, we have a current non-terminal instead of a current state.  Each table lookup has this form:
 
 	T[A, t] = X
 	
-How to go through the table.
+TODO how is the parsing table really created?  What 2 things do we have, what 3rd thing are we looking for?  Iterate over each position in the table?  Iterate over all possible terminals?  And why can we have 2 things (like a TX) in the parsing table?
 
-bla bla
-
-How the table is constructed.
-	
-`T` is the table, `A` is the current non-terminal, `t` is the next token, and `X`
-
-TODO how is the parsing table really created?  What 2 things do we have, what 3rd thing are we looking for?  Iterate over each position in the table?  Iterate over all possible terminals?  
-
-In order to create the parsing table, we need to find a B for every combo of A and t.  We can find these X's by computing the first and follow sets for each A.
+So we have our parsing table with non-terminals as rows and terminals as columns, and nothing in the entries.  For each non-terminal, we iterate over its productions.  For each production, we calculate that productions first set using the first and follow sets of each thing it contins.  Then we look at that productions first set.  For each terminal in the productions first set, we put that production in at the entry (non-terminal, terminal).
 
 <details><summary>First Sets</summary>
 `T[A, t] = B` if t is in the first set of B.  
@@ -278,6 +415,125 @@ Here's the definition of a follow set for non-terminal X:
 What this says is that t is in Follow(X) if Y's multiple-step derivation contains X, and also has some terminal t after it.  
 
 The start symbol S's follow set will contain only `$` (end of file).
+
+<a class="prev" onclick="plusSlides1(-1)">&#10094;</a>
+<a class="next" onclick="plusSlides1(1)">&#10095;</a>
+
+<div class="mySlides1">
+Step 1 / 14:  Start at E
+<pre>
+Follow(E) = { $ }
+Follow(T) = { }
+Follow(X) = { }
+Follow(Y) = { }
+Follow('(') = { }
+Follow(')') = { }
+Follow('+') = { }
+Follow('*') = { }
+Follow(int) = { }
+</pre>
+</div>
+
+<div class="mySlides1">
+Step 2 / 14:  Look at E -> TX
+<pre>
+Follow(E) = { $ }
+Follow(T) = { First(X) }
+Follow(X) = { Follow(E) }
+Follow(Y) = { }
+Follow('(') = { }
+Follow(')') = { }
+Follow('+') = { }
+Follow('*') = { }
+Follow(int) = { }
+</pre>
+</div>
+
+<div class="mySlides1">
+Step 3 / 14:  Look at T -> (E)
+<pre>
+Follow(E) = { $, ')' }
+Follow(T) = { First(X) }
+Follow(X) = { Follow(E) }
+Follow(Y) = { }
+Follow('(') = { First(E) }
+Follow(')') = { Follow(T) }
+Follow('+') = { }
+Follow('*') = { }
+Follow(int) = { }
+</pre>
+</div>
+
+<div class="mySlides1">Step 4 / 14:  Look at T -> int Y
+<pre>
+Follow(E) = { $, ')' }
+Follow(T) = { First(X) }
+Follow(X) = { Follow(E) }
+Follow(Y) = { Follow(T) }
+Follow('(') = { First(E) }
+Follow(')') = { Follow(T) }
+Follow('+') = { }
+Follow('*') = { }
+Follow(int) = { First(Y) }
+</pre>
+</div>
+	
+<div class="mySlides1">Step 5 / 14:  Look at X -> +E
+<pre>
+Follow(E) = { $, ')', Follow(X) }
+Follow(T) = { First(X) }
+Follow(X) = { Follow(E) }
+Follow(Y) = { Follow(T) }
+Follow('(') = { First(E) }
+Follow(')') = { Follow(T) }
+Follow('+') = { First(E) }
+Follow('*') = { }
+Follow(int) = { First(Y) }
+</pre>
+</div>
+
+
+<div class="mySlides1">Step 6 / 14:  Look at X -> epsilon
+<pre>
+Follow(E) = { $, ')', Follow(X) }
+Follow(T) = { First(X) }
+Follow(X) = { Follow(E) }
+Follow(Y) = { Follow(T) }
+Follow('(') = { First(E) }
+Follow(')') = { Follow(T) }
+Follow('+') = { First(E) }
+Follow('*') = { }
+Follow(int) = { First(Y) }
+</pre>
+</div>
+
+<div class="mySlides1">Step 7 / 14:  Look at Y -> * T
+<pre>
+Follow(E) = { $, ')', Follow(X) }
+Follow(T) = { First(X), Follow(Y) }
+Follow(X) = { Follow(E) }
+Follow(Y) = { Follow(T) }
+Follow('(') = { First(E) }
+Follow(')') = { Follow(T) }
+Follow('+') = { First(E) }
+Follow('*') = { First(T) }
+Follow(int) = { First(Y) }
+</pre>
+</div>
+
+<div class="mySlides1">Step 8 / 14:  Look at Y -> epsilon
+<pre>
+Follow(E) = { $, ')', Follow(X) }
+Follow(T) = { First(X), Follow(Y) }
+Follow(X) = { Follow(E) }
+Follow(Y) = { Follow(T) }
+Follow('(') = { First(E) }
+Follow(')') = { Follow(T) }
+Follow('+') = { First(E) }
+Follow('*') = { First(T) }
+Follow(int) = { First(Y) }
+</pre>
+</div>
 
 <details><summary>TODO algorithm for computing follow sets</summary> 
 You should just ignore this part for now.  It's not necessary to know how to make these first and follow sets.  Just know how to recognize them.  It's a complicated exponential runtime algorithm.
@@ -342,10 +598,17 @@ Now that we have the first and follow sets for each terminal and non-terminal, w
 </details>
 
 <details><summary>TODO</summary>
+Clean up everything.  No more drop downs, unless absolutely necessary.
+
+I feel like if you explain simply why LL(k) grammars don't matter, and more generally why you only ever need 1 token of lookahead, then all the rest of this stuff should fall into place.  Just simply explain why 1 token of lookahead should be all that is necessary.  Then, once you understand that only 1 token of lookahead is ever needed, explain why that's not entirely true, and that you USUALLY only ever need 1 token of lookahead.  GLR parsers USUALLY only look ahead 1 token.  And cut down on the definitions.
+Once you compare all of these definitions and really hone in on what this stuff is, you should be able to figure out the perfect tools and implementation for your grammar.
+
 Give a really quick overview of the parts of a compiler.  Lexer, parser, semantic analyzer, code generation.
 Explain that assembly is binary.  Recall your 61C project where you made a processor that ran on binary.
 
-explain regex and automata
+explain regex and automata.  "in your head, you separate the tokens like this:  (for) (x) (in) ... but for all the computer knows the tokens should be separated like this: (f) (or x) (i)(n) ..."
+
+Need good image manipulation software.  Much easier than the slideshow you made.
 
 explain terminology better.
 
@@ -366,124 +629,6 @@ Oh, the first and follow set examples:  maybe give them the way to do it by hand
 </details>
 
 
-<a class="prev" onclick="plusSlides1(-1)">&#10094;</a>
-<a class="next" onclick="plusSlides1(1)">&#10095;</a>
-
-<div class="mySlides1">
-Step 1 / NUMSLIDES:  Start at E
-<pre>
-Follow(E) = { $ }
-Follow(T) = { }
-Follow(X) = { }
-Follow(Y) = { }
-Follow('(') = { }
-Follow(')') = { }
-Follow('+') = { }
-Follow('*') = { }
-Follow(int) = { }
-</pre>
-</div>
-
-<div class="mySlides1">
-Step 2 / NUMSLIDES:  Look at E -> TX
-<pre>
-Follow(E) = { $ }
-Follow(T) = { First(X) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { }
-Follow('(') = { }
-Follow(')') = { }
-Follow('+') = { }
-Follow('*') = { }
-Follow(int) = { }
-</pre>
-</div>
-
-<div class="mySlides1">
-Step 3 / NUMSLIDES:  Look at T -> (E)
-<pre>
-Follow(E) = { $, ')' }
-Follow(T) = { First(X) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { }
-Follow('*') = { }
-Follow(int) = { }
-</pre>
-</div>
-
-<div class="mySlides1">Step 4 / NUMSLIDES:  Look at T -> int Y
-<pre>
-Follow(E) = { $, ')' }
-Follow(T) = { First(X) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { Follow(T) }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { }
-Follow('*') = { }
-Follow(int) = { First(Y) }
-</pre>
-</div>
-	
-<div class="mySlides1">Step 5 / NUMSLIDES:  Look at X -> +E
-<pre>
-Follow(E) = { $, ')', Follow(X) }
-Follow(T) = { First(X) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { Follow(T) }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { First(E) }
-Follow('*') = { }
-Follow(int) = { First(Y) }
-</pre>
-</div>
-
-
-<div class="mySlides1">Step 6 / NUMSLIDES:  Look at X -> epsilon
-<pre>
-Follow(E) = { $, ')', Follow(X) }
-Follow(T) = { First(X) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { Follow(T) }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { First(E) }
-Follow('*') = { }
-Follow(int) = { First(Y) }
-</pre>
-</div>
-
-<div class="mySlides1">Step 7 / NUMSLIDES:  Look at Y -> * T
-<pre>
-Follow(E) = { $, ')', Follow(X) }
-Follow(T) = { First(X), Follow(Y) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { Follow(T) }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { First(E) }
-Follow('*') = { First(T) }
-Follow(int) = { First(Y) }
-</pre>
-</div>
-
-<div class="mySlides1">Step 8 / NUMSLIDES:  Look at Y -> epsilon
-<pre>
-Follow(E) = { $, ')', Follow(X) }
-Follow(T) = { First(X), Follow(Y) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { Follow(T) }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { First(E) }
-Follow('*') = { First(T) }
-Follow(int) = { First(Y) }
-</pre>
-</div>
 
 <script>
 var slideIndex = 1;
@@ -504,3 +649,163 @@ function showSlides1(n) {
   slides[slideIndex-1].style.display = "block";
 }
 </script>
+
+<script>
+var slideIndex = 1;
+showSlides2(slideIndex);
+
+function plusSlides2(n) {
+  showSlides2(slideIndex += n);
+}
+
+function showSlides2(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides2");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  slides[slideIndex-1].style.display = "block";
+}
+</script>
+
+`Bottom Up Parsing`
+
+Rather than starting at the start symbol and eventually deriving the terminals, we start at the list of terminals and condense them into the start symbol.  Bottom Up parsing is just as fast as LL(1) parsing, and also doesn't require a left-factored grammar.
+
+Imagine when you built the parse tree for top down parsing.  You started at the root note, and expanded it out over and over until you got to the leaves, leftmost first.  With bottom up parsing, instead imagine all of the leaves, unconnected.  Then connect them together, starting at the leftmost leaves, and doing this until you have created a root node and everything is connected to it.  Hit rewind and you get a rightmost derivation.  Well, not exactly rewind.  You're not erasing connections between nodes.  The reverse rightmost derivation analogy isn't that important, I don't think.
+
+Actually, when you imagine the string of terminals, start connecting them / reducing them downward.  Don't build up.  Then maybe the analogy will be more clear.
+
+`Shift Reduce Parsing`
+
+A kind of bottom up parsing.  Say that `aBw` is what we currently have in our parse.  Now assume `X->B` is the next step.  Remember that this means we will replace `aBw` with `aXw`, since it's a bottom up parse and we're going in the reverse direction we normally would.  Anyway, assuming `X->B` is next, then we know `w` must be a string of terminals, with no non-terminals in it.  This is because we're going left to right.  If someting is on the right of what we are currently working on, we haven't touched it yet.  So we haven't touched any of `w` yet, which means it's a bunch of terminals.
+
+So knowing that everything to the right of our rightmost non-terminal is a bunch of terminals, we are going to separate our string thing into 2 parts with a |, like so:  `aX|w`.  Everything to the left we have seen so far, and is composed of terminals and non-terminals, and everything to the right we have not seen yet, and is composed only of terminals.  
+
+Shift reduce parsing gets its name because it only has 2 possible actions:  shifting and reducing.  We've already seen reduce moves:
+
+	aB|w -> aX|w
+	
+We haven't seen shift moves yet.  A shift move is simply reading the next 1 token of input:
+
+	aX|w -> aXw|
+	
+Note that in this example, w is a single terminal, though in previous examples it was multiple terminals.
+
+
+	E -> T + E | T
+	T -> int * T | int | (E)
+
+example:
+	
+	|int*int+int
+	int|*int+int
+	T|*int+int //MISTAKE
+	
+You shouldn't reduce to T because `T * int` doesn't exist in this grammar, meaning that if you make that last reduction, you'll never get back to the start symbol.  If instead you did:
+
+	|int*int+int
+	int|*int+int
+	int*|int+int
+	int*int|+int
+	int*T|+int
+	
+That would be fine, because `int*T` is in the grammar, and can be further reduced.  So just because you _can_ make a reduction doesn't mean you _should_.  But how do you know when to reduce and when to shift?
+
+When you reduce, that's when you put stuff together in your tree.  When you shift, you add a new token to the bottom of the tree.
+
+What about the first 2 productions of T?  If those are both in a dfa state, and you transition and consume an int, what goes on the stack?  Is that a shift reduce conflict?  Yes, it is.  This is when you look in the follow of T.  If the next thing is in the follow of T, put the reduce on the stack.  If the next thing is the first thing to the right of your . in the item, put the shift on the stack.  
+
+
+
+
+`Handles`
+A handle is a prefix of a string that is safe to reduce.  So in the previous example, we encounter our first handle at `int*int|+int`, where the second `int` is the handle.  
+
+`Recognizing handles`
+On most CFG's, there's no efficient algorithm for recognization.  However, just like with predictive parsing, there are certain subsets of CFG's that make it simple.
+
+A viable prefix is on the left of a |.  
+A viable prefix is a prefix of THE handle.(?)  
+If there's at least 1 viable prefix, there's no parsing error.
+Just a name, not super deep.
+
+Important:  the set of viable prefixes is a regular language.
+
+insert circle graph thing here with LR grammars. 
+
+Handle
+Prefix (is he actually talking about viable prefixes?)
+viable prefix
+item
+stack of prefixes
+
+algorithm is stack nfa, nfa->dfa, dfa is table driven.  We leave it as an nfa because it's simpler to write.
+Uses items for each state, I think.  The stack is a sequence of partial right-hand sides.
+
+Maybe explicitly say that you're going to skip all the weird definitions and just show the algorithm.
+
+For the NFA, notice there are states
+
+	E->.T
+	E->.T+E
+	
+Both of these are allowed, since we are in an NFA.  We simply say that we are in both states until proven otherwise.  If you wanted a DFA, you would do what you did before:  combine the common parts into 1 element.
+
+But wait, how are we doing this using NFA's?  I thought only regular expressions could be NFA's?  Need to explain the prefix thing.  How does that work?  We MUST be leaving something out.  Try the nested parens example again.  Hm...the nfa is based on the stack, and the stack is implemented through your CFG.  So it's not your grammar that's being translated into an NFA, it's the grammar tree thing, I think.
+
+NFA starts at the start symbol, then you immediately slide down all the epsilon moves, and you're in all the states that don't have any epsilon transitions out.  These states will be states like `T -> (E)` that have a terminal as the first thing in their production.
+
+DFA example just shoves all the NFA states into 1 thing.  This isn't how you actually do it, since if you want to know if you have to shift / reduce, you have to look at every item contained in that state, which isn't actually O(n).  You would have to separate all of these states by left-factoring.  It's just not done for simplicity.
+
+reduce/reduce conflict if a state has 2 reduce items
+
+shift/reduce if any state has a reduce and a shift item
+
+there is no such thing as a shift/shift conflict.  If more than 1 can shift, you can just do it.  No need to choose, since they're all shifting by the same terminal.
+
+shift items look like:  `X->B.`, `Y->w.`
+reduce items look like: `Y->w.tf`
+Shift items all have the . at the end because you are done with the production and so should shift in a terminal from the unseen part.
+
+Note that shift/reduce conflicts don't require that you change your grammar or whatever.  You could always just split it into 2 threads, and which ever one lives, wins.
+
+Note that could be important:  while this shift reduce stuff is kind of annoying, the whole shift/reduce and reduce/reduce conflicts may actually be useful to know.  After all, a GLR parser will stil have conflicts, and will probably report them.  Fixing these conflicts will result in faster parsing.
+
+SLR parsing
+Add 1 new rule:  Reduce by X->B if t in Follow(X).  This is in addition to the other rules.
+'If there are conflicts under these rules, the grammar is not SLR'.
+I think this solves shift reduce conflicts?  Maybe?
+
+Previously, you run the DFA on the entire stack over and over.  Faster to not do that.  Remember that the stack is full of prefixes?  Now it's full of prefixes, and each of those prefixes has an accompanying DFA state.  Now you can easily get back to where you were, and don't have to start the DFA over from the beginning.
+
+now you have 2 parsing tables:  goto, which tells you the next dfa state to go to , and action, which tells you what to do on your stack, shift, reduce, error, accept.
+
+
+How to do the algorithm with the NFA / DFA.  How it corresponds with the tables / with the parse tree.  Use the chart to explain that you're going to ignore a lot of bottom up parsing stuff.  Forget handles, valid items, etc.  Explain how you make the table.
+
+***
+Just do the algorithm now, and annotate as you go along
+
+transitions are made based on the top of the stack.  Since the stack can have both terminals and non-terminals, that's how we get a dfa.
+
+The upcoming terminal is to determine whether to shift or to reduce.  It is also used to determine what transition to take if you are reducing (in other words, if you need to know what is in the follow of the top of your stack).
+
+goto[i, A] = j if state i ->(A) state j.
+If you're in state i, and A is the symbol on top of the stack, go to state j.  This is our DFA table.  To be clear, our DFA table doesn't tell us how to make the parse tree.  We also have an action table that depends on our DFA table, and tells us how to make the parse tree.
+
+action[i, a] = shift / reduce
+If you are in state i, and terminal a is the first thing to the right of the |, then you shift a into the left.
+
+So you combine the goto and action tables together, putting the tuple <a, j> onto the stack.
+
+3:42 of SLR improvements has the whole algorithm.
+
+
+
+
+
+
+
