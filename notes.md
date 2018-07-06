@@ -6,9 +6,7 @@ You need money, right? Quick advice: invest in ETFs, put money into your 401k, t
 </details>
 
 #Code Structures
-https://refactoring.guru/design-patterns/factory-method
 
-this seems promising
 
 
 <details><summary>Interface</summary>
@@ -178,6 +176,42 @@ But we don't just want async methods to catch events, we also want to tell them 
 You might wonder 'Why do we need to pass a callback in as a parameter?  Why not just put that code directly into the asynchronous function?'  To answer that, think about this scenario:  you have a website that has a whole bunch of different clickable buttons.  Some buttons link you to other pages, some buttons open drop down menus, some display images.  All of these buttons have asynchronous functions behind them, waiting for clicks.  But when they get a click, they all do different things.  If you had to program all these buttons, it would be much easier to write the part of the program that listens for clicks once, rather than copying and pasting it again and again for every single button.  So the reason callback functions are so common is that asynchronous functions often just listen for events, so passing in the 'what to do after you get the event' logic as a parameter is easier than writing it directly into the asynchronous method.
 
 </details>
+
+https://refactoring.guru/design-patterns/factory-method
+
+this seems promising
+
+Design patterns aren't a library or a language.  They're a way to structure code.  A lot of people argue about them.  Don't start by thinking about design patterns.  Here are some reasons to use design patterns:  code is clearer, code is reusable, code can be extended more easily.
+
+`polymorphic`
+
+`first class citizen` in terms of functions in java and c++
+
+`closure`
+
+maybe look at all the other crazy stuff Lisp has.  Seems like all that stuff just keeps getting implemented in other languages later.
+
+`factory method`
+
+`controller`
+
+`singleton`
+
+`template method / metaprogramming`
+
+Here's a list of other design patterns. it's a kind of design pattern, and you can just google '<name> design pattern' to get a good idea of that other persons code.
+
+https://github.com/kamranahmedse/design-patterns-for-humans#-command
+
+do this now, will help you later.  Also perhaps google more examples.  or 'why use x when i could use y?'  Think about what happens when you want to change it.  Think about what the alternative is.
+
+`decorator`
+
+`observer`
+
+etc
+
+
 
 #Databases
 
@@ -502,17 +536,14 @@ http://lists.busybox.net/pipermail/busybox/2010-December/074114.html
 
 `/usr/local` everything here is for your 'local' user.  None of it is managed by a package manager.  You might want this for something like, I don't know, game files, photoshop, stuff like that?  Just stuff you don't want your package manager updating and potentially breaking.
 
-
-
-
-
-
-	
-
+`systemd` This is the first process when you boot your OS.  It boots and monitors all userspace processes.
 
 `systemctl`
+ctl stands for control.  systemctl controls systemd, allowing you do do various things.
+>`list-unit-files` lists all the services that systemd has available to run.
 
 `journalctl`
+journalctl -fu api -o json | jq.  What is this?
 
 #Git
 
