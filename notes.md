@@ -649,8 +649,18 @@ ctl stands for control.  systemctl controls systemd, allowing you do do various 
 journalctl -fu api -o json | jq.  What is this?
 
 #Git
+Git is version control software.  When you make a project, whether it's code or an essay or a painting, you start with nothing, and gradually make changes until you get a final product.  You add changes, you remove changes, you start over, etc.  Without version control, all you have is the current version of your project.  There's no way to see the history of your project; what it looked like yesterday, a week ago, whatever.  With git, you can do this.  You can also split a project into 2 different projects and track both of them at the same time.  
 
-`HEAD`
+http://www.graphviz.org/
+
+try this for your node examples.
+
+
+`HEAD` is the current commit you're on.
+
+`detached HEAD`
+  If you check out a commit that isn't a leaf node in the git tree, 
+what is a detached head
 
 `remote`
 
@@ -658,15 +668,25 @@ journalctl -fu api -o json | jq.  What is this?
 
 `add`
 
+`rm`
+
 `commit`
 
 `clone`
 
 `https vs ssh`
 
-`merge`
+`merge` fuse 2 branches together.
 
-`rebase`
+`rebase` snap off your branch and stick it on the end of another branch.
+
+`tag`
+
+`stash`
+
+`squashing`
+
+
 
 #Json
 
@@ -1231,3 +1251,7 @@ Opened in chrome by right clicking on a page then clicking inspect.
 https://notes.shichao.io/
 
 check out this weebs notes.  not bad at all.
+
+this is a record of you trying your best to learn.  even if it doesn't work out, at least you can say, with undenyable proof, that you tried.
+
+remember: learn top down, not bottom up.  what problem does this solve, how does it fit into the larger problem you're trying to solve, what are its keywords/components.
