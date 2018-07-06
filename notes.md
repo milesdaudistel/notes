@@ -235,9 +235,9 @@ There's a famous book called 'Design Patterns: Elements of Reusable Object-Orien
 	Facade, Flyweight, Proxy, Chain of Responsibility, Command, Interpreter, Iterator, Mediator, Mememto, 
 	Observer, State, Strategy, Template, Visitor
 	
-You might have seen some of these terms as part of a function name, class name, type, etc in some piece of code that you read.  These terms are the design patterns described in the book.  So if you come across a piece of code that you don't understand, and it has one of these words in the name, you can google 'design pattern <X>' to get a high level understanding of the piece of code you're looking at.  Most of these I think aren't useful, though.  Below are the ones that I do find useful:
+You might have seen some of these terms as part of a function name, class name, type, etc in some piece of code that you read.  These terms are the design patterns described in the book.  So if you come across a piece of code that you don't understand, and it has one of these words in the name, you can google 'design pattern X' to get a high level understanding of the piece of code you're looking at.  Most of these I think aren't useful, though.  Below are the ones that I do find useful:
 
-`Design patterns: factory method` Probably one of the simplest and most useful patterns.  If you're making an API that has a lot of different related objects, you use a factory method to simplify creation of those different objects for the user of the API.  Consider this example that does _not_ use a factory method:
+`Design patterns: factory method` One of the simplest and most useful patterns.  If you're making an API that has a lot of different related objects, you use a factory method to simplify creation of those different objects for the user of the API.  Consider this example that does _not_ use a factory method:
 
 	//API
 	abstract class Vehicle:
@@ -319,8 +319,6 @@ Here, worker is the template method, whose work submethod gets replaced for each
 `Framework` is just a bunch of template methods put together.  A framework is constricting to the user, offering them less flexibility, in return for making implementation a lot less of a hassle.  The term framework is usually used in web / enterprise programming.  I wouldn't say a single library is a framework because a library is a tool for a kind of _computational_ task.  A framework is for ... I'll say product-creation tasks for now.  Web framework, graphical framework, etc.
 
 #Databases
-
-TODO change this to be a quiz type thing.  You should be able to look at the summary and think about the contents without every seeing the contents.
 
 <details><summary>Table</summary>
 A table stores data in rows and columns.  Each column is a type of data, and each row is a collection of that data.  Columns might be things like names, ages, jobs, etc.  Put these columns together and you have a table, where each row will give you the name, age, and job of a single person.
