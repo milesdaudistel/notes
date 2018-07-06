@@ -1,55 +1,101 @@
 #Compilers
-<details><summary>Notation</summary>
-We'll start off with this example:
 
-	E -> T | T + E
-	T -> int | int * T | (E)
+A compiler is a program that takes your code (like C or Go) and turns it into a file containing only 0's and 1's.  These 0's and 1's can then be run on a computer.  A compiler consists of 5 stages:  Lexing, Parsing, Semantic Analysis, Optimization, and Code Generation. 
 
-`grammar` the whole thing
+<details><summary>What are interpreters?  How are they different from compilers?</summary>
 
-`E, T` nonterminals
+An interpreter takes your code and just runs it without outputting a binary file.  It still does the same job of turning your code into 0's and 1's, however.  So running a binary file output from a compiler will be faster than running a source file through an interpreter.
 
-`int, *, (, )` terminals
+However, that doesn't mean interpreters aren't still useful.  Look at this link to find out why:
 
-`E -> T` the first production of E
-
-`T -> int * T` the second production of T
-
-`|` used to separate the productions of the nonterminals
-
-`->` E can be converted to T
-
-`->*` X can be converted to Y in ? steps
-
-`stream` A list, file, array, etc.  Just any form of things one after the next.
+https://www.quora.com/Why-do-we-use-interpreters-instead-of-using-compilers-for-everything-Is-platform-independence-the-main-reason
 
 </details>
 
-<details><summary>Lexing</summary>
-Imagine you have a program as follows:
+`Lexing`
 
-	for (i=0, i< 100, i++) {
+Imagine you wrote this program:
+
+	while (true):
 		print(i)
-	}
 	
-To a compiler, your program currently looks like an array of characters with no further meaning: 
+To a compiler, your program currently looks like an array of characters: 
 	
-	[f, o, r, , (, i, =, 0, ,, i, <, 1, 0, 0, , i, +, +, ), ....]
+	[ w, h, i, l, e, (, t, r, u, e, ), :, p, r, i, n, t, (, i, ) ]
 	
-The first thing the compiler does is take this stream of characters and turn it into a stream of tokens, like so:
+As they are, the compiler has no idea what these characters mean.  The first part of the compiler is called the lexer.  It takes this stream of characters and turn it into a stream of tokens, like so:
 
-	[for, (, i, =, 0, i, <, 100, i, ++, ), ....]
+	[ while, (, true, ), :, print, (, i, ) ]
 	
-A token is just a clump of characters that has meaning to the compiler.  'f', 'o', 'r' has no meaning to a compiler, but 'for' does.  
+A token is a blob of characters that has meaning in your programming language.  None of 'w', 'h', 'i', 'l', or 'e' have meaning individually, but 'while' does.  
 
-We tell the compiler how to clump characters together with regular expressions.
+All tokens have a value.  Most tokens values are identical to their names, like 'while', '(', and 'true'.  Other tokens, like strings, numbers, and variables have values different from their names.  Here's another example program:
+
+	x=4;
+	
+and here is the token output when a lexer reads this program:
+
+	[ ID='x', =, INT=4 ]
+	
+In practice, the token name ID usually denotes variable names, function names, and class names.
+
+<details><summary>How do we know that 'while' is a WHILE token?  How does the lexer know not to output 5 ID tokens?</summary>
+
+Lexers use the maximum much rule.  The maximum munch rule means that the lexer will create the biggest tokens it possibly can.  So first it sees a 'w', and thinks "this could be an ID... I'll keep going".  Then it sees an h, an i, an l, an e, and a (.  Then it thinks "Ok, I know that 'while(' isn't a possible token, so the biggest token I can make is 'while'.
+
+The lexer knows to make 'while' a WHILE token, and not an ID='while' token through precedence rules, which are hard-coded.  So when it sees a 'while', it thinks "this could be an ID, or it could be a WHILE token.  Since WHILE takes precedence over ID, I'll make this a WHILE".
+</details> 
+
+Now, how do we actually code a lexer?  In other words, how do we create a program that will clump characters into tokens?  The answer is with regular expressions, or regex.  Regex describe patterns of characters using 3 operators:  Grouping, Boolean OR, and Quantification.
+
+	Grouping:  r"ab" matches the string 'a'
+	Boolean OR:  r"a|b" matches the string 'a', or the string 'b'
+	Quantification:  r"a*" matches the string '', the string 'a', the string 'aa', ... to infinity a's
+	
+You may have seen other regex operators in Java or Python, like + or ?.  These operators are just shortcuts of the 3 operators above.  `a+` is equivalent to `aa*` and `a?` is equivalent to `a|`.
+
+We use regex to decide whether some string matches a pattern.  If we had a big file called X.txt, and we wanted to know if it contained only 0's and 1's, we could do it with regular expressions in python like this:
+
+	import re
+	
+	regex01 = r"(0|1)*"
+	X = open('X.txt', 'r').read() #The file X.txt has been read into X, which is a string
+	
+	if re.match(regex01, X):
+		print("Match")
+	else:
+		print("No match")
+		
+Regex can match a lot of patterns, but there are certain patterns it can't match that we need to make a real programming language.  Consider C, or Java.  These languages require parenthesis and curly braces to be balanced, which means for every '(' that opens up a new scope, there needs to be a ')' to close the scope.
+
+Now see if you can think of a regular expression that can match '()', '(())', '((()))', '(((())))', etc, all the way up to an arbitrary number of parenthesis, _without_ matching anything unbalanced, like '(()', '(()))', etc.  Your first thought might be something like `(*)*`, but that would end up matching '(()' and '(()))', which we should throw an error on.  Next you might try something like `()|(())|((()))|(((())))|....` Which is a good effort.  You could make a regex expression that could match balanced parenthesis in the hundreds, thousands, millions, or beyond, but you can never create a regex expression that can match an arbitrary number of parenthesis.
+
+So our lexer just won't deal with this problem.  It will output parenthesis as single '(' and ')' tokens, not bothering to count them.  
+
+TOKENS WILL NOT BE CONTAINED INSIDE OTHER TOKENS.  I think this is how you transition between lexer and parser.  Tokens within tokens would be a recursive structure.  This means an infinite structure.  Something a finite automaton can't do.  Tokens inside of tokens is a tree structure.  Actually, I don't know.... A lexer doesn't just use regex, it breaks those rules.  A lexer and a parser are really 2 parts of the same thing.  So it's just hard to transition without it being weird.
+
+Counting parenthesis to make sure they're balanced will be left to the next stage of our compiler:  the parser.
+
+<details><summary>What about python?  It doesn't have parenthesis at all</summary>
+While python doesn't have parenthesis, it still uses 'balanced' whitespace in order define scopes, which ends up being the same problem.  
+</details>
+
+If we want to make a programming language, we need things like balanced parens, order of operations (tree), which regex can't do.
+This is why we need a parser, which uses backus nar form to make languages more general than regular languages.
+This is what a parser does.
+You create a parser by specifying a grammar.
+A grammar is this.  Before, we were making regular grammars.  Now we're making context free grammars.
+Here are some things context free grammars can't do.  If a grammar is like this, it's context sensitive.
+But we can just do some quick hacks like this and pretend that our grammar is still context free.
+It's important to keep our grammars as close to context free as we can, since they can be parsed in O(n) time.  Context sensitive takes O(n^2) time.  So technically the grammars we make here take O(n^2) time, but just for a few operations, so in practice our parser and lexer will seem like it only takes O(n) time.
 
 http://trevorjim.com/python-is-not-context-free/
+
 This is a very simple example that shows that what you're doing isn't context free, maybe.
 
-</details>
 
-<details><summary>DFA to Table Driven</summary>
+
+<details><summary>DFA To Table Driven, or How Regex Works Under The Hood</summary>
 Consider this regex of all binary strings that end in 1:
 
 	(1|0)*1
@@ -605,7 +651,7 @@ Now that we have the first and follow sets for each terminal and non-terminal, w
 </details>
 
 <details><summary>TODO</summary>
-Clean up everything.  No more drop downs, unless absolutely necessary.
+Clean up everything.  Maybe have dropdowns just for questions that aren't part of the 'core' stuff.
 
 I feel like if you explain simply why LL(k) grammars don't matter, and more generally why you only ever need 1 token of lookahead, then all the rest of this stuff should fall into place.  Just simply explain why 1 token of lookahead should be all that is necessary.  Then, once you understand that only 1 token of lookahead is ever needed, explain why that's not entirely true, and that you USUALLY only ever need 1 token of lookahead.  GLR parsers USUALLY only look ahead 1 token.  And cut down on the definitions.
 Once you compare all of these definitions and really hone in on what this stuff is, you should be able to figure out the perfect tools and implementation for your grammar.
