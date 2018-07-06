@@ -6,6 +6,11 @@ You need money, right? Quick advice: invest in ETFs, put money into your 401k, t
 </details>
 
 #Code Structures
+https://refactoring.guru/design-patterns/factory-method
+
+this seems promising
+
+
 <details><summary>Interface</summary>
 
 Languages like Java and Go, and C++ all have very similar but not identical concepts called interfaces.
@@ -171,8 +176,6 @@ An event is just 'something that has happened'; a mouse click, a keyboard input,
 But we don't just want async methods to catch events, we also want to tell them what to do with the events.  We can do this by passing the async method a callback function as a parameter.  An example is when you set onClick in an html tag.  The thing that you set onClick to is the callback function.  
 
 You might wonder 'Why do we need to pass a callback in as a parameter?  Why not just put that code directly into the asynchronous function?'  To answer that, think about this scenario:  you have a website that has a whole bunch of different clickable buttons.  Some buttons link you to other pages, some buttons open drop down menus, some display images.  All of these buttons have asynchronous functions behind them, waiting for clicks.  But when they get a click, they all do different things.  If you had to program all these buttons, it would be much easier to write the part of the program that listens for clicks once, rather than copying and pasting it again and again for every single button.  So the reason callback functions are so common is that asynchronous functions often just listen for events, so passing in the 'what to do after you get the event' logic as a parameter is easier than writing it directly into the asynchronous method.
-
-
 
 </details>
 
@@ -466,6 +469,70 @@ Of course, python virtual environments also solve this problem, but that's just 
 <summary>Python Virtual Environment</summary>
 Python VE's predate most container stuff that we know.  They're very similar, but outdated compared to containers.
 </details>
+
+`vagrant`
+Allows you to make a VM, configure it, then share it with other people.  Requires virtualbox / vmware.  Used in businesses when you want everyone to run their code on the exact same system.  Solves the problem of 'but it runs on my machine'.  Why not just make a configuration in vmware / virtualbox, then share it with everyone?  Because then they can modify it (intentionally or not) which you don't want.  The whole point is to have everyone on the exact same system, and if they're able to modify their system, that defeats the purpose.
+
+`Environment List`
+When programs are compiled, linked, run, etc, how do they do various things like find standard libraries, know what shell it's being run in, who the current user is, etc?  Through the environment list, otherwise known as the program environment.  The environment list is passed to your program by whatever is running it (usually a shell), and is available globally.  Below is a diagram of a simpmlified environment list.  The real environment list contains dozens if not hundreds of name:value pairs.  Some other examples of environment variables might be SESSION=ubuntu, SSH\_AGENT\_PID=1508, etc.
+
+![endsin1](pics/environmentlist.png)
+
+`PATH variable`
+
+To write Hello World in C, the first thing you do is `#include <stdio.h>`.  How does the compiler know where stdio.h is?  It looks for the PATH variable in the environment list.  The PATH variable specifies where to find all your standard libraries.  On MacOS, the PATH variable is usually contained in `~/.bash_profile`.
+
+`Unix file system`
+
+`/` is the root directory.  It contains all other files in your system.
+
+`~` is your home directory.  It contains all your documents, pictures, etc.  Actual path varies, on Linux its `/home`, on MacOS it's `/Users/<yourname>`.
+
+For the following subdirectories I am only guessing as to their function.  Most of the reason why there are so many directories is just because of history.  There is no more need for much of this complicated heirarchy with its names that have little to do with what the folder actually holds.
+
+http://lists.busybox.net/pipermail/busybox/2010-December/074114.html
+
+`/usr` used to be the home directory.  Now it contains shared resources that aren't 'system critical' like shared libraries.
+
+`/usr/include` contains header files.  This contains C header files.  Some non-C stuff might be here, but pretty much all OS's are written in C, so odds are this folder won't have much other than standard C header files.
+
+`/usr/lib` contains the source code for most libraries for most languages, like C, C++, Java, Python, Go.  This and /usr/bin are where your package manager installs things.
+
+`/usr/bin` contains the compiled binary versions of the source files in /usr/lib.
+
+`/usr/local` everything here is for your 'local' user.  None of it is managed by a package manager.  You might want this for something like, I don't know, game files, photoshop, stuff like that?  Just stuff you don't want your package manager updating and potentially breaking.
+
+
+
+
+
+
+	
+
+
+`systemctl`
+
+`journalctl`
+
+#Git
+
+`HEAD`
+
+`remote`
+
+`origin`
+
+`add`
+
+`commit`
+
+`clone`
+
+`https vs ssh`
+
+`merge`
+
+`rebase`
 
 #Json
 
@@ -1012,7 +1079,21 @@ In react:
 	  }
 	}
 	
-
-
 </details>
 
+#Chrome Devtools
+
+Opened in chrome by right clicking on a page then clicking inspect.
+
+`element`
+
+`console`
+
+`sources`
+
+`network`
+
+#Misc
+https://notes.shichao.io/
+
+check out this weebs notes.  not bad at all.

@@ -44,6 +44,9 @@ A token is just a clump of characters that has meaning to the compiler.  'f', 'o
 
 We tell the compiler how to clump characters together with regular expressions.
 
+http://trevorjim.com/python-is-not-context-free/
+This is a very simple example that shows that what you're doing isn't context free, maybe.
+
 </details>
 
 <details><summary>DFA to Table Driven</summary>
