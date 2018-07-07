@@ -65,20 +65,18 @@ We use regex to decide whether some string matches a pattern.  If we had a big f
 		print("Match")
 	else:
 		print("No match")
+
+Now that we have turned a list of characters into tokens, we now have to figure out how those tokens interact with each other.  
 		
+<details><summary>Can regular expressions match anything?</summary>
 Regex can match a lot of patterns, but there are certain patterns it can't match that we need to make a real programming language.  Consider C, or Java.  These languages require parenthesis and curly braces to be balanced, which means for every '(' that opens up a new scope, there needs to be a ')' to close the scope.
 
 Now see if you can think of a regular expression that can match '()', '(())', '((()))', '(((())))', etc, all the way up to an arbitrary number of parenthesis, _without_ matching anything unbalanced, like '(()', '(()))', etc.  Your first thought might be something like `(*)*`, but that would end up matching '(()' and '(()))', which we should throw an error on.  Next you might try something like `()|(())|((()))|(((())))|....` Which is a good effort.  You could make a regex expression that could match balanced parenthesis in the hundreds, thousands, millions, or beyond, but you can never create a regex expression that can match an arbitrary number of parenthesis.
 
-So our lexer just won't deal with this problem.  It will output parenthesis as single '(' and ')' tokens, not bothering to count them.  
+What about python?  It doesn't have parenthesis at all.
 
-TOKENS WILL NOT BE CONTAINED INSIDE OTHER TOKENS.  I think this is how you transition between lexer and parser.  Tokens within tokens would be a recursive structure.  This means an infinite structure.  Something a finite automaton can't do.  Tokens inside of tokens is a tree structure.  Actually, I don't know.... A lexer doesn't just use regex, it breaks those rules.  A lexer and a parser are really 2 parts of the same thing.  So it's just hard to transition without it being weird.
-
-Counting parenthesis to make sure they're balanced will be left to the next stage of our compiler:  the parser.
-
-<details><summary>What about python?  It doesn't have parenthesis at all</summary>
 While python doesn't have parenthesis, it still uses 'balanced' whitespace in order define scopes, which ends up being the same problem.  
-</details>
+</details> 
 
 If we want to make a programming language, we need things like balanced parens, order of operations (tree), which regex can't do.
 This is why we need a parser, which uses backus nar form to make languages more general than regular languages.
