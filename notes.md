@@ -118,6 +118,14 @@ In Go, interfaces are explicitly declared and implicitly implemented.  This mean
 Here is an interface called geometry.  Both the rect and circle structs implement it without the need to say 'implements geometry'.  Go knows that rect and circle implement the geometry interface simply because both structs have an area and perim method.
 </details>
 
+<details><summary>Why does Java have interfaces and abstract classes?  Why not just use abstract classes?</summary>
+
+I think it's to avoid the problems associated with multiple inheritance.  If you inherit from multiple parent classes, I think there's certain type stuff that can get a little bit unwieldy.  If you inherit from 2 classes, but 1 of those classes is a purely abstract class, you could turn it into an interface.
+
+But I'm not entirely sure on this definition.  It might just be some extra syntax to make things clearer.  In my opinion it makes things more complicated, but that's just the language that java is.
+
+</details>
+
 </details>
 
 <details><summary>Why use getters and setters?</summary>
@@ -163,6 +171,10 @@ What about setters?  Lets say you have some food, and it's ok to share it with p
 
 Think of threads as jobs, not as workers.  It's important that you can spawn as many threads, or jobs as you want.  Your operating system has to output video, audio, listen for mouse clicks, keyboard input, watch power consumption, etc.  That's a lot more than 4 jobs.  If you could only run 4 jobs at a time the user would think their computer was super slow.  Well, not super slow, it just wouldn't function at all.
 
+Another way to think about it is that your computer is your stay-at-home mom.  She has 4 tasks on hand: doing laundry, washing dishes, making breakfast, and vacuuming.  If your mom wanted to do the tasks in the order that saved the most time, she should probably do the laundry and the dishes before making breakfast or vacuuming.  She can load the clothes / dishes into their respective machine, and they'll keep working while she cooks and cleans.  But lets say its your first day back to school, so you have to leave soon.  If she does the laundry or the dishes, you'll have to leave before breakfast is done.  Being a smart mom, she makes breakfast for everyone first, even though it will take more time overall.
+
+It's the same principle for your computers scheduler.  If you want to listen to music while reading a pdf, it would be most computationally efficient for your computer to play the entire song, then open the pdf, then let you scroll through it.  But that's obviously not what you want, so your computer switches between these two tasks (threads) very rapidly in order to make it seem like both things are happening at the same time.
+
 </details>
 
 <details><summary>Events, Asynchronous Methods, Callbacks</summary>
@@ -177,45 +189,154 @@ You might wonder 'Why do we need to pass a callback in as a parameter?  Why not 
 
 </details>
 
-https://refactoring.guru/design-patterns/factory-method
+`polymorphism` Another somewhat loaded term.  I would say it usually refers to function overloading.  Consider the following 2 functions:
 
-this seems promising
+	int Add(int x, int y) {
+		return x + y;
+	}
+	
+	int Add(int[] x, int[] y) {
+		return sum(x) + sum(y);
+	}
+	
+Notice they have the same name, the same return type, but different parameters.  Some languages allow this, as they differentiate function calls by looking at the parameters.  Other languages don't bother doing this, and so don't allow this kind of method naming.
 
-Design patterns aren't a library or a language.  They're a way to structure code.  A lot of people argue about them.  Don't start by thinking about design patterns.  Here are some reasons to use design patterns:  code is clearer, code is reusable, code can be extended more easily.
+`first class function` If a programming language supports first class functions, this means you can pass functions as parameters, return them from other functions, etc.  Basically means you treat functions as data, like any other variable.
 
-`polymorphic`
+`Higher-order function` Also called functor.  A higher order function is a function that takes functions as arguments, returns a function, or both.
 
-`first class citizen` in terms of functions in java and c++
+`closure` related to first class and higher-order functions, a closure is a function returned from a higher-order function (its parent) that can still access its parents variables.  Example:
 
-`closure`
+	def makeHuman():
+		noise = "oh no"
+		def human():
+			print(noise)
+		return human
+		
+	x = makeHuman()
+	x() #will print "oh no"
+	
+In this example, x assigned the human function.  When x is called, it knows the value of the 'noise' variable, even though it is outside the scope of human.  Of course, calling 'print("oh no")' would achieve the same thing.  The real power of closures is that they can do many of the same things that classes/objects can do:
 
-maybe look at all the other crazy stuff Lisp has.  Seems like all that stuff just keeps getting implemented in other languages later.
+	def makeMathematician():
+		favoriteNumber = 4
+		def getNum():
+			return favoriteNumber
+		def setNum(num):
+			favoriteNumber = num
+		return getNum, setNum
+		
+	x = makeMathematician()
+	print(x.getNum()) #will print 4
+	x.setNum(8)
+	print(x.getNum()) #will now print 8
 
-`factory method`
+<details><summary>If closures and classes are so similar, which one should I use?</summary>
+Classes and objects are much faster than closures.  I'm not really sure why.  I would say use classes when you can.  The mathematician example would actually be better represented as a class, I think.  For some languages like javascript, the only way to get classes is through closures.  So for now, I would treat closures as something to be dealt with, not something to actively try to use.
+</details>
 
-`controller`
+`Design patterns` aren't a library or a concrete feature of a language.  They're a way to structure code.  They're the vague kind of techniques that differentiate 'good' from 'bad' code.  If used correctly, they shoud make code more clear, more reusable, and more extendable.  If you're about to dive in to a large code base, it might help to google <type of software> design patterns.  Security design patterns, simulation design patterns, etc.  Probably the most important thing you can take away from design patterns is that they're not something you set out to use.  They're a result of the fact that most software does very similar things, and end up implemented in similar ways.  So keep them in mind, but remember that the term 'overdesigned' is used a lot more often than 'underdesigned' in the software industry, at least in my experience.
 
-`singleton`
+There's a famous book called 'Design Patterns: Elements of Reusable Object-Oriented Software' where most of these common design patterns get their name.  I wouldn't read it.  However, if you look at the following list:
 
-`template method / metaprogramming`
+	Abstract Factory, Builder, Factory Method, Prototype, Singleton, Adapter, Bridge, Composite, Decorator, 
+	Facade, Flyweight, Proxy, Chain of Responsibility, Command, Interpreter, Iterator, Mediator, Mememto, 
+	Observer, State, Strategy, Template, Visitor
+	
+You might have seen some of these terms as part of a function name, class name, type, etc in some piece of code that you read.  These terms are the design patterns described in the book.  So if you come across a piece of code that you don't understand, and it has one of these words in the name, you can google 'design pattern X' to get a high level understanding of the piece of code you're looking at.  Most of these I think aren't useful, though.  Below are the ones that I do find useful:
 
-Here's a list of other design patterns. it's a kind of design pattern, and you can just google '<name> design pattern' to get a good idea of that other persons code.
+`Design patterns: factory method` One of the simplest and most useful patterns.  If you're making an API that has a lot of different related objects, you use a factory method to simplify creation of those different objects for the user of the API.  Consider this example that does _not_ use a factory method:
 
-https://github.com/kamranahmedse/design-patterns-for-humans#-command
+	//API
+	abstract class Vehicle:
+		void printWheels():
+			print(0)
+			
+	class Motorcycle inherits Vehicle:
+		void printWheels():
+			print(2)
+			
+	class Car inherits Vehicle:
+		void printWheels():
+			print(4)
+	
+	//User of API
+	class Person:
+		Vehicle myVehicle = null
+		
+		Vehicle buyVehicle(vType):
+			if vType == 1:
+				myVehicle = Motorcycle()
+			elif vType == 2:
+				myVehicle = Car()
+			
+Seems pretty simple.  But what if the makers of the API wanted to add new types?  Bikes, skateboards, jet skis, big rigs, etc.  For every new subclass you add to the API, the user of your API will have to add another elif to their buyVehicle function.  Instead, we should do that for them.  Here's the same API, but now with a factory method called manufacture:
 
-do this now, will help you later.  Also perhaps google more examples.  or 'why use x when i could use y?'  Think about what happens when you want to change it.  Think about what the alternative is.
+	//API
+	abstract class Vehicle:
+		void printWheels():
+			print(0)
+			
+	class Motorcycle inherits Vehicle:
+		void printWheels():
+			print(2)
+			
+	class Car inherits Vehicle:
+		void printWheels():
+			print(4)
+			
+	Vehicle manufacture(int vType):
+		if vType == 1:
+			return Motorcycle()
+		elif vType == 2:
+			return Car()
+		else:
+			return null
+	
+	//User of API
+	class Person:
+		Vehicle myVehicle = null
+		
+		Vehicle buyVehicle(vType):
+			myVehicle = manufactor(vType)
+			
+So our API code gets more complicated, but it's easier for the user now.  There could be a million different vehicle types and the user wouldn't need to change their implementation.  And since there's hopefully going to be a lot more users of the API than creators of the API, this should save a lot of typing for most people.
 
-`decorator`
+`Design patterns: singleton` A singleton is a class that you should only ever need 1 object of.  For instance, if you are playing some game app, there's probably a class called game that contains everything else.  You don't want more than 1 game running at a time, so you would make that class a singleton.  It's pretty simple to implement.  Here's a java example:
 
-`observer`
+	class Singleton:
+	    static Singleton obj = new Singleton();
+	 
+	    private Singleton(): pass
+	 
+	    Singleton getInstance():
+	    	return obj
+	
+The obj object is the 1 instance of our class.  Notice the constructor is private, so no one can create another obj.  1 obj is created on start up, and you can interact with that 1 obj by calling getInstance.
 
-etc
+`design patterns:  MVC` stands for Model-View-Controller.  Technically all 3 of these are design patterns on their own, but they're usually lumped together.  This design pattern is used very commonly in web development (which is basically the wild west of software; always changing, basically no rules.  At least no rules that stick around for more than a few years), so I won't write too much about this.  The model is the data.  User data, embedded videos, ability to comment on things, etc.  It's all the functionality of the website.  The view is the user interface.  It changes itself when it sees a change in the model.  The controller handles events.  It watches the user (and other possible events) and changes the model accordingly.  So the controller watches the user, the user watches the view, the user interacts with the view the controller changes the model accordingly, the view watches the model, the view changes itself accordingly.
 
+Right now, you could say that 'backend' code like Go or backbone.js make the model, react.js is for making the view, and node.js is for making controllers.  But that's probably going to change once again a few years from now.
 
+`design patterns:  template method` Basically just a very generic higher order function, or abstract class.  Implement the parts that are common between all the sub-parts, then leave the other parts unimplemented for someone else to implement.  Or provide a default anyway and let other people overwrite it.
+
+![endsin1](pics/stolenfromsourcemaking.png)
+
+Here, worker is the template method, whose work submethod gets replaced for each different worker.  The term `hook` is often used for the parts of the template that the user fills in.
+
+`Framework` is just a bunch of template methods put together.  A framework is constricting to the user, offering them less flexibility, in return for making implementation a lot less of a hassle.  The term framework is usually used in web / enterprise programming.  I wouldn't say a single library is a framework because a library is a tool for a kind of _computational_ task.  A framework is for ... I'll say product-creation tasks for now.  Web framework, graphical framework, etc.
+
+`Pagination` Lets say you have some application, and a user makes a really big request, for 1000 pictures, let's say.  The apps UI would take forever to render 1000 pictures all at once.  You could either 
+
+a) go through with the request and make the user wait a few minutes
+
+b) not give the user what they explicitly asked for
+
+c) paginate the request, giving them a little bit of what they asked for (say a page of 10 pictures), to which the user could then request the next 10 pages, then the next 10, etc.
+
+Guess which one is best?
 
 #Databases
-
-TODO change this to be a quiz type thing.  You should be able to look at the summary and think about the contents without every seeing the contents.
 
 <details><summary>Table</summary>
 A table stores data in rows and columns.  Each column is a type of data, and each row is a collection of that data.  Columns might be things like names, ages, jobs, etc.  Put these columns together and you have a table, where each row will give you the name, age, and job of a single person.
@@ -546,8 +667,18 @@ ctl stands for control.  systemctl controls systemd, allowing you do do various 
 journalctl -fu api -o json | jq.  What is this?
 
 #Git
+Git is version control software.  When you make a project, whether it's code or an essay or a painting, you start with nothing, and gradually make changes until you get a final product.  You add changes, you remove changes, you start over, etc.  Without version control, all you have is the current version of your project.  There's no way to see the history of your project; what it looked like yesterday, a week ago, whatever.  With git, you can do this.  You can also split a project into 2 different projects and track both of them at the same time.  
 
-`HEAD`
+http://www.graphviz.org/
+
+try this for your node examples.
+
+
+`HEAD` is the current commit you're on.
+
+`detached HEAD`
+  If you check out a commit that isn't a leaf node in the git tree, 
+what is a detached head
 
 `remote`
 
@@ -555,15 +686,29 @@ journalctl -fu api -o json | jq.  What is this?
 
 `add`
 
+`rm`
+
 `commit`
 
 `clone`
 
 `https vs ssh`
 
-`merge`
+`merge` fuse 2 branches together.
 
-`rebase`
+do deletions get automerged?
+
+what happens if you're behind, and you push without pulling first?
+
+`rebase` snap off your branch and stick it on the end of another branch.
+
+`tag`
+
+`stash`
+
+`squashing`
+
+
 
 #Json
 
@@ -1128,3 +1273,7 @@ Opened in chrome by right clicking on a page then clicking inspect.
 https://notes.shichao.io/
 
 check out this weebs notes.  not bad at all.
+
+this is a record of you trying your best to learn.  even if it doesn't work out, at least you can say, with undenyable proof, that you tried.
+
+remember: learn top down, not bottom up.  what problem does this solve, how does it fit into the larger problem you're trying to solve, what are its keywords/components.
