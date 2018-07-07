@@ -12,7 +12,7 @@ https://www.quora.com/Why-do-we-use-interpreters-instead-of-using-compilers-for-
 
 </details>
 
-`Lexing`
+#Lexing
 
 Imagine you wrote this program:
 
@@ -41,107 +41,161 @@ In practice, the token name ID usually denotes variable names, function names, a
 
 <details><summary>How do we know that 'while' is a WHILE token?  How does the lexer know not to output 5 ID tokens?</summary>
 
-Lexers use the maximum much rule.  The maximum munch rule means that the lexer will create the biggest tokens it possibly can.  So first it sees a 'w', and thinks "this could be an ID... I'll keep going".  Then it sees an h, an i, an l, an e, and a (.  Then it thinks "Ok, I know that 'while(' isn't a possible token, so the biggest token I can make is 'while'.
+Lexers use the maximum munch rule.  The maximum munch rule means that the lexer will create the biggest tokens it possibly can.  So first it sees a 'w', and thinks "this could be an ID... I'll keep going".  Then it sees an h, an i, an l, an e, and a (.  Then it thinks "Ok, I know that 'while(' isn't a possible token, so the biggest token I can make is 'while'.
 
 The lexer knows to make 'while' a WHILE token, and not an ID='while' token through precedence rules, which are hard-coded.  So when it sees a 'while', it thinks "this could be an ID, or it could be a WHILE token.  Since WHILE takes precedence over ID, I'll make this a WHILE".
 </details> 
 
 Now, how do we actually code a lexer?  In other words, how do we create a program that will clump characters into tokens?  The answer is with regular expressions, or regex.  Regex describe patterns of characters using 3 operators:  Grouping, Boolean OR, and Quantification.
 
-	Grouping:  r"ab" matches the string 'a'
+	Grouping:  r"ab" matches the string 'ab'
 	Boolean OR:  r"a|b" matches the string 'a', or the string 'b'
 	Quantification:  r"a*" matches the string '', the string 'a', the string 'aa', ... to infinity a's
 	
 You may have seen other regex operators in Java or Python, like + or ?.  These operators are just shortcuts of the 3 operators above.  `a+` is equivalent to `aa*` and `a?` is equivalent to `a|`.
 
-We use regex to decide whether some string matches a pattern.  If we had a big file called X.txt, and we wanted to know if it contained only 0's and 1's, we could do it with regular expressions in python like this:
+We use regex to decide whether some string matches a pattern.  If we had a big file called X.txt, and we wanted to know if it contained only numbers, we could do it with regular expressions in python like this:
 
 	import re
 	
-	regex01 = r"(0|1)*"
-	X = open('X.txt', 'r').read() #The file X.txt has been read into X, which is a string
+	regex01 = r"[0-9]*" #python shorthand for (0|1|2|3|4|5|6|7|8|9)*
+	
+	X = open('X.txt', 'r').read() #The file X.txt has been read into the string X
 	
 	if re.match(regex01, X):
 		print("Match")
 	else:
 		print("No match")
-
-Now that we have turned a list of characters into tokens, we now have to figure out how those tokens interact with each other.  
+		
+So if X.txt contained something like `98560134760976`, then "Match" would be printed out, but if it contained something like `3704974320ABC947523`, then "No match" would be printed out.  But rather than printing things out, a real lexer would call a function that would emit a token; something like `emitToken(tokenName, tokenValue)`.  For this example, rather than calling `print("Match")` we would call `emitToken(INT, 98560134760976 )`.
 		
 <details><summary>Can regular expressions match anything?</summary>
 Regex can match a lot of patterns, but there are certain patterns it can't match that we need to make a real programming language.  Consider C, or Java.  These languages require parenthesis and curly braces to be balanced, which means for every '(' that opens up a new scope, there needs to be a ')' to close the scope.
 
-Now see if you can think of a regular expression that can match '()', '(())', '((()))', '(((())))', etc, all the way up to an arbitrary number of parenthesis, _without_ matching anything unbalanced, like '(()', '(()))', etc.  Your first thought might be something like `(*)*`, but that would end up matching '(()' and '(()))', which we should throw an error on.  Next you might try something like `()|(())|((()))|(((())))|....` Which is a good effort.  You could make a regex expression that could match balanced parenthesis in the hundreds, thousands, millions, or beyond, but you can never create a regex expression that can match an arbitrary number of parenthesis.
+Now see if you can think of a regular expression that can match '()', '(())', '((()))', '(((())))', etc, all the way up to an arbitrary number of parenthesis, _without_ matching anything unbalanced, like '(()', '(()))', etc.  Your first thought might be something like `(*)*`, but that would end up matching '(()' and '(()))'.  Next you might try something like `()|(())|((()))|(((())))|....` Which is a good effort.  You could make a regex expression that could match balanced parenthesis in the hundreds, thousands, millions, or beyond, but you can never create a regex expression that can match an arbitrary number of parenthesis.  So if we want balaned parenthesis, we'll have to use more stuff in addition to regular expressions.
 
 What about python?  It doesn't have parenthesis at all.
 
-While python doesn't have parenthesis, it still uses 'balanced' whitespace in order define scopes, which ends up being the same problem.  
+While python doesn't have parenthesis, it still uses 'balanced' whitespace in order to define scope, which ends up being the same problem.  
 </details> 
 
-If we want to make a programming language, we need things like balanced parens, order of operations (tree), which regex can't do.
-This is why we need a parser, which uses backus nar form to make languages more general than regular languages.
-This is what a parser does.
-You create a parser by specifying a grammar.
-A grammar is this.  Before, we were making regular grammars.  Now we're making context free grammars.
+Now that we've turned a stream of meaningless characters into meaningful tokens, we now need to figure out how those tokens interact with eachother.
+
+#Parsing
+
+Look at this python program:
+
+	y = f(4)                                      #line 1
+	....                                          #line 2-199
+	def f(x):                                     #line 200
+		if x != 4:                                 #line 201
+			print("that's not my favorite number") #line 202
+			explode()                              #line 203
+		else:                                     #line 204
+			print("I cannot accept this gift")     #line 205
+			return 4                               #line 206
+	def explode():                                #line 207
+		return 1 / 0                               #line 208
+	
+	
+This program, like most, does not execute in order, e.g executing line 1, then line 2, then line 3, etc.  It starts at line 1, then jumps to line 200, then line 201, then line 204, 205, 206, then back to 1 before continuing.  
+
+When our lexer turns the above program into a token stream, we get:
+
+	[ ID=y, =, ID=f, (, INT=4, ), .... ]
+	
+The structure of this token stream is linear.  Line 1, line 2, line 3, etc.  It doesn't give us any information on how to actually execute the program.
+
+A parser turns a stream of tokens into a tree of tokens.  A tree's structure is non-linear; it can tell us more about the order in which a program will execute.
+
+Even simple programs usually require some kind of tree structure.  Here is another example:
+
+	2+3*2+3
+
+and its token stream:
+
+	[ INT=2, +, INT=3, *, INT=2, +, INT=3 ]
+	
+If our computer tried to execute this program token by token, these would be the steps it would take:
+
+	2
+	2+
+	2+3
+	5
+	5*
+	5*2
+	10
+	10+
+	10+3
+	13
+	
+Considering that 2+3*2+3=11, this is not the behavior that we want.  Computers are stupid.  They don't know that multiplication comes before addition.  If we instead take our token stream, and run it through a parser that understands our tokens, we would get an output like this:
+
+![basic_tree](pics/basic_tree.png)
+
+Our computer will traverse this tree inorder.  In actual code, the parse tree would look like this:
+
+	( +
+		2
+		( +
+			( *
+				3
+				2
+			)
+		)
+	)
+	
+<details><summary>Wait, this looks like Lisp/Scheme...</summary>
+That's because it is, basically.  Putting the tree all on 1 line, you would get `(+ 2 (+ (* 3 2) 3 ) )`.  You could copy and paste this exact line into a lisp interpreter / compiler and it would run successfully.  
+
+In Lisp, you are basically skipping lexing and parsing almost entirely by directly creating the parse tree.  Supposedly this makes Lisp more powerful.  By powerful I don't mean computationally powerful, as in it runs faster.  I mean linguistically powerful, as in you can express computational ideas in a much more concise manner than, say, C++, Java, or Python.  Of course, this is a very difficult thing to quantify, or prove, but there is a very devoted community of Lisp users that swear by its almighty power.
+
+As a side note, since Lisp skips most of lexing and parsing, it can be compiled faster than pretty much any other high-level language.  However, I can't remember where I found the benchmarks that prove it.
+</details>
+		
+Notice now that the multiplication 3 * 2 will happen before the addition 2 + 3, which is what we want.  
+
+Once we have a parse tree for the input program, that program definitely has some semblance of sense.  It may still have errors in it, but the program is speaking a language that we understand.  Let's get a sense of where we are with some metaphorical compilations of English:
+
+`asdfasfasdf`  This is complete gibberish, and means nothing.  Fails at the lexing stage.
+
+`is was of I pancakes`  While each individual word (token) makes sense, they don't form a grammatically correct sentence.  Fails at the parsing stage.
+
+`The goats mustache is Cameron Diaz`  Ok, we have a grammatically correct sentence, but we're missing something.  'The' goat?  What goat are we talking about?  Who is Cameron Diaz?  I don't know who they are, but I know a human can't be a goats mustache.  Fails at the semantic analysis stage.
+
+`I must proceed at high velocity` Now we're getting somewhere.  Each token makes sense, and together they form a parse tree that tells us that 'I' absolutely need to move very fast.  This would pass the parse stage and the semantic analysis stage, hopefully creating a running program.  If the optimization or code generation stages fail, that's an error in the compiler, not an error in the users program.
+
+So once we have created a parse tree, we have either a 'goats mustache' or a 'high velocity' program.
+
+However, we still don't know how to create a parser.  To do that, we need to learn more about formal language theory.
+
+`Formal Languages` A formal language is a language where validity is not disputed.  English, is not a formal language.  Recently, the term 'neckbeard' was put into the Oxford dictionary.  However, that doesn't mean every English speaker now agrees that 'neckbeard' is an actual word.  If someone were to tell me 'You are a neckbeard', I would dispute the fact that they were even speaking English. 
+
+***
+To learn how to make one, we need to learn more about formal language theory.
+
+A formal language is a language where validity isn't disputed.  Spoken languages like English are not formal languages.  Consider the phrase "The horse raced past the barn fell."  This is an example of a garden path sentence, which is supposedly a grammatically correct sentence.  I think it sucks, though.
+
+The regular expressions we used during lexing are a kind of regular grammar, which is a kind of formal grammar.
+
+A formal grammar specifys a formal language.  It is composed of G(Sigma, thing, thing thing).  These together make up a formal grammar.
+
+To create a parser, we need to create a context-free grammar, which is more expressive than regular grammars.  Unlike regular grammars, we can't use regular expressions to create a context-free grammar.  Instead, context-free grammars are usually described using backus nar form.
+
+Here's an example of backus nar form.
+
+Side note, regular grammars are special because unlike context-free, they can be expressed using regular expressions instead of backus nar form.  You could create a regular grammar using backus nar form, but since regular expressions are easier, we use them instead.
+
+syntax
+semantics
+language
+grammar
+
 Here are some things context free grammars can't do.  If a grammar is like this, it's context sensitive.
 But we can just do some quick hacks like this and pretend that our grammar is still context free.
 It's important to keep our grammars as close to context free as we can, since they can be parsed in O(n) time.  Context sensitive takes O(n^2) time.  So technically the grammars we make here take O(n^2) time, but just for a few operations, so in practice our parser and lexer will seem like it only takes O(n) time.
 
-http://trevorjim.com/python-is-not-context-free/
-
-This is a very simple example that shows that what you're doing isn't context free, maybe.
-
-
-
-<details><summary>DFA To Table Driven, or How Regex Works Under The Hood</summary>
-Consider this regex of all binary strings that end in 1:
-
-	(1|0)*1
-
-Whose DFA implementation is as follows:	
-
-![endsin1](pics/endsin1.png)
-
-We can convert this DFA into a table.  A table is easy to implement in code, as well as fast.  Here is a table equivalent to the DFA:
-
-|  | `0` | `1` |
-|-----|-----|-----|
-| `S` | T | U |
-| `T` | T | U |
-| `U` | T | U |
- 
- Say we have the input `0101`.  We are in state S, and the next input is 0, so we look at row S, column 0, whose entry is T.  This means we are now in state T.  
- 
- The next input is 1, so we look in row T, column 1, whose entry is U.  Now we are in state U.  
- 
- The next input is 0, so we look in row U, column 0, whose entry is T.  Now we are in state T.
- 
- The next input is 1, so we look in row T, column 1, whose entry is U.  Now we are in state U.
- 
- There is no more input, so we are done.  One thing that isn't in table that we need to somehow specify is that U is an accepting state, and S and T aren't.  Implemention is trivial and will be omitted :^)
- 
- So in general, you have a current state, and you have a next token of input.  You do a table look up based on those 2 things to find your next state.  If at any point you try to do a table lookup and find nothing, that means the string does not match.  If we had the string `ab`, we would look in row S, and we wouldn't find a column corresponding to `a`, and our algorithm would return false, saying the string does not match our regular expression.
-
-</details>
-
-<details><summary>Parsing</summary>
-A lexer turns a stream of characters into a stream of tokens.  A parser turns a stream of tokens into a tree of tokens.  We want to format our tokens into a tree so that we know the order of operations.
-
-Example character stream:
-
-`2+3*2+3`
-	
-Example token stream output from lexer:
-
-`INT PLUS INT MUL INT PLUS INT`
-	
-Each INT has an actual numerical value that we don't see.
-
-Example token tree output from parser:
-
-![basic_tree](pics/basic_tree.png)
-
-Obviously we know the order of operations for the original character stream, but the computer doesn't.  If we told the computer to calculate the final result directly from the token stream, the output would be `(((2+3)*2)+3)=13` instead of the expected `2+(3*2)+3=11`.  This is why a parser is necessary.
+***
 
 <details><summary>Context Free Grammars</summary>
 The regular grammars that we've looked at so far are a subset of Context Free Grammars.  So all regular grammars are CFGs, but not all CFG's are regular grammars.  Maybe explain what a context sensitive grammar is?  Then explain that anything above that is like english; disputable.  Then explain that a regular grammar can also have the same Backus Nar Form as the other stuff.  Then explain why Backus Nar form can formulate all formal grammars.  Perhaps use the meaning function.
@@ -186,8 +240,6 @@ Recursive Descent Functions:
 	
 Recursive descent limitations:
 TODO
-
-</details>
 
 </details>
 
@@ -853,6 +905,10 @@ If you are in state i, and terminal a is the first thing to the right of the |, 
 So you combine the goto and action tables together, putting the tuple <a, j> onto the stack.
 
 3:42 of SLR improvements has the whole algorithm.
+
+#Misc
+
+http://trevorjim.com/python-is-not-context-free/
 
 
 
