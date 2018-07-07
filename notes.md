@@ -118,6 +118,10 @@ In Go, interfaces are explicitly declared and implicitly implemented.  This mean
 Here is an interface called geometry.  Both the rect and circle structs implement it without the need to say 'implements geometry'.  Go knows that rect and circle implement the geometry interface simply because both structs have an area and perim method.
 </details>
 
+<details><summary>Why does Java have interfaces and abstract classes?  Why not just use abstract classes?</summary>
+
+</details>
+
 </details>
 
 <details><summary>Why use getters and setters?</summary>
@@ -317,6 +321,16 @@ Right now, you could say that 'backend' code like Go or backbone.js make the mod
 Here, worker is the template method, whose work submethod gets replaced for each different worker.  The term `hook` is often used for the parts of the template that the user fills in.
 
 `Framework` is just a bunch of template methods put together.  A framework is constricting to the user, offering them less flexibility, in return for making implementation a lot less of a hassle.  The term framework is usually used in web / enterprise programming.  I wouldn't say a single library is a framework because a library is a tool for a kind of _computational_ task.  A framework is for ... I'll say product-creation tasks for now.  Web framework, graphical framework, etc.
+
+`Pagination` Lets say you have some application, and a user makes a really big request, for 1000 pictures, let's say.  The apps UI would take forever to render 1000 pictures all at once.  You could either 
+
+a) go through with the request and make the user wait a few minutes
+
+b) not give the user what they explicitly asked for
+
+c) paginate the request, giving them a little bit of what they asked for (say a page of 10 pictures), to which the user could then request the next 10 pages, then the next 10, etc.
+
+Guess which one is best?
 
 #Databases
 
@@ -677,6 +691,10 @@ what is a detached head
 `https vs ssh`
 
 `merge` fuse 2 branches together.
+
+do deletions get automerged?
+
+what happens if you're behind, and you push without pulling first?
 
 `rebase` snap off your branch and stick it on the end of another branch.
 
