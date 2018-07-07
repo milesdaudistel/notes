@@ -58,7 +58,8 @@ We use regex to decide whether some string matches a pattern.  If we had a big f
 
 	import re
 	
-	regex01 = r"[0-9]*" #python shorthand for (0|1|2|3|4|5|6|7|8|9)*
+	regex01 = r"[0-9]+" #shorthand for (0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*.
+	                    #There's two (0|1|2|3|4|5|6|7|8|9)'s because we want at least 1 digit.
 	
 	X = open('X.txt', 'r').read() #The file X.txt has been read into the string X
 	
@@ -67,12 +68,12 @@ We use regex to decide whether some string matches a pattern.  If we had a big f
 	else:
 		print("No match")
 		
-So if X.txt contained something like `98560134760976`, then "Match" would be printed out, but if it contained something like `3704974320ABC947523`, then "No match" would be printed out.  But rather than printing things out, a real lexer would call a function that would emit a token; something like `emitToken(tokenName, tokenValue)`.  For this example, rather than calling `print("Match")` we would call `emitToken(INT, 98560134760976 )`.
+So if X.txt contained something like `98560134760976`, then "Match" would be printed out, but if it contained something like `3704974320ABC947523`, then "No match" would be printed out.  But rather than printing things out, a real lexer would call a function that would emit a token; something like `emitToken(tokenName, tokenValue)`.  For this example, rather than calling `print("Match")` we would call `emitToken(INT, 98560134760976 )`, which would emit an INT token object whose value was 98560134760976.
 		
 <details><summary>Can regular expressions match anything?</summary>
 Regex can match a lot of patterns, but there are certain patterns it can't match that we need to make a real programming language.  Consider C, or Java.  These languages require parenthesis and curly braces to be balanced, which means for every '(' that opens up a new scope, there needs to be a ')' to close the scope.
 
-Now see if you can think of a regular expression that can match '()', '(())', '((()))', '(((())))', etc, all the way up to an arbitrary number of parenthesis, _without_ matching anything unbalanced, like '(()', '(()))', etc.  Your first thought might be something like `(*)*`, but that would end up matching '(()' and '(()))'.  Next you might try something like `()|(())|((()))|(((())))|....` Which is a good effort.  You could make a regex expression that could match balanced parenthesis in the hundreds, thousands, millions, or beyond, but you can never create a regex expression that can match an arbitrary number of parenthesis.  So if we want balaned parenthesis, we'll have to use more stuff in addition to regular expressions.
+Now see if you can think of a regular expression that can match '()', '(())', '((()))', '(((())))', etc, all the way up to an arbitrary number of parenthesis, _without_ matching anything unbalanced, like '(()', '(()))', etc.  Your first thought might be something like `(*)*`, but that would end up matching '(()' and '(()))'.  Next you might try something like `()|(())|((()))|(((())))|....` Which is a good effort.  You could make a regex expression that could match balanced parenthesis in the hundreds, thousands, millions, or beyond, but you can never create a regex expression that can match an arbitrary number of parenthesis.  But the parser will take care of that, so our lexer doesn't have to worry about it.
 
 What about python?  It doesn't have parenthesis at all.
 
@@ -150,7 +151,7 @@ That's because it is, basically.  Putting the tree all on 1 line, you would get 
 
 In Lisp, you are basically skipping lexing and parsing almost entirely by directly creating the parse tree.  Supposedly this makes Lisp more powerful.  By powerful I don't mean computationally powerful, as in it runs faster.  I mean linguistically powerful, as in you can express computational ideas in a much more concise manner than, say, C++, Java, or Python.  Of course, this is a very difficult thing to quantify, or prove, but there is a very devoted community of Lisp users that swear by its almighty power.
 
-As a side note, since Lisp skips most of lexing and parsing, it can be compiled faster than pretty much any other high-level language.  However, I can't remember where I found the benchmarks that prove it.
+Another note is that since Lisp mostly skips lexing and parsing, it can be compiled faster than pretty much any other high-level language.  However, I can't remember where I found the benchmarks that prove it.
 </details>
 		
 Notice now that the multiplication 3 * 2 will happen before the addition 2 + 3, which is what we want.  
@@ -163,18 +164,35 @@ Once we have a parse tree for the input program, that program definitely has som
 
 `The goats mustache is Cameron Diaz`  Ok, we have a grammatically correct sentence, but we're missing something.  'The' goat?  What goat are we talking about?  Who is Cameron Diaz?  I don't know who they are, but I know a human can't be a goats mustache.  Fails at the semantic analysis stage.
 
-`I must proceed at high velocity` Now we're getting somewhere.  Each token makes sense, and together they form a parse tree that tells us that 'I' absolutely need to move very fast.  This would pass the parse stage and the semantic analysis stage, hopefully creating a running program.  If the optimization or code generation stages fail, that's an error in the compiler, not an error in the users program.
+`I must proceed at high velocity` Now we're getting somewhere.  Each token makes sense, and together they form a parse tree that tells us that 'I' absolutely need to move very fast.  This is a valid program, and should be able to run.  If the optimization or code generation stages fail, that's an error in the compiler, not an error in the users program.
 
-So once we have created a parse tree, we have either a 'goats mustache' or a 'high velocity' program.
+So once we have created a parse tree for our input program, it is either a 'goats mustache' or a 'high velocity' program.
 
 However, we still don't know how to create a parser.  To do that, we need to learn more about formal language theory.
 
-`Formal Languages` A formal language is a language where validity is not disputed.  English, is not a formal language.  Recently, the term 'neckbeard' was put into the Oxford dictionary.  However, that doesn't mean every English speaker now agrees that 'neckbeard' is an actual word.  If someone were to tell me 'You are a neckbeard', I would dispute the fact that they were even speaking English. 
+`Formal Languages` A formal language is a language where validity is not disputed.  
+
+English, is not a formal language.  Recently, the term 'neckbeard' was put into the Oxford dictionary.  However, that doesn't mean every English speaker now agrees that 'neckbeard' is an actual word.  If someone were to tell me 'You are a neckbeard', I would mock them for not speaking valid english, and they would probably retort that it was valid, and I'm just dumb for not understanding.  
+
+Programming languages like C and Java are formal languages.  If you compile a program and it works, no one can say 'that's not a valid program'.  If you compile a program and it throws an error, then your program is invalid, end of discussion.
+
+The actual definition of a formal language is the set of all strings created by its `alphabet`.  An alphabet is all the characters in your language.  The definition of alphabet here is a little different than the definition we're used to.  In english, the 'alphabet' that we're used to is a to z, upper and lower case.  But the actual, formal English alphabet also includes punction like commas, semicolons, periods, question marks, etc.  I would also throw in the digits 0-9, maybe the dollar and pound signs, and whatever else you might read in a book written in english.
+
+So if a formal language is the set of all strings created by its alphabet, then it's an infinite set.  Even if your alphabet was just 'a', your formal language would be a, aa, aaa, aaaa, .... etc.  So really the only way we can show someone a formal language is to say 'here's the alphabet, do whatever you want with it.'
+
+So the sentence 'asdfoiasfiashfoaifijds' is actually in the english language.  However, it is not a grammatically correct sentence, which brings us to formal grammars.
+
+`Formal Grammar` A formal grammar is how we describe the rules of a formal language.  Regular expressions are a kind of formal grammar.
+
+alphabet.
+
+Meaning function.  Maps syntax to semantics.  So it maps the syntax '[0-9]+' to the semantics INT.  Syntax is the word, semantics is its meaning.  In this example, INT isn't really the semantics, it's actually shorthand for the real semantics.  The real semantics is that it's a number, which means you can do all the number-y stuff you could possibly think of to this piece of syntax.  So INT is also syntax.  It stands in for the meaning  I can't actually show you all the semantics.  Or maybe just start off by saying INT is the syntax, and going straight into saying the semantics are math stuff.  Meaning is many to 1.  It takes an infinite set of possible strings of digits, and tells you they all have the same meaning:  they are numbers.  Think of the infinite set of strings of digits.  You can't go through them 1 by 1 and explain their meaning to someone.  You have to say 'if a string follows this pattern, it means this'.  
+
+bla bla bla
+
+then explain them all together.  Make sure to explain that a language is the set of all sentences generated by the grammar.  So it's a really really big infinite set.
 
 ***
-To learn how to make one, we need to learn more about formal language theory.
-
-A formal language is a language where validity isn't disputed.  Spoken languages like English are not formal languages.  Consider the phrase "The horse raced past the barn fell."  This is an example of a garden path sentence, which is supposedly a grammatically correct sentence.  I think it sucks, though.
 
 The regular expressions we used during lexing are a kind of regular grammar, which is a kind of formal grammar.
 
@@ -238,8 +256,7 @@ Recursive Descent Functions:
 	
 
 	
-Recursive descent limitations:
-TODO
+
 
 </details>
 
@@ -700,36 +717,7 @@ Now that we have the first and follow sets for each terminal and non-terminal, w
 
 </details>
 
-<details><summary>TODO</summary>
-Clean up everything.  Maybe have dropdowns just for questions that aren't part of the 'core' stuff.
 
-I feel like if you explain simply why LL(k) grammars don't matter, and more generally why you only ever need 1 token of lookahead, then all the rest of this stuff should fall into place.  Just simply explain why 1 token of lookahead should be all that is necessary.  Then, once you understand that only 1 token of lookahead is ever needed, explain why that's not entirely true, and that you USUALLY only ever need 1 token of lookahead.  GLR parsers USUALLY only look ahead 1 token.  And cut down on the definitions.
-Once you compare all of these definitions and really hone in on what this stuff is, you should be able to figure out the perfect tools and implementation for your grammar.
-
-Give a really quick overview of the parts of a compiler.  Lexer, parser, semantic analyzer, code generation.
-Explain that assembly is binary.  Recall your 61C project where you made a processor that ran on binary.
-
-explain regex and automata.  "in your head, you separate the tokens like this:  (for) (x) (in) ... but for all the computer knows the tokens should be separated like this: (f) (or x) (i)(n) ..."
-
-Need good image manipulation software.  Much easier than the slideshow you made.
-
-explain terminology better.
-
-explain recursive descent
-
-recursive descent algorithm limitation ( logical or shortcircuitting)
-
-left recursion
-
-left factoring
-
-first and follow sets
-
-Consider trying to figure out some kind of step-by-step for certain things.  Like examples.  Consider the follow set example.
-
-Oh, the first and follow set examples:  maybe give them the way to do it by hand?  No need to show them the computer code to do it.
-
-</details>
 
 
 
@@ -909,6 +897,45 @@ So you combine the goto and action tables together, putting the tuple <a, j> ont
 #Misc
 
 http://trevorjim.com/python-is-not-context-free/
+
+<details><summary>TODO</summary>
+Figure out how to concisely explain epsilon, and where.  Probably in the lexer phase.
+
+put your goats mustache example up at the very top.  Then at each stage, use that example to give them a sense of what this stage of the compiler does.  Also add these in:
+optimization:  this stage is optional.  Makes code easier for computer to execute.  'I must proceed at high velocity' becomes 'Gotta go fast'.
+code generation:  'Gotta go fast' becomes '010100100101001010010101001' (but make it accurate).  
+
+recursive descent limitations.
+
+Clean up everything.  Maybe have dropdowns just for questions that aren't part of the 'core' stuff.
+
+I feel like if you explain simply why LL(k) grammars don't matter, and more generally why you only ever need 1 token of lookahead, then all the rest of this stuff should fall into place.  Just simply explain why 1 token of lookahead should be all that is necessary.  Then, once you understand that only 1 token of lookahead is ever needed, explain why that's not entirely true, and that you USUALLY only ever need 1 token of lookahead.  GLR parsers USUALLY only look ahead 1 token.  And cut down on the definitions.
+Once you compare all of these definitions and really hone in on what this stuff is, you should be able to figure out the perfect tools and implementation for your grammar.
+
+Give a really quick overview of the parts of a compiler.  Lexer, parser, semantic analyzer, code generation.
+Explain that assembly is binary.  Recall your 61C project where you made a processor that ran on binary.
+
+explain regex and automata.  "in your head, you separate the tokens like this:  (for) (x) (in) ... but for all the computer knows the tokens should be separated like this: (f) (or x) (i)(n) ..."
+
+Need good image manipulation software.  Much easier than the slideshow you made.
+
+explain terminology better.
+
+explain recursive descent
+
+recursive descent algorithm limitation ( logical or shortcircuitting)
+
+left recursion
+
+left factoring
+
+first and follow sets
+
+Consider trying to figure out some kind of step-by-step for certain things.  Like examples.  Consider the follow set example.
+
+Oh, the first and follow set examples:  maybe give them the way to do it by hand?  No need to show them the computer code to do it.
+
+</details>
 
 
 
