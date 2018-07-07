@@ -170,28 +170,72 @@ So once we have created a parse tree for our input program, it is either a 'goat
 
 However, we still don't know how to create a parser.  To do that, we need to learn more about formal language theory.
 
-`Formal Languages` A formal language is a language where validity is not disputed.  
+`Formal Languages`  A formal language is the set of all possible sentences that follow some set of rules.  Validity is not disputed in formal languages.  Let's say you invent a language, and someone asks you 'Is this paragraph written in your language?'  If you can use the rules of your language to prove with 100% certainty that the paragraph is valid (it is written in your language) or invalid (it is not written in your language), then your language is a formal language.
 
-English, is not a formal language.  Recently, the term 'neckbeard' was put into the Oxford dictionary.  However, that doesn't mean every English speaker now agrees that 'neckbeard' is an actual word.  If someone were to tell me 'You are a neckbeard', I would mock them for not speaking valid english, and they would probably retort that it was valid, and I'm just dumb for not understanding.  
+Java and C are formal languages.  If you compile some text and the compiler throws an error, the text is not a valid program.  If the program compiles and runs, it is a valid program.
 
-Programming languages like C and Java are formal languages.  If you compile a program and it works, no one can say 'that's not a valid program'.  If you compile a program and it throws an error, then your program is invalid, end of discussion.
+English is not a formal language.  English has rules, but there are definitely words and phrases that are arguably valid or invalid.
 
-The actual definition of a formal language is the set of all strings created by its `alphabet`.  An alphabet is all the characters in your language.  The definition of alphabet here is a little different than the definition we're used to.  In english, the 'alphabet' that we're used to is a to z, upper and lower case.  But the actual, formal English alphabet also includes punction like commas, semicolons, periods, question marks, etc.  I would also throw in the digits 0-9, maybe the dollar and pound signs, and whatever else you might read in a book written in english.
+<details><summary>What if the program compiles, but has a runtime error?  Is the program valid?</summary>
+Yes.  A runtime error, like a stack overflow, is a problem with the hardware of the machine.  If we had more memory, that error would not have occured.  So it's a problem with your language.
+</details> 
 
-So if a formal language is the set of all strings created by its alphabet, then it's an infinite set.  Even if your alphabet was just 'a', your formal language would be a, aa, aaa, aaaa, .... etc.  So really the only way we can show someone a formal language is to say 'here's the alphabet, do whatever you want with it.'
+`Formal Grammar` formal grammars are the rules of formal languages.  The formal grammar rules in our parser are what turn the token stream into a token tree.  Our parser will use a specific kind of formal grammar known as a context-free grammar.
 
-So the sentence 'asdfoiasfiashfoaifijds' is actually in the english language.  However, it is not a grammatically correct sentence, which brings us to formal grammars.
+`Context-Free Grammar` CFGs are a subset of formal grammars.  Formal grammars use backus nar form to describe their rules.  
 
-`Formal Grammar` A formal grammar is how we describe the rules of a formal language.  Regular expressions are a kind of formal grammar.
+Example of a CFG in backus nar form:
 
-alphabet.
+	S -> x | xT
+	T -> y | z
+	
+Formal grammars do the same thing that regular expressions do: they look through strings and return either true or false depending on whether the pattern matches or not.  
 
-Meaning function.  Maps syntax to semantics.  So it maps the syntax '[0-9]+' to the semantics INT.  Syntax is the word, semantics is its meaning.  In this example, INT isn't really the semantics, it's actually shorthand for the real semantics.  The real semantics is that it's a number, which means you can do all the number-y stuff you could possibly think of to this piece of syntax.  So INT is also syntax.  It stands in for the meaning  I can't actually show you all the semantics.  Or maybe just start off by saying INT is the syntax, and going straight into saying the semantics are math stuff.  Meaning is many to 1.  It takes an infinite set of possible strings of digits, and tells you they all have the same meaning:  they are numbers.  Think of the infinite set of strings of digits.  You can't go through them 1 by 1 and explain their meaning to someone.  You have to say 'if a string follows this pattern, it means this'.  
+The above grammar will match the strings 'x', 'xy', and 'xz', and won't match anything else.
+	
+All formal grammars have:
 
-bla bla bla
+A set of `terminal symbols`.  A terminal symbol is the smallest unit of meaning in a language.  Think of terminal symbols as single words.  The terminal symbols in our example are x, y, and z.  The terminal symbols in our compiler will be the tokens from our lexer. 
 
-then explain them all together.  Make sure to explain that a language is the set of all sentences generated by the grammar.  So it's a really really big infinite set.
+A set of `nonterminal symbols`.  A non-terminal symbol is just a symbol that can be broken down into a combination of nonterminal and terminal symbols.  In our example, S and T are non-terminal symbols.  S can be broken down into either x, or xT.  T can be broken down into either y or z. 
 
+A set of `production rules`.  Production rules tell you how to break down nonterminal symbols.  S->x is a production rule, S->xT is a production, T->y is a production, and T->z is a production.  S-> x | xT is not a production, it is 2 productions.
+
+A `start symbol`.  A start symbol is just the nonterminal where you start parsing.  It's either denoted with S, Start, or it should be clear enough without explicit statement.
+
+
+Here's another example:
+
+	S -> (S) | epsilon
+	
+epsilon is a stand in for the empty string ''.  This grammar can match nested balanced parenthesis, which regex can't do.
+
+
+<details><summary>Couldn't we do the S and T example with regex?</summary>
+Yes.  A regular expression is actually a kind of formal grammar, and more, its a kind of context-free grammar.
+
+All regex expressions have an equivalent backus-nar form.
+
+Example regex:
+
+	([A-Za-z])([A-Za-z0-9*])
+	
+Example equivalent backus-nar form:
+
+	S -> Alpha T
+	
+	T -> Alpha T | Num T | epsilon
+	
+	Alpha -> A|a|B|b|C|c|D|d|E|e|F|f|G|g|H|h|I|i|J|j|K|k|L|l|M|m|N|n|O|o|P|p|Q|q|R|r|S|s|T|t|U|u|V|v|W|w|X|x|Y|y|Z|z
+	
+	Num -> 0|1|2|3|4|5|6|7|8|9
+	
+So really, the lexer is a formal grammar.  Its terminal symbols are characters, its non-terminal symbols are the tokens, and each 
+
+Yeah, we could combine regex with backus nar form (thereby combining the lexer and the parser), but its better to keep them separate for a multitude of reasons.  Most of those reasons can be boiled down to 'it makes the implementation look ugly'.  There's also the fact that separating it into a lexer and parser lets us pipeline the two parts easily.  Also, it makes the whole 'parsing english' metaphor clearer, and therefore easier to understand conceptually.
+
+Our lexer is just a formal grammar.  its terminals are individual characters, it's non-terminals are the tokens it outputs. Its start symbol is all of the tokens OR'd together, but we don't care about it.
+</details>
 ***
 
 The regular expressions we used during lexing are a kind of regular grammar, which is a kind of formal grammar.
