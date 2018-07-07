@@ -120,6 +120,10 @@ Here is an interface called geometry.  Both the rect and circle structs implemen
 
 <details><summary>Why does Java have interfaces and abstract classes?  Why not just use abstract classes?</summary>
 
+I think it's to avoid the problems associated with multiple inheritance.  If you inherit from multiple parent classes, I think there's certain type stuff that can get a little bit unwieldy.  If you inherit from 2 classes, but 1 of those classes is a purely abstract class, you could turn it into an interface.
+
+But I'm not entirely sure on this definition.  It might just be some extra syntax to make things clearer.  In my opinion it makes things more complicated, but that's just the language that java is.
+
 </details>
 
 </details>
