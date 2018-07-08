@@ -552,3 +552,27 @@ function showSlides2(n) {
   slides[slideIndex-1].style.display = "block";
 }
 </script>
+
+<details><summary>How does the parser decide whether to shift or reduce?  For example, why does step 2 -> 3 do a Shift, rather than Reduce by Production 1: T -> int?</summary>
+Let's see what happens if we did reduce by production 1 rather than shifting.  Rather than some mysterious way of shifting and reducing, we'll reduce whenever it's possible.
+
+	Step 1:   | int * int + int
+	Step 2:   int | * int + int
+	Step 3:   T | * int + int
+	Step 4:   E | * int + int
+	Step 5:   E * | int + int
+	Step 6:   E * int | + int
+	Step 7:   E * T | + int
+	Step 8:   E * E | + int
+	Step 9:   E * E + | int
+	Step 10:  E * E + int |
+	Step 11:  E * E + T |
+	Step 12:  E * E + E |
+	
+And now we're stuck.  There's nothing left to shift, and we also can't reduce anything.  Since we couldn't reduce to a single start symbol E, we don't know in what order to execute * or +, which means we can't create a binary for the input program.  How the parser actually knows whether to shift or reduce is a pretty complex topic, and will be covered later.
+</details>
+
+Why does the table say to shift at this step?  Why can't we reduce at this step?
+Let's see what would happen if rather than using the table, we reduced as much as possible, shifting only when there was nothing left to reduce.
+	asdfasdf
+Ok, now we're stuck.  So we can't just reduce whenever possible.  The purpose of the table is to tell us exactly what action to take, whether it's a shift or reduce.  Without the table, we would have to guess at which production to use next.  We could potentially use the wrong production and get stuck.

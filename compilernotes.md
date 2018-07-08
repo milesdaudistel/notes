@@ -241,18 +241,211 @@ derivation
 
 LR / LALR
 
+For historical reasons, Bison by default is limited by the additional restrictions of LALR(1)
+
 In practice, your grammars won't be context-free.  But since context-free grammars take O(n) time to parse, you want to make your grammar as close to this as possible.  Give an example of when a context sensitive grammar would take like O(n^2) or something.  show that a regular grammar parse tree is a stick or something.  So you can't have anything like ifs, fors, anything more than local scope with regular grammars.  Give an example of when C/C++ are context sensitive, and why those examples don't result in too bad slow down.  Also say how you would solve that problem?
+
+You're going out of order.  You'll probably have to go back to the finite automata thing to explain the table.
+
+Now that we understand CFGs, we're going to learn how to use them to parse.  The algorithm we use to parse things actually doesn't work with all CFGs.  It only works with a subset of them, called LR/LALR grammars.
+
+Can LR/LALR express the same languages as any CFG?  Equivalent question:  Can every CFG be converted to an LR CFG?
+
+Start with your stream of tokens, your terminals.  Build up your tree.
+How do you build up your tree?  Assume you have this parsing table.  This is how you use the parsing table.
+
+But how do you make the parsing table in the first place?  First and follow sets.  Convert from NFA/DFA.  Wait, but if we have an NFA / DFA, then isn't this a regular language?  No, it's only the handles that are a regular language.  Blah blah blah.
+
+But what about these shortcomings?  Blah blah blah.  Where are you going to explain the subsets of the grammars?  Do not explain LL grammars.  Those are for top down parsers.
+
+
 ***
 
-`Bottom Up Parsing`
-
-Rather than starting at the start symbol and eventually deriving the terminals, we start at the list of terminals and condense them into the start symbol.  Bottom Up parsing is just as fast as LL(1) parsing, and also doesn't require a left-factored grammar.
-
-Imagine when you built the parse tree for top down parsing.  You started at the root note, and expanded it out over and over until you got to the leaves, leftmost first.  With bottom up parsing, instead imagine all of the leaves, unconnected.  Then connect them together, starting at the leftmost leaves, and doing this until you have created a root node and everything is connected to it.  Hit rewind and you get a rightmost derivation.  Well, not exactly rewind.  You're not erasing connections between nodes.  The reverse rightmost derivation analogy isn't that important, I don't think.
-
-Actually, when you imagine the string of terminals, start connecting them / reducing them downward.  Don't build up.  Then maybe the analogy will be more clear.
-
 `Shift Reduce Parsing`
+
+There are a few techniques for parsing, but we're only going to learn about shift reduce parsing since that's the kind of parser that Bison generates.
+
+SR parsers look through the tokens 1 at a time.  An SR parser keeps a stack of `items`.  Each item either a terminal (token) or non-terminal.  At each step of parsing, we do 1 of 2 things:  
+
+1 We could take a token from the token stream and put it on our item stack.  This is called a `shift`.
+
+2 We could use a production rule to combine multiple stack items into a single item.  This is a `reduce`.  Every time we reduce, we add a new node to our parse tree.
+
+An SR parser shifts and reduces over and over until it can't shift or reduce anymore.  If there is no more input, and the only item on our stack is the start symbol, we have successfully created a parse tree.
+
+Exactly how the SR parser decides whether to shift or reduce will remain mysterious for now.  After understanding this example, we'll learn how the parser decides whether to shift or reduce.
+
+Below is an SR parsing example.  In our example grammar, T and E are non-terminals, and int, *, and + are terminals (tokens).  Our example input to the parser is 'int * int + int'.  The vertical bar character | is used show where we are in our parse.  For instance, 'int * int | + int' means that our parser has looked at the 3 tokens 'int * int' and has put them on its stack.  The parser has not yet looked at '+ int', and it has not yet reduced anything.  Whenever a shift move occurs, we put another token onto our stack, and move the | over by 1.  When we do a reduce move, some things to the left of the | will be changed, and we won't look at another token of input for that step.
+
+<details>
+<summary>
+Reductions seem backwards.  If Production 1:  T -> int has the arrow going from T to int, why are we turning ints into Ts?
+</summary>
+
+To answer this question, I have to explain some history.  The first parsers did not use the shift reduce algorithm.  They instead used `recursive descent`.  Rather than taking tokens and combining them into non-terminals, they started at the start symbol non-terminal, and broke up the start symbol into its child terminals and non-terminals.  For example, it would start at E, and break that up into T using production 4.  Sometimes (most of the time) it would choose the wrong production.  So it would have to undo all of its work and break E up into T + E using production 5.
+
+Since recursive descent parsers came first, backus nar form has the arrows going from non-terminals to the parts that you break it up into.
+
+Recursive descent parsing is slow.  It can be sped up by using special kinds of CFGs, called LL(k) grammars.  If you use an LL(k) grammar, recursive descent is as fast as shift reduce.  However, LL(k) grammars are annoying to create.
+
+Interestingly, GCC and Clang (the two most popular C/C++ compilers) both use hand-coded recursive descent compilers.  They don't use bison, and they don't use shift reduce.  Supposedly it's easier to maintain your code if you do everything by hand.  But there are other languages like Ruby that do use parser generators like Bison.  Right now, I would recommend using a parser generator like Bison.  It's much less work.  C/C++ have to use hand-written because they're bloated from years of committees of people piling on features that were always conflicting with eachother.  It's a giant mess. 
+</details>
+
+<details><summary>Why does the parse tree end with a bunch of non-terminal symbols on it?  I thought it was supposed to only have terminal symbols.</summary>
+You are correct.  After we create the parse tree, we will remove all of the nonterminal symbols.  Exactly how we do this will come after we learn how the parser decides whether to shift or reduce. 
+</details>
+
+Also need to mention somewhere about the AST having a lot of extra symbols, unles you haven't actually said anything about that.
+
+	Production 1:  T -> int
+	Production 2:  T -> int * T
+	Production 3:  T -> int
+	Production 4:  E -> T
+	Production 5:  E -> T + E
+	
+<a class="prev" onclick="plusSlidesSLIDESHOWNAME(-1)">&#10094;</a>
+<a class="next" onclick="plusSlidesSLIDESHOWNAME(1)">&#10095;</a>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>1 / 11</div>
+  <pre>
+  | int * int + int
+  </pre>
+  <pre>
+  Parsing begins
+  </pre>
+  <img src="pics/shiftreduce1.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>2 / 11</div>
+  <pre>
+  int | * int + int
+  </pre>
+  <pre>
+  Shift
+  </pre>
+  <img src="pics/shiftreduce1.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>3 / 11</div>
+  <pre>
+  int * | int + int
+  </pre>
+  <pre>
+  Shift
+  </pre>
+  <img src="pics/shiftreduce1.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>4 / 11</div>
+  <pre>
+  int * int | + int
+  </pre>
+  <pre>
+  Shift
+  </pre>
+  <img src="pics/shiftreduce1.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>5 / 11</div>
+  <pre>
+  int * T | + int
+  </pre>
+  <pre>
+  Reduce by Production 1:  T -> int
+  </pre>
+  <img src="pics/shiftreduce2.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>6 / 11</div>
+  <pre>
+  T | + int
+  </pre>
+  <pre>
+  Reduce by Production 2:  T -> int * T
+  </pre>
+  <img src="pics/shiftreduce3.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>7 / 11</div>
+  <pre>
+  T + | int
+  </pre>
+  <pre>
+  Shift
+  </pre>
+  <img src="pics/shiftreduce3.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>8 / 11</div>
+  <pre>
+  T + int |
+  </pre>
+  <pre>
+  Shift
+  </pre>
+  <img src="pics/shiftreduce3.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>9 / 11</div>
+  <pre>
+  T + T |
+  </pre>
+  <pre>
+  Reduce by Production 1:  T -> int
+  </pre>
+  <img src="pics/shiftreduce4.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>10 / 11</div>
+  <pre>
+  T + E |
+  </pre>
+  <pre>
+  Reduce by Production 4:  E -> T
+  </pre>
+  <img src="pics/shiftreduce5.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>11 / 11</div>
+  <pre>
+  E |
+  </pre>
+  <pre>
+  Reduce by Production 5:  E -> T + E
+  </pre>
+  <img src="pics/shiftreduce6.png">
+</div>
+
+<script>
+var slideIndex = 1;
+showSlidesSLIDESHOWNAME(slideIndex);
+
+function plusSlidesSLIDESHOWNAME(n) {
+  showSlidesSLIDESHOWNAME(slideIndex += n);
+}
+
+function showSlidesSLIDESHOWNAME(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlidesSLIDESHOWNAME");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  slides[slideIndex-1].style.display = "block";
+}
+</script>
 
 A kind of bottom up parsing.  Say that `aBw` is what we currently have in our parse.  Now assume `X->B` is the next step.  Remember that this means we will replace `aBw` with `aXw`, since it's a bottom up parse and we're going in the reverse direction we normally would.  Anyway, assuming `X->B` is next, then we know `w` must be a string of terminals, with no non-terminals in it.  This is because we're going left to right.  If someting is on the right of what we are currently working on, we haven't touched it yet.  So we haven't touched any of `w` yet, which means it's a bunch of terminals.
 
@@ -420,8 +613,13 @@ Shift reduce parsing takes n time without needing to do all that grammar shiftin
 
 https://stackoverflow.com/questions/3922699/what-is-the-runtime-difference-between-different-parsing-algorithms
 
-Interesting.  Very strange as well.  But ugh.  There's just so much.  I feel like conceptual simplicity matters the most.  Which means you should use a lexer and parser generator.  Bison uses shift reduce, so you should learn shift reduce.
+Above link is interesting.  Very strange as well.  But ugh.  There's just so much.  I feel like conceptual simplicity matters the most.  Which means you should use a lexer and parser generator.  Bison uses shift reduce, so you should learn shift reduce.
 
+Is there a specific name for the kinds of things a regular grammar can't accomplish?  Like it can't accomplish infinitely recursive structures, or it can't do infinite nesting, or it can't do uncountably infinite sets, or it can't do non-modulo sets, or something.  Just give a name to it.  As of now, it's hard to figure out whether you can write something as a regular expression or not.  You have to use the pumping lemma, I think.  Maybe explain that simply.  Would actually be useful.  'Can I write this as a regular expression'?  If yes, fantastic, an easy win.  If not, oh well, at least you didn't waste a bunch of time trying to think of a way to do it.
+
+https://cs.stackexchange.com/questions/51189/ambiguity-vs-context-sensitivity
+https://en.wikipedia.org/wiki/Ambiguous_grammar
+https://stackoverflow.com/questions/14589346/is-c-context-free-or-context-sensitive
 
 
 </details>
