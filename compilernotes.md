@@ -465,29 +465,58 @@ Oh, it's because you need to 'remember' where you were previously.  It's that th
 
 You're probably going to need to explain this stuff starting from the beginning.  But really.  This needs a simpler explanation than what they give.
 
+Figure out the terminology of each different parser.  How exactly are they different?  What languages does each generate?  What are the limitations on the grammars?  What can be automatically converted to what?  What are the differences in number of states, speed, etc?
 
 
+
+8-01 Handles
+Reduce when you know that you have an entire right hand side on top of your stack.
+Pop the entire right hand side off the stack, push the left hand side onto the stack.
 
 `Handles`
-A handle is a prefix of a string that is safe to reduce.  So in the previous example, we encounter our first handle at `int*int|+int`, where the second `int` is the handle.  
+A handle is a prefix / reduction of a string that can be reduced to the start symbol.  Different productions are handles at different times.
 
-`Recognizing handles`
-On most CFG's, there's no efficient algorithm for recognization.  However, just like with predictive parsing, there are certain subsets of CFG's that make it simple.
+	Location 1:  int | * int + int
+	Location 2:  int * int | + int
+	
+Here, T->int is a handle when we are at location 2, but not at location 1.  A handle just means 'the right reduction to use right now'.
 
-A viable prefix is on the left of a |.  
-A viable prefix is a prefix of THE handle.(?)  
-If there's at least 1 viable prefix, there's no parsing error.
-Just a name, not super deep.
+`Viable prefix`
+if we have a|w during a parse, then a is a viable prefix.  a couldn't possibly be invalid because then we would have stopped parsing.  The viable prefix is a prefix of the next handle we're going to use.
 
-Important:  the set of viable prefixes is a regular language.
+There can be multiple viable prefixes on the stack.  The topmost prefix is going to be reduced by the current handle.  The second topmost prefix is going to be reduced by the handle that comes after that.
 
-insert circle graph thing here with LR grammars. 
+I have no idea why they're naming these things.
 
-Handle
-Prefix (is he actually talking about viable prefixes?)
-viable prefix
-item
-stack of prefixes
+For any grammar, the set of viable prefixes is a regular language.  Now we're going to show this.
+
+The stack will be full of prefixes.  if we have P_1 P_2 on the stack, we know we're going to reduce P_2 before P_1.  We also know that since P_1 is a prefix, there are some missing parts after it.  We also know that if those missing parts are a string, P_2 is a prefix of that string.  So X -> P_1 ABC..., and A->P_2....
+
+If we have P_1 P_2 P_3 on the stack then P_3 is a prefix of the missing part of P_2, and P_2 is a prefix of the missing part of P_1.  So P_2 concatenated with P_3 is also a prefix of P_1.  There's an inductive proof here.  So if X->P_1 (missing part), then X->P_1 P_2 (smaller missing part), and X-> P_1 P_2 P_3 (even smaller missing part).
+
+This is because whenever you start ANYTHING in a context-free grammar, it ends before its enclosing thing ends.
+
+	Statement(expresion)
+	
+we know that this expression (which we'll call P_2), must end before the statement (which we'll call P_1).  It's LIFO.  Last in first out.  Or in this case, last started first finished.  
+
+So now the algorithm.
+
+NFA states are the `items` of the grammar.  So take each production, and do a dot thing at each character.
+The NFA will always start at the bottom of the stack and work its way up to the top of the stack.  It will then say 'yes, this is a viable prefix, keep going', or it will say 'no, this is not a viable prefix, error out.'
+
+So the purpose of the NFA is to test for validity.  Then it tells you whether to shift or reduce.
+
+You transition states based on what is on the stack, not what is next in the input.(?). I think this is true for now, you'll have to augment this later with SLR parsing.
+
+You know how in an NFA, you go to a state, and you are immediately in all the states that you can get to from an epsilon transition, right?  Don't discount the states that aren't on the end of the 'epsilon slide'.  Consider a state that has an epsilon transition and a non-epsilon transition.  It's still in that state, as well as all the child states.
+
+In the NFA, if you're in a state like E->T., then its time to reduce.  This means that you have successfully found a handle.
+
+Also you were wondering 'won't S'->.E never take the E transition to S'->E.?'  It will, eventually.  Remember the NFA starts over at each shift/reduce, starting from the start symbol all over again.
+
+
+
 
 algorithm is stack nfa, nfa->dfa, dfa is table driven.  We leave it as an nfa because it's simpler to write.
 Uses items for each state, I think.  The stack is a sequence of partial right-hand sides.
