@@ -13,30 +13,19 @@ You need money, right? Quick advice: invest in ETFs, put money into your 401k, t
 
 Languages like Java and Go, and C++ all have very similar but not identical concepts called interfaces.
 
-In general, an interface is a group of unimplemented method names.  Metaphorically, if you think of different classes as different types of cars, then an interface for those all of those classes might be a steering wheel, gas pedal, break pedal, and transmission.  Because all of these different types of cars have the same interface, you know how to drive any of them without having to understand how they work under the hood.  So if you know an interface, you know how to manipulate every class that implements that interface without knowing how it works under the hood.
+An interface is roughly equivalent to an abstract class.  You can't create a variable with that specific type, but you can create classes that inherit from it.  Any class that inherits from this abstract class is said to 'implement its interface'.  In the below example, we have an interface called TimeMachine, and a PhaseShiftor and HyperCube class that implement it (since obviously shifting your phase and using a hybercube are 2 different ways to time travel).  You 
 
-<details><summary>Pseudo Java Example</summary>
+The purpose of an interface is so a user can call a method and know what will happen without having to know how it happens.  A more practical example would be something like a sort interface.  MergeSort and Quicksort could both implement it, since all they do is sort a list of numbers.
 
-	Interface Vehicle {
-		void takeGas(int amount);
-		int milesPerGallon();
-		void go();
-	}
+<details><summary>Example</summary>
+
+	Interface TimeMachine:
+		void goToYear(int year)
+		
 	
-	Class Car implements Vehicle {
-		int gasLevel = 0;
-		int milesPerGallon = 25;
-		void takeGas(int amount) {
-			gasLevel += amount;
-		}
-		int milesPerGallon() {
-			return milesPerGallon;
-		}
-		void go() {
-			System.out.println("Went " + str(milesPerGallon * gasLevel) + " miles");
-			milesPerGallon = 0;
-		}
-	}
+	
+	Class PhaseShiftor implements TimeMachine:
+		void goToYear(int year
 	
 	Class Motorcycle implements Vehicle {
 		int gasLevel = 0;
@@ -68,8 +57,7 @@ In this example, we don't know whether each vehicle in the array is a car or mot
 Interfaces aren't exactly the same in all languages.  In C++, there is no keyword for interface.  However, you could make something equivalent to a Java interface in C++ by creating an abstract class with purely virtual methods.  Then any class that inherits from this abstract class must implement these virtual methods.
 
 
-<details>
-<summary>Go example</summary>
+<details><summary>Go example</summary>
 In Go, interfaces are explicitly declared and implicitly implemented.  This means you create an interface by saying `type myInterface interface {...}` but unlike Java, there is no need to say `class X implements myInterface` in order for X to be able to use myInterface.
 
 	package main
