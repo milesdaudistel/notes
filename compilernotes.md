@@ -103,7 +103,7 @@ When our lexer turns the above program into a token stream, we get:
 
 	[ ID=y, =, ID=f, (, INT=4, ), .... ]
 	
-The structure of this token stream is linear.  Line 1, line 2, line 3, etc.  It doesn't give us any information on how to actually execute the program.
+The structure of this token stream is linear.  Line 1, line 2, line 3, etc.  It doesn't give us any information as to the order of program execution.
 
 A parser turns a stream of tokens into a tree of tokens.  A tree's structure is non-linear; it can tell us more about the order in which a program will execute.
 
@@ -273,9 +273,9 @@ SR parsers look through the tokens 1 at a time.  An SR parser keeps a stack of `
 
 An SR parser shifts and reduces over and over until it can't shift or reduce anymore.  If there is no more input, and the only item on our stack is the start symbol, we have successfully created a parse tree.
 
-Exactly how the SR parser decides whether to shift or reduce will remain mysterious for now.  After understanding this example, we'll learn how the parser decides whether to shift or reduce.
+Exactly how the SR parser decides whether to shift or reduce will remain mysterious for now.  Just know that sometimes the parser could either shift or reduce, and it always chooses the 'right' one to do.
 
-Below is an SR parsing example.  In our example grammar, T and E are non-terminals, and int, *, and + are terminals (tokens).  Our example input to the parser is 'int * int + int'.  The vertical bar character | is used show where we are in our parse.  For instance, 'int * int | + int' means that our parser has looked at the 3 tokens 'int * int' and has put them on its stack.  The parser has not yet looked at '+ int', and it has not yet reduced anything.  Whenever a shift move occurs, we put another token onto our stack, and move the | over by 1.  When we do a reduce move, some things to the left of the | will be changed, and we won't look at another token of input for that step.
+Below is an SR parsing example.  In our example grammar, T and E are non-terminals, and int, *, and + are terminals (tokens).  Our example input to the parser is 'int * int + int'.  The vertical bar character | is used show where we are in our parse.  For instance, 'int * int | + int' means that our parser has looked at the 3 tokens 'int * int' and has put them on the item stack.  The parser has not yet looked at '+ int', and it has not yet reduced anything.  Whenever a shift move occurs, we put another token onto our stack, and move the | over by 1.  When we do a reduce move, some things to the left of the | will be changed, and we won't look at another token of input for that step.
 
 <details>
 <summary>
@@ -295,11 +295,9 @@ Interestingly, GCC and Clang (the two most popular C/C++ compilers) both use han
 You are correct.  After we create the parse tree, we will remove all of the nonterminal symbols.  Exactly how we do this will come after we learn how the parser decides whether to shift or reduce. 
 </details>
 
-Also need to mention somewhere about the AST having a lot of extra symbols, unles you haven't actually said anything about that.
-
 	Production 1:  T -> int
 	Production 2:  T -> int * T
-	Production 3:  T -> int
+	Production 3:  T -> (E)
 	Production 4:  E -> T
 	Production 5:  E -> T + E
 	
@@ -447,43 +445,25 @@ function showSlidesSLIDESHOWNAME(n) {
 }
 </script>
 
-A kind of bottom up parsing.  Say that `aBw` is what we currently have in our parse.  Now assume `X->B` is the next step.  Remember that this means we will replace `aBw` with `aXw`, since it's a bottom up parse and we're going in the reverse direction we normally would.  Anyway, assuming `X->B` is next, then we know `w` must be a string of terminals, with no non-terminals in it.  This is because we're going left to right.  If someting is on the right of what we are currently working on, we haven't touched it yet.  So we haven't touched any of `w` yet, which means it's a bunch of terminals.
+Now we are going to learn how the parser decides whether to shift or reduce.
 
-So knowing that everything to the right of our rightmost non-terminal is a bunch of terminals, we are going to separate our string thing into 2 parts with a |, like so:  `aX|w`.  Everything to the left we have seen so far, and is composed of terminals and non-terminals, and everything to the right we have not seen yet, and is composed only of terminals.  
+The parser looks at the item on top of its stack, (the item immediately to the left of the |), then looks at the next token in the input (the token immediately to the right of the |).  Note that the token stays on the right of the |; it doesn't get shifted.  It then uses the item and token it just looked at to do a look up in a `parsing table`.  A parsing table has an entry for every possible item + token combo.  Each entry in the table tells the parser whether to shift, reduce, stop parsing, or throw an error.
 
-Shift reduce parsing gets its name because it only has 2 possible actions:  shifting and reducing.  We've already seen reduce moves:
+Here is the parsing table for the above example.  Step through the example again, this time noting how the parser uses the table to create the parse tree.
 
-	aB|w -> aX|w
-	
-We haven't seen shift moves yet.  A shift move is simply reading the next 1 token of input:
+You have a current state.  Your next state is determined by the next token, and your current state.  You do a lookup in the action table.  
 
-	aX|w -> aXw|
-	
-Note that in this example, w is a single terminal, though in previous examples it was multiple terminals.
+it tells you to s3, which means shift and go to state 3.
 
+now we have (c, 3) on the stack.  d is next.  look up d, 3, and get s4.
 
-	E -> T + E | T
-	T -> int * T | int | (E)
+now we have (0 ?) (c 3) (d 4) on the stack.  d is next.  look up d, 4, and get r_3.  This means reduce by production 3.  For shifts, the number refers to the next state.  For reduces, the number refers to the production to reduce by.
 
-example:
-	
-	|int*int+int
-	int|*int+int
-	T|*int+int //MISTAKE
-	
-You shouldn't reduce to T because `T * int` doesn't exist in this grammar, meaning that if you make that last reduction, you'll never get back to the start symbol.  If instead you did:
+now we have (0 ?) (c 3) (C ?)   Then for some reason you're back in state 3.  When you reduce, you have a (non-terminal, ?) on the stack.  You look at (?, state) (non-terminal, ?), pop 2 things off the stack.  Combine (state, non-terminal).  Do a look up there.  put state back on the stack.  put non-terminal back on the stack.  The look up will give you new_state.  Put that on the stack.  In other words, the ? in (non-terminal, ?) is determined by a lookup in the goto table of (state, non-terminal).  Then you do another look up.  You do this because a reduction corresponds to you 'backtracking' in the NFA.  When you combine a bunch of stuff from the stack, you don't immediately put it back on the stack.  You look at the state you're currently in.
 
-	|int*int+int
-	int|*int+int
-	int*|int+int
-	int*int|+int
-	int*T|+int
-	
-That would be fine, because `int*T` is in the grammar, and can be further reduced.  So just because you _can_ make a reduction doesn't mean you _should_.  But how do you know when to reduce and when to shift?
+Oh, it's because you need to 'remember' where you were previously.  It's that thing that's an SLR improvement.  
 
-When you reduce, that's when you put stuff together in your tree.  When you shift, you add a new token to the bottom of the tree.
-
-What about the first 2 productions of T?  If those are both in a dfa state, and you transition and consume an int, what goes on the stack?  Is that a shift reduce conflict?  Yes, it is.  This is when you look in the follow of T.  If the next thing is in the follow of T, put the reduce on the stack.  If the next thing is the first thing to the right of your . in the item, put the shift on the stack.  
+You're probably going to need to explain this stuff starting from the beginning.  But really.  This needs a simpler explanation than what they give.
 
 
 
@@ -620,6 +600,8 @@ Is there a specific name for the kinds of things a regular grammar can't accompl
 https://cs.stackexchange.com/questions/51189/ambiguity-vs-context-sensitivity
 https://en.wikipedia.org/wiki/Ambiguous_grammar
 https://stackoverflow.com/questions/14589346/is-c-context-free-or-context-sensitive
+
+put the drop downs into > format.  Easier to keep it separate from the rest of the text.
 
 
 </details>
