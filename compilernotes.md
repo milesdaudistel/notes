@@ -12,7 +12,7 @@ https://www.quora.com/Why-do-we-use-interpreters-instead-of-using-compilers-for-
 
 </details>
 
-`Lexing`
+#Lexing
 
 Imagine you wrote this program:
 
@@ -41,759 +41,482 @@ In practice, the token name ID usually denotes variable names, function names, a
 
 <details><summary>How do we know that 'while' is a WHILE token?  How does the lexer know not to output 5 ID tokens?</summary>
 
-Lexers use the maximum much rule.  The maximum munch rule means that the lexer will create the biggest tokens it possibly can.  So first it sees a 'w', and thinks "this could be an ID... I'll keep going".  Then it sees an h, an i, an l, an e, and a (.  Then it thinks "Ok, I know that 'while(' isn't a possible token, so the biggest token I can make is 'while'.
+Lexers use the maximum munch rule.  The maximum munch rule means that the lexer will create the biggest tokens it possibly can.  So first it sees a 'w', and thinks "this could be an ID... I'll keep going".  Then it sees an h, an i, an l, an e, and a (.  Then it thinks "Ok, I know that 'while(' isn't a possible token, so the biggest token I can make is 'while'.
 
 The lexer knows to make 'while' a WHILE token, and not an ID='while' token through precedence rules, which are hard-coded.  So when it sees a 'while', it thinks "this could be an ID, or it could be a WHILE token.  Since WHILE takes precedence over ID, I'll make this a WHILE".
 </details> 
 
 Now, how do we actually code a lexer?  In other words, how do we create a program that will clump characters into tokens?  The answer is with regular expressions, or regex.  Regex describe patterns of characters using 3 operators:  Grouping, Boolean OR, and Quantification.
 
-	Grouping:  r"ab" matches the string 'a'
+	Grouping:  r"ab" matches the string 'ab'
 	Boolean OR:  r"a|b" matches the string 'a', or the string 'b'
 	Quantification:  r"a*" matches the string '', the string 'a', the string 'aa', ... to infinity a's
 	
 You may have seen other regex operators in Java or Python, like + or ?.  These operators are just shortcuts of the 3 operators above.  `a+` is equivalent to `aa*` and `a?` is equivalent to `a|`.
 
-We use regex to decide whether some string matches a pattern.  If we had a big file called X.txt, and we wanted to know if it contained only 0's and 1's, we could do it with regular expressions in python like this:
+We use regex to decide whether some string matches a pattern.  If we had a big file called X.txt, and we wanted to know if it contained only numbers, we could do it with regular expressions in python like this:
 
 	import re
 	
-	regex01 = r"(0|1)*"
-	X = open('X.txt', 'r').read() #The file X.txt has been read into X, which is a string
+	regex01 = r"[0-9]+" #shorthand for (0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*.
+	                    #There's two (0|1|2|3|4|5|6|7|8|9)'s because we want at least 1 digit.
+	
+	X = open('X.txt', 'r').read() #The file X.txt has been read into the string X
 	
 	if re.match(regex01, X):
 		print("Match")
 	else:
 		print("No match")
 		
+So if X.txt contained something like `98560134760976`, then "Match" would be printed out, but if it contained something like `3704974320ABC947523`, then "No match" would be printed out.  But rather than printing things out, a real lexer would call a function that would emit a token; something like `emitToken(tokenName, tokenValue)`.  For this example, rather than calling `print("Match")` we would call `emitToken(INT, 98560134760976 )`, which would emit an INT token object whose value was 98560134760976.
+		
+<details><summary>Can regular expressions match anything?</summary>
 Regex can match a lot of patterns, but there are certain patterns it can't match that we need to make a real programming language.  Consider C, or Java.  These languages require parenthesis and curly braces to be balanced, which means for every '(' that opens up a new scope, there needs to be a ')' to close the scope.
 
-Now see if you can think of a regular expression that can match '()', '(())', '((()))', '(((())))', etc, all the way up to an arbitrary number of parenthesis, _without_ matching anything unbalanced, like '(()', '(()))', etc.  Your first thought might be something like `(*)*`, but that would end up matching '(()' and '(()))', which we should throw an error on.  Next you might try something like `()|(())|((()))|(((())))|....` Which is a good effort.  You could make a regex expression that could match balanced parenthesis in the hundreds, thousands, millions, or beyond, but you can never create a regex expression that can match an arbitrary number of parenthesis.
+Now see if you can think of a regular expression that can match '()', '(())', '((()))', '(((())))', etc, all the way up to an arbitrary number of parenthesis, _without_ matching anything unbalanced, like '(()', '(()))', etc.  Your first thought might be something like `(*)*`, but that would end up matching '(()' and '(()))'.  Next you might try something like `()|(())|((()))|(((())))|....` Which is a good effort.  You could make a regex expression that could match balanced parenthesis in the hundreds, thousands, millions, or beyond, but you can never create a regex expression that can match an arbitrary number of parenthesis.  But the parser will take care of that, so our lexer doesn't have to worry about it.
 
-So our lexer just won't deal with this problem.  It will output parenthesis as single '(' and ')' tokens, not bothering to count them.  
+What about python?  It doesn't have parenthesis at all.
 
-TOKENS WILL NOT BE CONTAINED INSIDE OTHER TOKENS.  I think this is how you transition between lexer and parser.  Tokens within tokens would be a recursive structure.  This means an infinite structure.  Something a finite automaton can't do.  Tokens inside of tokens is a tree structure.  Actually, I don't know.... A lexer doesn't just use regex, it breaks those rules.  A lexer and a parser are really 2 parts of the same thing.  So it's just hard to transition without it being weird.
+While python doesn't have parenthesis, it still uses 'balanced' whitespace in order to define scope, which ends up being the same problem.  
+</details> 
 
-Counting parenthesis to make sure they're balanced will be left to the next stage of our compiler:  the parser.
+#Parsing
 
-<details><summary>What about python?  It doesn't have parenthesis at all</summary>
-While python doesn't have parenthesis, it still uses 'balanced' whitespace in order define scopes, which ends up being the same problem.  
-</details>
+Look at this python program:
 
-If we want to make a programming language, we need things like balanced parens, order of operations (tree), which regex can't do.
-This is why we need a parser, which uses backus nar form to make languages more general than regular languages.
-This is what a parser does.
-You create a parser by specifying a grammar.
-A grammar is this.  Before, we were making regular grammars.  Now we're making context free grammars.
-Here are some things context free grammars can't do.  If a grammar is like this, it's context sensitive.
-But we can just do some quick hacks like this and pretend that our grammar is still context free.
-It's important to keep our grammars as close to context free as we can, since they can be parsed in O(n) time.  Context sensitive takes O(n^2) time.  So technically the grammars we make here take O(n^2) time, but just for a few operations, so in practice our parser and lexer will seem like it only takes O(n) time.
-
-http://trevorjim.com/python-is-not-context-free/
-
-This is a very simple example that shows that what you're doing isn't context free, maybe.
-
-
-
-<details><summary>DFA To Table Driven, or How Regex Works Under The Hood</summary>
-Consider this regex of all binary strings that end in 1:
-
-	(1|0)*1
-
-Whose DFA implementation is as follows:	
-
-![endsin1](pics/endsin1.png)
-
-We can convert this DFA into a table.  A table is easy to implement in code, as well as fast.  Here is a table equivalent to the DFA:
-
-|  | `0` | `1` |
-|-----|-----|-----|
-| `S` | T | U |
-| `T` | T | U |
-| `U` | T | U |
- 
- Say we have the input `0101`.  We are in state S, and the next input is 0, so we look at row S, column 0, whose entry is T.  This means we are now in state T.  
- 
- The next input is 1, so we look in row T, column 1, whose entry is U.  Now we are in state U.  
- 
- The next input is 0, so we look in row U, column 0, whose entry is T.  Now we are in state T.
- 
- The next input is 1, so we look in row T, column 1, whose entry is U.  Now we are in state U.
- 
- There is no more input, so we are done.  One thing that isn't in table that we need to somehow specify is that U is an accepting state, and S and T aren't.  Implemention is trivial and will be omitted :^)
- 
- So in general, you have a current state, and you have a next token of input.  You do a table look up based on those 2 things to find your next state.  If at any point you try to do a table lookup and find nothing, that means the string does not match.  If we had the string `ab`, we would look in row S, and we wouldn't find a column corresponding to `a`, and our algorithm would return false, saying the string does not match our regular expression.
-
-</details>
-
-<details><summary>Parsing</summary>
-A lexer turns a stream of characters into a stream of tokens.  A parser turns a stream of tokens into a tree of tokens.  We want to format our tokens into a tree so that we know the order of operations.
-
-Example character stream:
-
-`2+3*2+3`
+	y = f(4)                                      #line 1
+	....                                          #line 2-199
+	def f(x):                                     #line 200
+		if x != 4:                                 #line 201
+			print("that's not my favorite number") #line 202
+			explode()                              #line 203
+		else:                                     #line 204
+			print("I cannot accept this gift")     #line 205
+			return 4                               #line 206
+	def explode():                                #line 207
+		return 1 / 0                               #line 208
 	
-Example token stream output from lexer:
-
-`INT PLUS INT MUL INT PLUS INT`
 	
-Each INT has an actual numerical value that we don't see.
+This program, like most, does not execute in order, e.g executing line 1, then line 2, then line 3, etc.  It starts at line 1, then jumps to line 200, then line 201, then line 204, 205, 206, then back to 1 before continuing.  
 
-Example token tree output from parser:
+When our lexer turns the above program into a token stream, we get:
+
+	[ ID=y, =, ID=f, (, INT=4, ), .... ]
+	
+The structure of this token stream is linear.  Line 1, line 2, line 3, etc.  It doesn't give us any information as to the order of program execution.
+
+A parser turns a stream of tokens into a tree of tokens.  A tree's structure is non-linear; it can tell us more about the order in which a program will execute.
+
+Even simple programs usually require some kind of tree structure.  Here is another example:
+
+	2+3*2+3
+
+and its token stream:
+
+	[ INT=2, +, INT=3, *, INT=2, +, INT=3 ]
+	
+If our computer tried to execute this program token by token, these would be the steps it would take:
+
+	2
+	2+
+	2+3
+	5
+	5*
+	5*2
+	10
+	10+
+	10+3
+	13
+	
+Considering that 2+3*2+3=11, this is not the behavior that we want.  Computers are stupid.  They don't know that multiplication comes before addition.  If we instead take our token stream, and run it through a parser that understands our tokens, we would get an output like this:
 
 ![basic_tree](pics/basic_tree.png)
 
-Obviously we know the order of operations for the original character stream, but the computer doesn't.  If we told the computer to calculate the final result directly from the token stream, the output would be `(((2+3)*2)+3)=13` instead of the expected `2+(3*2)+3=11`.  This is why a parser is necessary.
+Our computer will traverse this tree inorder.  In actual code, the parse tree would look like this:
 
-<details><summary>Context Free Grammars</summary>
-The regular grammars that we've looked at so far are a subset of Context Free Grammars.  So all regular grammars are CFGs, but not all CFG's are regular grammars.  Maybe explain what a context sensitive grammar is?  Then explain that anything above that is like english; disputable.  Then explain that a regular grammar can also have the same Backus Nar Form as the other stuff.  Then explain why Backus Nar form can formulate all formal grammars.  Perhaps use the meaning function.
+	( +
+		2
+		( +
+			( *
+				3
+				2
+			)
+		)
+	)
+	
+<details><summary>Wait, this looks like Lisp/Scheme...</summary>
+That's because it is, basically.  Putting the tree all on 1 line, you would get `(+ 2 (+ (* 3 2) 3 ) )`.  You could copy and paste this exact line into a lisp interpreter / compiler and it would run successfully.  
 
-A formal language / grammar is one where everyone agrees on the same set of rules.
-A formal grammar / language can be ambiguous.  While everyone agrees on the rules, the rules don't cover all possible cases.
+In Lisp, you are basically skipping lexing and parsing almost entirely by directly creating the parse tree.  Supposedly this makes Lisp more powerful.  By powerful I don't mean computationally powerful, as in it runs faster.  I mean linguistically powerful, as in you can express computational ideas in a much more concise manner than, say, C++, Java, or Python.  Of course, this is a very difficult thing to quantify, or prove, but there is a very devoted community of Lisp users that swear by its almighty power.
+
+Another note is that since Lisp mostly skips lexing and parsing, it can be compiled faster than pretty much any other high-level language.  However, I can't remember where I found the benchmarks that prove it.
+</details>
+		
+Notice now that the multiplication 3 * 2 will happen before the addition 2 + 3, which is what we want.  
+
+Once we have a parse tree for the input program, that program definitely has some semblance of sense.  It may still have errors in it, but the program is speaking a language that we understand.  Let's get a sense of where we are with some metaphorical compilations of English:
+
+`asdfasfasdf`  This is complete gibberish, and means nothing.  Fails at the lexing stage.
+
+`is was of I pancakes`  While each individual word (token) makes sense, they don't form a grammatically correct sentence.  Fails at the parsing stage.
+
+`The goats mustache is Cameron Diaz`  Ok, we have a grammatically correct sentence, but we're missing something.  'The' goat?  What goat are we talking about?  Who is Cameron Diaz?  I don't know who they are, but I know a human can't be a goats mustache.  Fails at the semantic analysis stage.
+
+`I must proceed at high velocity` Now we're getting somewhere.  Each token makes sense, and together they form a parse tree that tells us that 'I' absolutely need to move very fast.  This is a valid program, and should be able to run.  If the optimization or code generation stages fail, that's an error in the compiler, not an error in the users program.
+
+So once we have created a parse tree for our input program, it is either a 'goats mustache' or a 'high velocity' program.
+
+However, we still don't know how to create a parser.  To do that, we need to learn more about formal language theory.
+
+`Formal Languages`  A formal language is the set of all possible sentences that follow some set of rules.  Validity is not disputed in formal languages.  Let's say you invent a language, and someone asks you 'Is this paragraph written in your language?'  If you can use the rules of your language to prove with 100% certainty that the paragraph is valid (it is written in your language) or invalid (it is not written in your language), then your language is a formal language.
+
+Java and C are formal languages.  If you compile some text and the compiler throws an error, the text is not a valid program.  If the program compiles and runs, it is a valid program.
+
+English is not a formal language.  English has rules, but there are definitely words and phrases that are arguably valid or invalid.
+
+<details><summary>What if the program compiles, but has a runtime error?  Is the program valid?</summary>
+Yes.  A runtime error, like a stack overflow, is a problem with the hardware of the machine.  If we had more memory, that error would not have occured.  So it's a problem with your language.
+</details> 
+
+`Formal Grammar` formal grammars are the rules of formal languages.  The formal grammar rules in our parser are what turn the token stream into a token tree.  Our parser will use a specific kind of formal grammar known as a context-free grammar.
+
+`Context-Free Grammar` CFGs are a subset of formal grammars.  Formal grammars use backus nar form to describe their rules.  
+
+Example of a CFG in backus nar form:
+
+	S -> x | xT
+	T -> y | z
+	
+Formal grammars do the same thing that regular expressions do: they look through strings and return either true or false depending on whether the pattern matches or not.  
+
+The above grammar will match the strings 'x', 'xy', and 'xz', and won't match anything else.
+	
+All formal grammars have:
+
+A set of `terminal symbols`.  A terminal symbol is the smallest unit of meaning in a language.  Think of terminal symbols as single words.  The terminal symbols in our example are x, y, and z.  The terminal symbols in our compiler will be the tokens from our lexer. 
+
+A set of `nonterminal symbols`.  A non-terminal symbol is just a symbol that can be broken down into a combination of nonterminal and terminal symbols.  In our example, S and T are non-terminal symbols.  S can be broken down into either x, or xT.  T can be broken down into either y or z. 
+
+A set of `production rules`.  Production rules tell you how to break down nonterminal symbols.  S->x is a production rule, S->xT is a production, T->y is a production, and T->z is a production.  S-> x | xT is not a production, it is 2 productions.
+
+A `start symbol`.  A start symbol is just the nonterminal where you start parsing.  It's either denoted with S, Start, or it should be clear enough without explicit statement.
+
+Here's another example:
+
+	S -> (S) | epsilon
+	
+epsilon is a stand in for the empty string.  This grammar can match nested balanced parenthesis, which regex can't do.
+
+
+<details><summary>Couldn't we do the S and T example with regex?</summary>
+Yes.  A regular expression is actually a kind of formal grammar, and more, its a kind of context-free grammar.
+
+All regex expressions have an equivalent backus-nar form.
+
+Example regex:
+
+	([A-Za-z])([A-Za-z0-9*])
+	
+Example equivalent backus-nar form:
+
+	S -> Alpha T
+	
+	T -> Alpha T | Num T | epsilon
+	
+	Alpha -> A|a|B|b|C|c|D|d|E|e|F|f|G|g|H|h|I|i|J|j|K|k|L|l|M|m|N|n|O|o|P|p|Q|q|R|r|S|s|T|t|U|u|V|v|W|w|X|x|Y|y|Z|z
+	
+	Num -> 0|1|2|3|4|5|6|7|8|9
+	
+Our lexer is just a formal grammar.  It's terminals are individual characters, it's non-terminals are the tokens it outputs. Its start symbol is all of the tokens OR'd together, but we don't care about it.
+
+Yeah, we could combine regex with backus nar form (thereby combining the lexer and the parser), but its better to keep them separate for a multitude of reasons.  Most of those reasons can be boiled down to 'it makes the implementation look ugly'.  There's also the fact that separating it into a lexer and parser lets us pipeline the two parts easily.  Also, it makes the whole 'parsing english' metaphor clearer, and therefore easier to understand conceptually.
+
+So really the difference between regex and CFGs is that regex is just a special kind of CFG that is really easy to express.
+</details>
+
+***
+ambiguity
+
+derivation
+
+LR / LALR
+
+For historical reasons, Bison by default is limited by the additional restrictions of LALR(1)
 
 In practice, your grammars won't be context-free.  But since context-free grammars take O(n) time to parse, you want to make your grammar as close to this as possible.  Give an example of when a context sensitive grammar would take like O(n^2) or something.  show that a regular grammar parse tree is a stick or something.  So you can't have anything like ifs, fors, anything more than local scope with regular grammars.  Give an example of when C/C++ are context sensitive, and why those examples don't result in too bad slow down.  Also say how you would solve that problem?
 
+You're going out of order.  You'll probably have to go back to the finite automata thing to explain the table.
 
+Now that we understand CFGs, we're going to learn how to use them to parse.  The algorithm we use to parse things actually doesn't work with all CFGs.  It only works with a subset of them, called LR/LALR grammars.
 
-</details>
+Can LR/LALR express the same languages as any CFG?  Equivalent question:  Can every CFG be converted to an LR CFG?
 
-<details><summary>Derivation</summary>
-The term derivation refers to both the tree output of parsing, as well as the process of making the tree.
-</details>
+Start with your stream of tokens, your terminals.  Build up your tree.
+How do you build up your tree?  Assume you have this parsing table.  This is how you use the parsing table.
 
-<details><summary>Recursive Descent</summary>
-Recursive Descent is the simplest type of parsing algorithm.  The way recursive descent works is we get a big list (or stream) of tokens from the lexer.  We look at these tokens one at a time, forming them into a tree.
+But how do you make the parsing table in the first place?  First and follow sets.  Convert from NFA/DFA.  Wait, but if we have an NFA / DFA, then isn't this a regular language?  No, it's only the handles that are a regular language.  Blah blah blah.
 
-Example Grammar for recursive descent:
+But what about these shortcomings?  Blah blah blah.  Where are you going to explain the subsets of the grammars?  Do not explain LL grammars.  Those are for top down parsers.
 
-	E -> T | T + E
-	T -> int | int * T | (E)
-	
-Recursive Descent Functions:
 
-	bool Term(Token tok) { return *next++ == tok; }
-	
-	bool E() { 
-		Token *save = next;
-		
-	
-	bool E_1() { return T(); }
-	bool E_2() { return T() && term('+') && E(); }
-	
-	bool T_1() { return term(INT); }
-	bool T_2() { return term(INT) && term('*') && T(); }
-	bool T_3() { return term('(') && E() && term(')'); }
-	
-
-	
-Recursive descent limitations:
-TODO
-
-</details>
-
-</details>
-
-<details><summary>Predictive Parsing and LL(k) grammars</summary>
-Predictive parsing is a confusing term.  Saying that you have a 'predictive parser' is not a statement about your parsing algorithm (recursive descent, shift reduce, etc).  Saying that you have a predictive parser means that the grammar your parser reads is an LL(k) grammar.  LL(k) grammars are a special kind of context-free grammars.  By looking at the next k tokens, we can narrow down the possible productions to 1 at every step.  This means there will never be any backtracking, making it faster.
-
-Here is an example of a normal context-free grammar:
-
-	A -> aaaa | aaab
-	
-Let's say we get the input `aaab`.  This grammar starts at the first production of A, matchs the first, second and third `a`, then hits `b` and has to backtrack.  Starting over at the first `a`, the parser matches the input with the second production, and we're done.
-
-Here's an LL(k) grammar that parses the same language as above:
-
-	A -> aaaX
-	X -> a | b
-	
-In this grammar, k=1 because you only have to look at the next token to decide whether or not to keep parsing or error out.  For our input `aaab`, we match the first 3 `a`'s one at a time, then look at X.  `b` doesn't match X's first production, so we go to X's second production and get a match.  This is better than the first grammar because we only had to match `aaa` once.
-
-So LL(k) grammars don't have to backtrack, unlike most context-free grammars.
-
-Random facts:
-
-All context-free grammars have an LL(k) equivalent.  Tools like ANTLR can transform context-free grammars into LL(k) grammars automatically.
-
-In practice, we'll always be looking at LL(1) grammars. LL(k>1) grammars don't matter.  I think it's because if you can convert it to an LL(k) grammar, you can convert it to an LL(1) grammar.  LL(1) grammars are either faster, or simpler than any other value of k.  Something like that.
-
-</details>
-
-
-<details><summary>LL(k) vs regular grammars</summary>
-Consider this grammar that parses nested parenthesis:
-
-	E -> (E) | epsilon
-
-Regular grammars can't describe nested parens.  So LL(k) grammars are more general that regular grammars.  
-
-LL(k) grammars can be parsed in linear time just like regular grammars, unlike non-LL(k) context-free grammars.
-
-The only advantage of regular grammars is that they can be described by regular expressions, and so are simpler to write out than context free grammars.
-</details>
-
-<details><summary>LL(1) Parsing tables</summary>
-
-Remember how we converted DFA's into tables?  Tables are simple to implement in code, and fast to execute.  Now we want to make a parsing table for LL(1) grammars.
-
-`Structure and usage of parsing table`
-
-Lets say we have this grammar:
-
-	E -> TX
-	T -> (E) | int Y
-	X -> +E | epsilon
-	Y -> *T | epsilon
-
-Its parsing table will look like this:
-
-|   | `(` | `)` | `+` | `*` | `int` | `$` |
-|---|-----|---------|---------|----|-------|---------|
-| `E` | TX |  |  |  | TX |  |
-| `T` | (E) |  |  |  | int Y |  |
-| `X` |  | epsilon | +E |  |  | epsilon |
-| `Y` |  | epsilon | epsilon | *T |  | epsilon |
-
-Blanks in the table mean error.
-
-We can create a parse tree using this table by starting at E, and looking at the first terminal in our input, we do a table lookup.  Whatever we find, we add to our tree with E as the root.  Since it's a leftmost derivation, we travel the branches in a pre-order fashion until we hit a leaf node that is a non-terminal.  Then we look at the next terminal, and do another table look up.
-
-Input stream:
-
-	(3 * 4) + 2
-
-Derivation:
-
-	E -> T X -> (E) X -> (T X) X -> (int Y X) X -> (int * T X) X -> (int * int Y X) X -> (int * int X) X 
-	-> (int * int) X -> (int * int) + E -> (int * int) + T X -> (int * int) + int Y X -> (int * int) + int X
-	-> (int * int) + int
-
-These derivation steps are going to be gone through using the table.
-TODO might want to put more captions on each of these steps so that people get a better idea of how it corresponds to the table.
-
-<details><summary>Step-by-step derivation</summary>
-
-<a class="prev" onclick="plusSlides2(-1)">&#10094;</a>
-<a class="next" onclick="plusSlides2(1)">&#10095;</a>
-
-<div class="mySlides2">
-<div>1 / 14</div>
-<pre>
-(3*4)+2
-&#8593;
-</pre>
-<img src="pics/ETXY1.png">
-</div>
-
-<div class="mySlides2">
-<div>2 / 14</div>
-<pre>
-(3*4)+2
-&#8593;
-</pre>
-<img src="pics/ETXY2.png">
-</div>
-
-<div class="mySlides2">
-<div>3 / 14</div>
-<pre>
-(3*4)+2
- &#8593;
-</pre>
-<img src="pics/ETXY3.png">
-Now that we've derived the '(', we can move on to the second token of input, '3'.
-</div>
-
-<div class="mySlides2">
-<div>4 / 14</div>
-<pre>
-(3*4)+2
- &#8593;
-</pre>
-<img src="pics/ETXY4.png">
-</div>
-
-<div class="mySlides2">
-<div>5 / 14</div>
-<pre>
-(3*4)+2
-  &#8593;
-</pre>
-<img src="pics/ETXY5.png">
-</div>
-
-<div class="mySlides2">
-<div>6 / 14</div>
-<pre>
-(3*4)+2
-   &#8593;
-</pre>
-<img src="pics/ETXY6.png">
-</div>
-
-<div class="mySlides2">
-<div>7 / 14</div>
-<pre>
-(3*4)+2
-    &#8593;
-</pre>
-<img src="pics/ETXY7.png">
-</div>
-
-<div class="mySlides2">
-<div>8 / 14</div>
-<pre>
-(3*4)+2
-    &#8593;
-</pre>
-<img src="pics/ETXY8.png">
-Since the row 'Y', column ')' entry is 'epsilon', Y is nothing, and we do not need to represent it anymore.
-</div>
-
-<div class="mySlides2">
-<div>9 / 14</div>
-<pre>
-(3*4)+2
-     &#8593;
-</pre>
-<img src="pics/ETXY9.png">
-After we delete the X that turned out to be an epsilon, we hit the ')', and consume it.  Only writing this because it may not be immediately clear.
-</div>
-
-<div class="mySlides2">
-<div>10 / 14</div>
-<pre>
-(3*4)+2
-     &#8593;
-</pre>
-<img src="pics/ETXY10.png">
-</div>
-
-<div class="mySlides2">
-<div>11 / 14</div>
-<pre>
-(3*4)+2
-     &#8593;
-</pre>
-<img src="pics/ETXY11.png">
-</div>
-
-<div class="mySlides2">
-<div>12 / 14</div>
-<pre>
-(3*4)+2
-      &#8593;
-</pre>
-<img src="pics/ETXY12.png">
-</div>
-
-<div class="mySlides2">
-<div>13 / 14</div>
-<pre>
-(3*4)+2
-      &#8593;
-</pre>
-<img src="pics/ETXY13.png">
-</div>
-
-<div class="mySlides2">
-<div>14 / 14</div>
-<pre>
-(3*4)+2
-      &#8593;
-</pre>
-<img src="pics/ETXY14.png">
-Here is our finished parse tree.  We can turn it into an AST by getting rid of all the non-terminals, which I don't feel like doing.
-</div>
-
-</details>
-
-`How parsing tables are constructed`
-
-Looking at our parsing table again, we know that if our current non-terminal is 'T', and our current terminal is '(', we should choose the production '(E)', and if an 'int' is our terminal, we should choose the production 'int Y'.  What we don't know is how to make a parsing table like this.  How should we know to assign T['T', '('] -> '(E)' in the first place?  Now we will show you.
-
-In the DFA table, we had a current state, and a next token which would determine our next table lookup.  In our LL(1) table, we have a current non-terminal instead of a current state.  Each table lookup has this form:
-
-	T[A, t] = X
-	
-TODO how is the parsing table really created?  What 2 things do we have, what 3rd thing are we looking for?  Iterate over each position in the table?  Iterate over all possible terminals?  And why can we have 2 things (like a TX) in the parsing table?
-
-So we have our parsing table with non-terminals as rows and terminals as columns, and nothing in the entries.  For each non-terminal, we iterate over its productions.  For each production, we calculate that productions first set using the first and follow sets of each thing it contins.  Then we look at that productions first set.  For each terminal in the productions first set, we put that production in at the entry (non-terminal, terminal).
-
-<details><summary>First Sets</summary>
-`T[A, t] = B` if t is in the first set of B.  
-The first set of a non-terminal B is the set of all terminals that appear first in B's derivation.
-
-	A -> Bx | Cy
-	B -> 0 | 1
-	C -> a | epsilon
-	
-In this grammar, the first sets of A, B and C are:
-
-	A : { 0, 1, a, y }
-	B : { 0, 1 }
-	C : { a, epsilon }
-	
-B and C are trivial, so I'll skip those.  A's first set looks like it does because when A is derived all the way down to terminals, it could look like any of the following:
-
-	0x
-	1x
-	ay
-	y
-	
-Since we want the first terminal that can be derived from A, we end up with 0, 1, a, and y.
-
-So if we're at A, we will transition to B if `t=0` or `t=1`.
-TODO I this is wrong.  What happens after we get to B?  We just die.
-
-In general, finding the first sets for each terminal and non-terminal in a grammar is as follows:
-
-	t : { t } // if t is a terminal symbol
-	First(Y) is a subset of First(X) if X -> Y....
-		or X -> ABCY....
-			and A, B, C can all be epsilon.
-	epsilon is an element of First(X) if:
-		X -> epsilon
-		or
-		X -> ABC
-			and A, B, C can all become epsilon
-
-</details>
-
-<details><summary>Follow Sets</summary>
-Here's the definition of a follow set for non-terminal X:
-
-	Follow(X) = { t | Y ->* AXtB }
-	
-What this says is that t is in Follow(X) if Y's multiple-step derivation contains X, and also has some terminal t after it.  
-
-The start symbol S's follow set will contain only `$` (end of file).
-
-<a class="prev" onclick="plusSlides1(-1)">&#10094;</a>
-<a class="next" onclick="plusSlides1(1)">&#10095;</a>
-
-<div class="mySlides1">
-Step 1 / 14:  Start at E
-<pre>
-Follow(E) = { $ }
-Follow(T) = { }
-Follow(X) = { }
-Follow(Y) = { }
-Follow('(') = { }
-Follow(')') = { }
-Follow('+') = { }
-Follow('*') = { }
-Follow(int) = { }
-</pre>
-</div>
-
-<div class="mySlides1">
-Step 2 / 14:  Look at E -> TX
-<pre>
-Follow(E) = { $ }
-Follow(T) = { First(X) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { }
-Follow('(') = { }
-Follow(')') = { }
-Follow('+') = { }
-Follow('*') = { }
-Follow(int) = { }
-</pre>
-</div>
-
-<div class="mySlides1">
-Step 3 / 14:  Look at T -> (E)
-<pre>
-Follow(E) = { $, ')' }
-Follow(T) = { First(X) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { }
-Follow('*') = { }
-Follow(int) = { }
-</pre>
-</div>
-
-<div class="mySlides1">Step 4 / 14:  Look at T -> int Y
-<pre>
-Follow(E) = { $, ')' }
-Follow(T) = { First(X) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { Follow(T) }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { }
-Follow('*') = { }
-Follow(int) = { First(Y) }
-</pre>
-</div>
-	
-<div class="mySlides1">Step 5 / 14:  Look at X -> +E
-<pre>
-Follow(E) = { $, ')', Follow(X) }
-Follow(T) = { First(X) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { Follow(T) }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { First(E) }
-Follow('*') = { }
-Follow(int) = { First(Y) }
-</pre>
-</div>
-
-
-<div class="mySlides1">Step 6 / 14:  Look at X -> epsilon
-<pre>
-Follow(E) = { $, ')', Follow(X) }
-Follow(T) = { First(X) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { Follow(T) }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { First(E) }
-Follow('*') = { }
-Follow(int) = { First(Y) }
-</pre>
-</div>
-
-<div class="mySlides1">Step 7 / 14:  Look at Y -> * T
-<pre>
-Follow(E) = { $, ')', Follow(X) }
-Follow(T) = { First(X), Follow(Y) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { Follow(T) }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { First(E) }
-Follow('*') = { First(T) }
-Follow(int) = { First(Y) }
-</pre>
-</div>
-
-<div class="mySlides1">Step 8 / 14:  Look at Y -> epsilon
-<pre>
-Follow(E) = { $, ')', Follow(X) }
-Follow(T) = { First(X), Follow(Y) }
-Follow(X) = { Follow(E) }
-Follow(Y) = { Follow(T) }
-Follow('(') = { First(E) }
-Follow(')') = { Follow(T) }
-Follow('+') = { First(E) }
-Follow('*') = { First(T) }
-Follow(int) = { First(Y) }
-</pre>
-</div>
-
-<details><summary>TODO algorithm for computing follow sets</summary> 
-You should just ignore this part for now.  It's not necessary to know how to make these first and follow sets.  Just know how to recognize them.  It's a complicated exponential runtime algorithm.
-Here is the general algorithm for getting follow sets, which we run on each production: 
-
-	for each  nonterminal on the right side of X -> ABC....Z:
-		Follow(A) += First(B)
-		if epsilon in First(B)
-			Follow(A) += First(C)
-			if epsilon in First(C)
-				....
-				if epsilon in First(Z)
-					Follow(A) += Follow(X)
-					
-		Follow(B) += First(C)
-		if epsilon in First(C)
-				....
-				if epsilon in First(Z)
-					Follow(B) += Follow(X)
-					
-		Do this for all of them
-		TODO should make a recursive version of this.  Also should have a portion that takes into account whether First(B) is already in Follow(A), etc.
-		
-
-
-Now we'll compute follow sets for this grammar, where E is the start symbol:
-
-	E -> TX
-	T -> (E) | int Y
-	X -> +E | epsilon
-	Y -> *T | epsilon
-
-<details><summary>computing follow sets example</summary>
-In this example, keep in mind the first sets from the previous example.
-
-
-This is really long, so I'm not going to finish it.  It would have been nice to have the ability to do slideshows.  Stupid markdown.
-
-
-</details>
-
-</details>
-	
-</details>
-
-<details><summary>building the parsing table after you have first and follow sets</summary>
-
-TODO potentially put the first follow algorithms + examples here instead.
-TODO look at video LL1 parsing tables again.  The `T[A, t] = B` thing. How do you know what the next A is?  It's actually the leftmost nonterminal in your current derivation.  Going to have to go back and change that.  If the leftmost thing is a terminal, then `T['int', t]` is a pointless lookup, since you can just do a direct comparison:  `'int' == t`.  For simplicity you could do a table lookup, or maybe this is faster.  Whatever.  Just do what you think would be easier to explain.
-
-Now that we have the first and follow sets for each terminal and non-terminal, we can find all the t's for each `T[A, t] = B`.  
-
-	for all non-terminal combos A and B in your language:
-		for each t in First(B):
-			T[A, t] = B
-		if epsilon in First(B):
-			for each t in Follow(A):
-				T[A, t] = B
-
-</details>
-
-</details>
-
-<details><summary>TODO</summary>
-Clean up everything.  Maybe have dropdowns just for questions that aren't part of the 'core' stuff.
-
-I feel like if you explain simply why LL(k) grammars don't matter, and more generally why you only ever need 1 token of lookahead, then all the rest of this stuff should fall into place.  Just simply explain why 1 token of lookahead should be all that is necessary.  Then, once you understand that only 1 token of lookahead is ever needed, explain why that's not entirely true, and that you USUALLY only ever need 1 token of lookahead.  GLR parsers USUALLY only look ahead 1 token.  And cut down on the definitions.
-Once you compare all of these definitions and really hone in on what this stuff is, you should be able to figure out the perfect tools and implementation for your grammar.
-
-Give a really quick overview of the parts of a compiler.  Lexer, parser, semantic analyzer, code generation.
-Explain that assembly is binary.  Recall your 61C project where you made a processor that ran on binary.
-
-explain regex and automata.  "in your head, you separate the tokens like this:  (for) (x) (in) ... but for all the computer knows the tokens should be separated like this: (f) (or x) (i)(n) ..."
-
-Need good image manipulation software.  Much easier than the slideshow you made.
-
-explain terminology better.
-
-explain recursive descent
-
-recursive descent algorithm limitation ( logical or shortcircuitting)
-
-left recursion
-
-left factoring
-
-first and follow sets
-
-Consider trying to figure out some kind of step-by-step for certain things.  Like examples.  Consider the follow set example.
-
-Oh, the first and follow set examples:  maybe give them the way to do it by hand?  No need to show them the computer code to do it.
-
-</details>
-
-
-
-<script>
-var slideIndex = 1;
-showSlides1(slideIndex);
-
-function plusSlides1(n) {
-  showSlides1(slideIndex += n);
-}
-
-function showSlides1(n) {
-  var i;
-  var slides = document.getElementsByClassName("mySlides1");
-  if (n > slides.length) {slideIndex = 1}    
-  if (n < 1) {slideIndex = slides.length}
-  for (i = 0; i < slides.length; i++) {
-      slides[i].style.display = "none";  
-  }
-  slides[slideIndex-1].style.display = "block";
-}
-</script>
-
-<script>
-var slideIndex = 1;
-showSlides2(slideIndex);
-
-function plusSlides2(n) {
-  showSlides2(slideIndex += n);
-}
-
-function showSlides2(n) {
-  var i;
-  var slides = document.getElementsByClassName("mySlides2");
-  if (n > slides.length) {slideIndex = 1}    
-  if (n < 1) {slideIndex = slides.length}
-  for (i = 0; i < slides.length; i++) {
-      slides[i].style.display = "none";  
-  }
-  slides[slideIndex-1].style.display = "block";
-}
-</script>
-
-`Bottom Up Parsing`
-
-Rather than starting at the start symbol and eventually deriving the terminals, we start at the list of terminals and condense them into the start symbol.  Bottom Up parsing is just as fast as LL(1) parsing, and also doesn't require a left-factored grammar.
-
-Imagine when you built the parse tree for top down parsing.  You started at the root note, and expanded it out over and over until you got to the leaves, leftmost first.  With bottom up parsing, instead imagine all of the leaves, unconnected.  Then connect them together, starting at the leftmost leaves, and doing this until you have created a root node and everything is connected to it.  Hit rewind and you get a rightmost derivation.  Well, not exactly rewind.  You're not erasing connections between nodes.  The reverse rightmost derivation analogy isn't that important, I don't think.
-
-Actually, when you imagine the string of terminals, start connecting them / reducing them downward.  Don't build up.  Then maybe the analogy will be more clear.
+***
 
 `Shift Reduce Parsing`
 
-A kind of bottom up parsing.  Say that `aBw` is what we currently have in our parse.  Now assume `X->B` is the next step.  Remember that this means we will replace `aBw` with `aXw`, since it's a bottom up parse and we're going in the reverse direction we normally would.  Anyway, assuming `X->B` is next, then we know `w` must be a string of terminals, with no non-terminals in it.  This is because we're going left to right.  If someting is on the right of what we are currently working on, we haven't touched it yet.  So we haven't touched any of `w` yet, which means it's a bunch of terminals.
+There are a few techniques for parsing, but we're only going to learn about shift reduce parsing since that's the kind of parser that Bison generates.
 
-So knowing that everything to the right of our rightmost non-terminal is a bunch of terminals, we are going to separate our string thing into 2 parts with a |, like so:  `aX|w`.  Everything to the left we have seen so far, and is composed of terminals and non-terminals, and everything to the right we have not seen yet, and is composed only of terminals.  
+SR parsers look through the tokens 1 at a time.  An SR parser keeps a stack of `items`.  Each item either a terminal (token) or non-terminal.  At each step of parsing, we do 1 of 2 things:  
 
-Shift reduce parsing gets its name because it only has 2 possible actions:  shifting and reducing.  We've already seen reduce moves:
+1 We could take a token from the token stream and put it on our item stack.  This is called a `shift`.
 
-	aB|w -> aX|w
+2 We could use a production rule to combine multiple stack items into a single item.  This is a `reduce`.  Every time we reduce, we add a new node to our parse tree.
+
+An SR parser shifts and reduces over and over until it can't shift or reduce anymore.  If there is no more input, and the only item on our stack is the start symbol, we have successfully created a parse tree.
+
+Exactly how the SR parser decides whether to shift or reduce will remain mysterious for now.  Just know that sometimes the parser could either shift or reduce, and it always chooses the 'right' one to do.
+
+Below is an SR parsing example.  In our example grammar, T and E are non-terminals, and int, *, and + are terminals (tokens).  Our example input to the parser is 'int * int + int'.  The vertical bar character | is used show where we are in our parse.  For instance, 'int * int | + int' means that our parser has looked at the 3 tokens 'int * int' and has put them on the item stack.  The parser has not yet looked at '+ int', and it has not yet reduced anything.  Whenever a shift move occurs, we put another token onto our stack, and move the | over by 1.  When we do a reduce move, some things to the left of the | will be changed, and we won't look at another token of input for that step.
+
+<details>
+<summary>
+Reductions seem backwards.  If Production 1:  T -> int has the arrow going from T to int, why are we turning ints into Ts?
+</summary>
+
+To answer this question, I have to explain some history.  The first parsers did not use the shift reduce algorithm.  They instead used `recursive descent`.  Rather than taking tokens and combining them into non-terminals, they started at the start symbol non-terminal, and broke up the start symbol into its child terminals and non-terminals.  For example, it would start at E, and break that up into T using production 4.  Sometimes (most of the time) it would choose the wrong production.  So it would have to undo all of its work and break E up into T + E using production 5.
+
+Since recursive descent parsers came first, backus nar form has the arrows going from non-terminals to the parts that you break it up into.
+
+Recursive descent parsing is slow.  It can be sped up by using special kinds of CFGs, called LL(k) grammars.  If you use an LL(k) grammar, recursive descent is as fast as shift reduce.  However, LL(k) grammars are annoying to create.
+
+Interestingly, GCC and Clang (the two most popular C/C++ compilers) both use hand-coded recursive descent compilers.  They don't use bison, and they don't use shift reduce.  Supposedly it's easier to maintain your code if you do everything by hand.  But there are other languages like Ruby that do use parser generators like Bison.  Right now, I would recommend using a parser generator like Bison.  It's much less work.  C/C++ have to use hand-written because they're bloated from years of committees of people piling on features that were always conflicting with eachother.  It's a giant mess. 
+</details>
+
+<details><summary>Why does the parse tree end with a bunch of non-terminal symbols on it?  I thought it was supposed to only have terminal symbols.</summary>
+You are correct.  After we create the parse tree, we will remove all of the nonterminal symbols.  Exactly how we do this will come after we learn how the parser decides whether to shift or reduce. 
+</details>
+
+	Production 1:  T -> int
+	Production 2:  T -> int * T
+	Production 3:  T -> (E)
+	Production 4:  E -> T
+	Production 5:  E -> T + E
 	
-We haven't seen shift moves yet.  A shift move is simply reading the next 1 token of input:
+<a class="prev" onclick="plusSlidesSLIDESHOWNAME(-1)">&#10094;</a>
+<a class="next" onclick="plusSlidesSLIDESHOWNAME(1)">&#10095;</a>
 
-	aX|w -> aXw|
-	
-Note that in this example, w is a single terminal, though in previous examples it was multiple terminals.
+<div class="mySlidesSLIDESHOWNAME">
+  <div>1 / 11</div>
+  <pre>
+  | int * int + int
+  </pre>
+  <pre>
+  Parsing begins
+  </pre>
+  <img src="pics/shiftreduce1.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>2 / 11</div>
+  <pre>
+  int | * int + int
+  </pre>
+  <pre>
+  Shift
+  </pre>
+  <img src="pics/shiftreduce1.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>3 / 11</div>
+  <pre>
+  int * | int + int
+  </pre>
+  <pre>
+  Shift
+  </pre>
+  <img src="pics/shiftreduce1.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>4 / 11</div>
+  <pre>
+  int * int | + int
+  </pre>
+  <pre>
+  Shift
+  </pre>
+  <img src="pics/shiftreduce1.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>5 / 11</div>
+  <pre>
+  int * T | + int
+  </pre>
+  <pre>
+  Reduce by Production 1:  T -> int
+  </pre>
+  <img src="pics/shiftreduce2.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>6 / 11</div>
+  <pre>
+  T | + int
+  </pre>
+  <pre>
+  Reduce by Production 2:  T -> int * T
+  </pre>
+  <img src="pics/shiftreduce3.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>7 / 11</div>
+  <pre>
+  T + | int
+  </pre>
+  <pre>
+  Shift
+  </pre>
+  <img src="pics/shiftreduce3.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>8 / 11</div>
+  <pre>
+  T + int |
+  </pre>
+  <pre>
+  Shift
+  </pre>
+  <img src="pics/shiftreduce3.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>9 / 11</div>
+  <pre>
+  T + T |
+  </pre>
+  <pre>
+  Reduce by Production 1:  T -> int
+  </pre>
+  <img src="pics/shiftreduce4.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>10 / 11</div>
+  <pre>
+  T + E |
+  </pre>
+  <pre>
+  Reduce by Production 4:  E -> T
+  </pre>
+  <img src="pics/shiftreduce5.png">
+</div>
+
+<div class="mySlidesSLIDESHOWNAME">
+  <div>11 / 11</div>
+  <pre>
+  E |
+  </pre>
+  <pre>
+  Reduce by Production 5:  E -> T + E
+  </pre>
+  <img src="pics/shiftreduce6.png">
+</div>
+
+<script>
+var slideIndex = 1;
+showSlidesSLIDESHOWNAME(slideIndex);
+
+function plusSlidesSLIDESHOWNAME(n) {
+  showSlidesSLIDESHOWNAME(slideIndex += n);
+}
+
+function showSlidesSLIDESHOWNAME(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlidesSLIDESHOWNAME");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  slides[slideIndex-1].style.display = "block";
+}
+</script>
+
+Now we are going to learn how the parser decides whether to shift or reduce.
+
+The parser looks at the item on top of its stack, (the item immediately to the left of the |), then looks at the next token in the input (the token immediately to the right of the |).  Note that the token stays on the right of the |; it doesn't get shifted.  It then uses the item and token it just looked at to do a look up in a `parsing table`.  A parsing table has an entry for every possible item + token combo.  Each entry in the table tells the parser whether to shift, reduce, stop parsing, or throw an error.
+
+Here is the parsing table for the above example.  Step through the example again, this time noting how the parser uses the table to create the parse tree.
+
+You have a current state.  Your next state is determined by the next token, and your current state.  You do a lookup in the action table.  
+
+it tells you to s3, which means shift and go to state 3.
+
+now we have (c, 3) on the stack.  d is next.  look up d, 3, and get s4.
+
+now we have (0 ?) (c 3) (d 4) on the stack.  d is next.  look up d, 4, and get r_3.  This means reduce by production 3.  For shifts, the number refers to the next state.  For reduces, the number refers to the production to reduce by.
+
+now we have (0 ?) (c 3) (C ?)   Then for some reason you're back in state 3.  When you reduce, you have a (non-terminal, ?) on the stack.  You look at (?, state) (non-terminal, ?), pop 2 things off the stack.  Combine (state, non-terminal).  Do a look up there.  put state back on the stack.  put non-terminal back on the stack.  The look up will give you new_state.  Put that on the stack.  In other words, the ? in (non-terminal, ?) is determined by a lookup in the goto table of (state, non-terminal).  Then you do another look up.  You do this because a reduction corresponds to you 'backtracking' in the NFA.  When you combine a bunch of stuff from the stack, you don't immediately put it back on the stack.  You look at the state you're currently in.
+
+Oh, it's because you need to 'remember' where you were previously.  It's that thing that's an SLR improvement.  
+
+You're probably going to need to explain this stuff starting from the beginning.  But really.  This needs a simpler explanation than what they give.
+
+Figure out the terminology of each different parser.  How exactly are they different?  What languages does each generate?  What are the limitations on the grammars?  What can be automatically converted to what?  What are the differences in number of states, speed, etc?
 
 
-	E -> T + E | T
-	T -> int * T | int | (E)
 
-example:
-	
-	|int*int+int
-	int|*int+int
-	T|*int+int //MISTAKE
-	
-You shouldn't reduce to T because `T * int` doesn't exist in this grammar, meaning that if you make that last reduction, you'll never get back to the start symbol.  If instead you did:
-
-	|int*int+int
-	int|*int+int
-	int*|int+int
-	int*int|+int
-	int*T|+int
-	
-That would be fine, because `int*T` is in the grammar, and can be further reduced.  So just because you _can_ make a reduction doesn't mean you _should_.  But how do you know when to reduce and when to shift?
-
-When you reduce, that's when you put stuff together in your tree.  When you shift, you add a new token to the bottom of the tree.
-
-What about the first 2 productions of T?  If those are both in a dfa state, and you transition and consume an int, what goes on the stack?  Is that a shift reduce conflict?  Yes, it is.  This is when you look in the follow of T.  If the next thing is in the follow of T, put the reduce on the stack.  If the next thing is the first thing to the right of your . in the item, put the shift on the stack.  
-
-
-
+8-01 Handles
+Reduce when you know that you have an entire right hand side on top of your stack.
+Pop the entire right hand side off the stack, push the left hand side onto the stack.
 
 `Handles`
-A handle is a prefix of a string that is safe to reduce.  So in the previous example, we encounter our first handle at `int*int|+int`, where the second `int` is the handle.  
+A handle is a prefix / reduction of a string that can be reduced to the start symbol.  Different productions are handles at different times.
 
-`Recognizing handles`
-On most CFG's, there's no efficient algorithm for recognization.  However, just like with predictive parsing, there are certain subsets of CFG's that make it simple.
+	Location 1:  int | * int + int
+	Location 2:  int * int | + int
+	
+Here, T->int is a handle when we are at location 2, but not at location 1.  A handle just means 'the right reduction to use right now'.
 
-A viable prefix is on the left of a |.  
-A viable prefix is a prefix of THE handle.(?)  
-If there's at least 1 viable prefix, there's no parsing error.
-Just a name, not super deep.
+`Viable prefix`
+if we have a|w during a parse, then a is a viable prefix.  a couldn't possibly be invalid because then we would have stopped parsing.  The viable prefix is a prefix of the next handle we're going to use.
 
-Important:  the set of viable prefixes is a regular language.
+There can be multiple viable prefixes on the stack.  The topmost prefix is going to be reduced by the current handle.  The second topmost prefix is going to be reduced by the handle that comes after that.
 
-insert circle graph thing here with LR grammars. 
+I have no idea why they're naming these things.
 
-Handle
-Prefix (is he actually talking about viable prefixes?)
-viable prefix
-item
-stack of prefixes
+For any grammar, the set of viable prefixes is a regular language.  Now we're going to show this.
+
+The stack will be full of prefixes.  if we have P_1 P_2 on the stack, we know we're going to reduce P_2 before P_1.  We also know that since P_1 is a prefix, there are some missing parts after it.  We also know that if those missing parts are a string, P_2 is a prefix of that string.  So X -> P_1 ABC..., and A->P_2....
+
+If we have P_1 P_2 P_3 on the stack then P_3 is a prefix of the missing part of P_2, and P_2 is a prefix of the missing part of P_1.  So P_2 concatenated with P_3 is also a prefix of P_1.  There's an inductive proof here.  So if X->P_1 (missing part), then X->P_1 P_2 (smaller missing part), and X-> P_1 P_2 P_3 (even smaller missing part).
+
+This is because whenever you start ANYTHING in a context-free grammar, it ends before its enclosing thing ends.
+
+	Statement(expresion)
+	
+we know that this expression (which we'll call P_2), must end before the statement (which we'll call P_1).  It's LIFO.  Last in first out.  Or in this case, last started first finished.  
+
+So now the algorithm.
+
+NFA states are the `items` of the grammar.  So take each production, and do a dot thing at each character.
+The NFA will always start at the bottom of the stack and work its way up to the top of the stack.  It will then say 'yes, this is a viable prefix, keep going', or it will say 'no, this is not a viable prefix, error out.'
+
+So the purpose of the NFA is to test for validity.  Then it tells you whether to shift or reduce.
+
+You transition states based on what is on the stack, not what is next in the input.(?). I think this is true for now, you'll have to augment this later with SLR parsing.
+
+You know how in an NFA, you go to a state, and you are immediately in all the states that you can get to from an epsilon transition, right?  Don't discount the states that aren't on the end of the 'epsilon slide'.  Consider a state that has an epsilon transition and a non-epsilon transition.  It's still in that state, as well as all the child states.
+
+In the NFA, if you're in a state like E->T., then its time to reduce.  This means that you have successfully found a handle.
+
+Also you were wondering 'won't S'->.E never take the E transition to S'->E.?'  It will, eventually.  Remember the NFA starts over at each shift/reduce, starting from the start symbol all over again.
+
+
+
 
 algorithm is stack nfa, nfa->dfa, dfa is table driven.  We leave it as an nfa because it's simpler to write.
 Uses items for each state, I think.  The stack is a sequence of partial right-hand sides.
@@ -855,6 +578,62 @@ If you are in state i, and terminal a is the first thing to the right of the |, 
 So you combine the goto and action tables together, putting the tuple <a, j> onto the stack.
 
 3:42 of SLR improvements has the whole algorithm.
+
+#Misc
+
+http://trevorjim.com/python-is-not-context-free/
+
+<details><summary>TODO</summary>
+Figure out how to concisely explain epsilon, and where.  Probably in the lexer phase.
+
+put your goats mustache example up at the very top.  Then at each stage, use that example to give them a sense of what this stage of the compiler does.  Also add these in:
+optimization:  this stage is optional.  Makes code easier for computer to execute.  'I must proceed at high velocity' becomes 'Gotta go fast'.
+code generation:  'Gotta go fast' becomes '010100100101001010010101001' (but make it accurate).  
+
+Here are some things context free grammars can't do.  If a grammar is like this, it's context sensitive.
+But we can just do some quick hacks like this and pretend that our grammar is still context free.
+It's important to keep our grammars as close to context free as we can, since they can be parsed in O(n) time.  Context sensitive takes O(n^2) time.  So technically the grammars we make here take O(n^2) time, but just for a few operations, so in practice our parser and lexer will seem like it only takes O(n) time.
+
+I feel like if you explain simply why LL(k) grammars don't matter, and more generally why you only ever need 1 token of lookahead, then all the rest of this stuff should fall into place.  Just simply explain why 1 token of lookahead should be all that is necessary.  Then, once you understand that only 1 token of lookahead is ever needed, explain why that's not entirely true, and that you USUALLY only ever need 1 token of lookahead.  GLR parsers USUALLY only look ahead 1 token.  And cut down on the definitions.
+Once you compare all of these definitions and really hone in on what this stuff is, you should be able to figure out the perfect tools and implementation for your grammar.
+
+Give a really quick overview of the parts of a compiler.  Lexer, parser, semantic analyzer, code generation.
+Explain that assembly is binary.  Recall your 61C project where you made a processor that ran on binary.
+
+explain regex and automata.  "in your head, you separate the tokens like this:  (for) (x) (in) ... but for all the computer knows the tokens should be separated like this: (f) (or x) (i)(n) ..."
+
+Need good image manipulation software.  Much easier than the slideshow you made.
+
+explain recursive descent
+
+recursive descent algorithm limitation (logical or shortcircuitting)
+
+left recursion
+
+left factoring
+
+first and follow sets
+
+Consider trying to figure out some kind of step-by-step for certain things.  Like examples.  Consider the follow set example.
+
+Oh, the first and follow set examples:  maybe give them the way to do it by hand?  No need to show them the computer code to do it.
+
+Shift reduce parsing takes n time without needing to do all that grammar shifting around that recursive descent needs.  
+
+https://stackoverflow.com/questions/3922699/what-is-the-runtime-difference-between-different-parsing-algorithms
+
+Above link is interesting.  Very strange as well.  But ugh.  There's just so much.  I feel like conceptual simplicity matters the most.  Which means you should use a lexer and parser generator.  Bison uses shift reduce, so you should learn shift reduce.
+
+Is there a specific name for the kinds of things a regular grammar can't accomplish?  Like it can't accomplish infinitely recursive structures, or it can't do infinite nesting, or it can't do uncountably infinite sets, or it can't do non-modulo sets, or something.  Just give a name to it.  As of now, it's hard to figure out whether you can write something as a regular expression or not.  You have to use the pumping lemma, I think.  Maybe explain that simply.  Would actually be useful.  'Can I write this as a regular expression'?  If yes, fantastic, an easy win.  If not, oh well, at least you didn't waste a bunch of time trying to think of a way to do it.
+
+https://cs.stackexchange.com/questions/51189/ambiguity-vs-context-sensitivity
+https://en.wikipedia.org/wiki/Ambiguous_grammar
+https://stackoverflow.com/questions/14589346/is-c-context-free-or-context-sensitive
+
+put the drop downs into > format.  Easier to keep it separate from the rest of the text.
+
+
+</details>
 
 
 
