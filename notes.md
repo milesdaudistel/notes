@@ -625,6 +625,14 @@ When programs are compiled, linked, run, etc, how do they do various things like
 
 To write Hello World in C, the first thing you do is `#include <stdio.h>`.  How does the compiler know where stdio.h is?  It looks for the PATH variable in the environment list.  The PATH variable specifies where to find all your standard libraries.  On MacOS, the PATH variable is usually contained in `~/.bash_profile`.
 
+#Bash and Unix
+
+Useful cheat sheet for any basic bash scripting stuff:  https://devhints.io/bash
+
+`command prompt` If you have a dollar sign at the end of your command prompt, you're a normal user.  If it's a pound sign, you're admin.
+
+`sudo <command>` there are certain things you can't do with this, like cd'ing into a file that requires admin permissions.  sudo makes you admin, does the command, then makes you a regular user again.  So if you sudo into a folder that requires admin permissions, you just get booted back out.  Use sudo su instead.  Don't know why, but su prompts for password, but sudo su doesn't.
+
 `Unix file system`
 
 `/` is the root directory.  It contains all other files in your system.
@@ -654,45 +662,45 @@ ctl stands for control.  systemctl controls systemd, allowing you do do various 
 `journalctl`
 journalctl -fu api -o json | jq.  What is this?
 
+`help <bash command>` help is for bash commands only.
+
+`man <something>` more general than help.  short for manuel.
+
+`info <something>` works mostly on GNU stuff.  Try man first.
+
+`set` bash command that lets you set shell variables.  Doesn't seem useful on its own.  More useful with options
+>`-e` exit immediately if a command exits with non-zero status.
+
 #Git
 Git is version control software.  When you make a project, whether it's code or an essay or a painting, you start with nothing, and gradually make changes until you get a final product.  You add changes, you remove changes, you start over, etc.  Without version control, all you have is the current version of your project.  There's no way to see the history of your project; what it looked like yesterday, a week ago, whatever.  With git, you can do this.  You can also split a project into 2 different projects and track both of them at the same time.  
 
-http://www.graphviz.org/
-
-try this for your node examples.
-
-
 `HEAD` is the current commit you're on.
 
-`detached HEAD`
-  If you check out a commit that isn't a leaf node in the git tree, 
-what is a detached head
+`detached HEAD` If you check out a commit that isn't a leaf node in the git tree, you are in a detached HEAD state.  You won't be able to change anything, because that will be changing history.  If you want to change things based on an old commit, create a new branch off of that commit.
 
-`remote`
+`git remote` This is where you push all of your changes so that other people can get them.
 
-`origin`
+`origin` The default name for your remote repository.
 
-`add`
+`git add <file name>` Put something in your 'staging area'.  Means that you want to add it to the picture of your work.
 
-`rm`
+`git rm <file name>` Delete something from your repo.  Deleting a file regularly will confuse git as from git's perspective the file magically disappeared.
 
-`commit`
+`commit` Create a new snapshot of your work.
+>`--amend` Allows you to put your added changes into your last commit, rather than creating a new one.  Useful when you forgot to change just 1 line, and don't want to make your commit history worse by adding an entirely new commit that only contains 1 line.
 
 `clone`
 
 `https vs ssh`
 
-`merge` fuse 2 branches together.
+`merge <branch name>` Mash <branch name> into your branch.  If the same line has been edited on both branches, results in a merge conflict.  Have to go to the file and choose how it should look, 'resolving' the conflict.
 
-do deletions get automerged?
+`rebase <branch name>` Very similar to a merge, but cleaner history.  Rather than merging in <branch name>, you snap off your entire branch and place it on the end of <branch name>.  So it's like you didn't do anything until <branch name>'s latest commit.  Maybe a picture would help here.
 
-what happens if you're behind, and you push without pulling first?
+`git tag` 'tags' your commit as being special.  Usually used for stable releases.  I wouldn't worry about this too much right now.
 
-`rebase` snap off your branch and stick it on the end of another branch.
-
-`tag`
-
-`stash`
+`git stash` for when want to save changes, but you're not sure if you want to keep them yet.  Maybe you're halfway through some experimental code that you haven't tested yet.  Don't want to commit it, so you can do git stash.  Note that this will put all the changes into a 'stash' and your working repo will go back to your last commit.  Also git automatically throws away old stashes.  It holds them somewhere between a week and a month.
+>`git stash apply` reapply what you just stashed.
 
 `squashing`
 
@@ -1244,6 +1252,8 @@ In react:
 	}
 	
 </details>
+
+`context` If you have a lot of props and a really big component tree, it can be annoying to continually pass down props from one level to the next.  If there's stuff that every single thing in the component tree should have (like a UI theme), put it in the context.  Then all the children can access it without you having to explicity pass it.
 
 #Chrome Devtools
 
