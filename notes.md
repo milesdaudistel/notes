@@ -594,6 +594,14 @@ Canonical and Red Hat certify which laptops can run Linux.  Pretty much all Thin
 Some kinds of Linux adhere to the free software spirit, which people like.  Others have a pretty desktop environment.  If you want to know whether switching from MacOS to Linux will make you a better programmer, it won't.  However, switching from Windows might be a better experience.  Empirically, I've found Unix based systems to be easier to develop on, as most common development software like GCC and Clang work out of the box on those.  However, Windows would require Cygwin in order to run that software.  Installing more software is never fun.
 </details>
 
+`What is the difference between all of these Linux flavors?` That's difficult to say.  Instead of actually telling you the differences, I'll say that for the vast majority of users, the difference is so small that it doesn't matter in the slightest.  The real question that you want to ask is "which Linux distro should I choose?"  To that, I would say you should choose the distro that will give you the fewest headaches.  Here's an article that talks about which distros are the most popular:
+
+https://www.zdnet.com/article/whats-the-most-popular-linux-of-them-all/
+
+While this may not seem to relate directly to a comparison between linux distros, notice that based on Google Analytics, Ubuntu is by far the most searched for out of all linux flavors besides Android.  If you ever run into a problem with linux, most of the answers on the web will be solutions specifically for Ubuntu.
+
+Now consider that most people use Ubuntu for their servers.  Ubuntu is the most popular according to Amazon AWS.  You should just use what will work.  Wait.  Ubuntu isn't open source.  Uh oh.
+
 <details>
 <summary>Virtual Machine</summary>
 Your computer has an operating system, probably either Windows, MacOS, or Linux.  Within your operating system, you can use software like virtualbox to run another, different operating system inside of your current one.  So you can run Linux in Windows, Windows in MacOS, etc.  Useful if you need some functionality of both operating systems.
@@ -653,15 +661,6 @@ http://lists.busybox.net/pipermail/busybox/2010-December/074114.html
 
 `/usr/local` everything here is for your 'local' user.  None of it is managed by a package manager.  You might want this for something like, I don't know, game files, photoshop, stuff like that?  Just stuff you don't want your package manager updating and potentially breaking.
 
-`systemd` This is the first process when you boot your OS.  It boots and monitors all userspace processes.
-
-`systemctl`
-ctl stands for control.  systemctl controls systemd, allowing you do do various things.
->`list-unit-files` lists all the services that systemd has available to run.
-
-`journalctl`
-journalctl -fu api -o json | jq.  What is this?
-
 `help <bash command>` help is for bash commands only.
 
 `man <something>` more general than help.  short for manuel.
@@ -670,6 +669,25 @@ journalctl -fu api -o json | jq.  What is this?
 
 `set` bash command that lets you set shell variables.  Doesn't seem useful on its own.  More useful with options
 >`-e` exit immediately if a command exits with non-zero status.
+
+`top` shows you the current processes running on your computer.  The unix version of control panel.  The most important columns are the ones labeled:  PID, USER, CPU, MEM, COMMAND.  PID is unique to each process.  It's the processes 'real' name.  USER is who is running that process.  Most will be root user, since root has to run a lot of stuff.  CPU is how many clock cycles the process takes up, MEM is how much RAM it takes, and COMMAND is a more 'user friendly' name.  If you have 2 web browsers running at the same time, say firefox, their COMMAND will both be something like 'firefox', but their PIDs will be unique, so you can differentiate between them.  There's also stuff like PR which is 'priority'.  Higher priority means the computer will spend longer on that task before switching.  NI stands for 'nice', which is related to priority.  Its kind of an optional priority modifier.  If your process is nice, that means it will yield if asked.  This might not be entirely correct.  Need more info on nice value.  There's also S.  Not sure what it stands for, but if the value is S, the process is asleep and not doing anything.  R means the process is running.  There's some other stuff I don't care about.
+
+`kill <pid>` if you see a process in top that you want dead, you can kill it by specifying its pid with this command.
+
+`pkill <name>` can also kill a process by using the value under COMMAND in top.
+
+`systemd` This is the first process when you boot your OS.  It boots and monitors all userspace processes.
+
+`systemctl`
+ctl stands for control.  systemctl controls systemd, allowing you do do various things.
+>`systemctl list-unit-files` lists all the services that systemd has available to run.
+>
+>`systemctl stop <process name>` stops user processes.  If you kill / pkill certain processes, systemd may start up another instance of it.
+
+`journalctl`
+journalctl -fu api -o json | jq.  What is this?
+
+`daemon` what is the difference between a daemon and a process running as root?
 
 #Git
 Git is version control software.  When you make a project, whether it's code or an essay or a painting, you start with nothing, and gradually make changes until you get a final product.  You add changes, you remove changes, you start over, etc.  Without version control, all you have is the current version of your project.  There's no way to see the history of your project; what it looked like yesterday, a week ago, whatever.  With git, you can do this.  You can also split a project into 2 different projects and track both of them at the same time.  
