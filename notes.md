@@ -324,6 +324,8 @@ c) paginate the request, giving them a little bit of what they asked for (say a 
 
 Guess which one is best?
 
+`API` stands for application programming interface.  If you use a library, say numpy, the functions of the library that you call are part of the API.  The functions that are potentially called in the background (as in not called by you) are not part of the API.  If you make a phone app that potentially uses the camera, you shouldn't have to write any functions that would open up the camera app.  Instead, the camera app should have an api that will allow you to just call it from within your own app.  In terms of web servers and services, an API is the part of that service that receives/reads requests and sends responses.
+
 #Databases
 
 <details><summary>Table</summary>
@@ -684,10 +686,12 @@ ctl stands for control.  systemctl controls systemd, allowing you do do various 
 >
 >`systemctl stop <process name>` stops user processes.  If you kill / pkill certain processes, systemd may start up another instance of it.
 
-`journalctl`
-journalctl -fu api -o json | jq.  What is this?
+`journalctl` systemd logs things in a journal, and journalctl can be used to see those logs, oldest to newest.
+>`-f` option stands for follow.  Will let you see the log as it is being written to.
+>
+>`-u <pattern>` show only the journal entries for units that match the pattern.  I'm pretty sure a unit is just a single entry/line in the journal.
 
-`daemon` what is the difference between a daemon and a process running as root?
+`daemon` A background process that the user doesn't interact with.  Mostly a Unix term, but applies pretty consistently to all of computing.
 
 #Git
 Git is version control software.  When you make a project, whether it's code or an essay or a painting, you start with nothing, and gradually make changes until you get a final product.  You add changes, you remove changes, you start over, etc.  Without version control, all you have is the current version of your project.  There's no way to see the history of your project; what it looked like yesterday, a week ago, whatever.  With git, you can do this.  You can also split a project into 2 different projects and track both of them at the same time.  
@@ -1279,11 +1283,13 @@ Opened in chrome by right clicking on a page then clicking inspect.
 
 `element`
 
-`console`
+`console` In javascript, if you type 'console.log(<whatever>), this is where that text will show up.  Used to get debugging information.
 
 `sources`
 
 `network`
+
+`browser cookie` A piece of text that a browser stores on your computer in a known location.  Can be anything from username/password to a session ID.  When you see a welcome message, you can click 'hide forever'.  Doing this will store a cookie in your browser containing the information 'don't show this user the welcome message' and the message element won't be displayed.
 
 #Misc
 https://notes.shichao.io/
