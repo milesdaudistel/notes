@@ -602,7 +602,7 @@ https://www.zdnet.com/article/whats-the-most-popular-linux-of-them-all/
 
 While this may not seem to relate directly to a comparison between linux distros, notice that based on Google Analytics, Ubuntu is by far the most searched for out of all linux flavors besides Android.  If you ever run into a problem with linux, most of the answers on the web will be solutions specifically for Ubuntu.
 
-Now consider that most people use Ubuntu for their servers.  Ubuntu is the most popular according to Amazon AWS.  You should just use what will work.  Wait.  Ubuntu isn't open source.  Uh oh.
+Now consider that most people use Ubuntu for their servers.  Ubuntu is the most popular according to Amazon AWS.  You should just use what will work.  Wait.  Ubuntu isn't open source.  Ouch.
 
 <details>
 <summary>Virtual Machine</summary>
@@ -641,7 +641,11 @@ Useful cheat sheet for any basic bash scripting stuff:  https://devhints.io/bash
 
 `command prompt` If you have a dollar sign at the end of your command prompt, you're a normal user.  If it's a pound sign, you're admin.
 
+`su <username>` stands for substitute user.  Can log into another user without logging out of your current session.  To get back to your original user, type either `exit` or Ctrl+d.  Don't su back into your original account, because then you'll have 2 substitutes.
+
 `sudo <command>` there are certain things you can't do with this, like cd'ing into a file that requires admin permissions.  sudo makes you admin, does the command, then makes you a regular user again.  So if you sudo into a folder that requires admin permissions, you just get booted back out.  Use sudo su instead.  Don't know why, but su prompts for password, but sudo su doesn't.
+
+Why does sudo su let me become root, but su root asks me for a password?
 
 `Unix file system`
 
