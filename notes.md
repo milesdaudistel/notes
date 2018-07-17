@@ -1323,6 +1323,32 @@ Opened in chrome by right clicking on a page then clicking inspect.
 
 `browser cookie` A piece of text that a browser stores on your computer in a known location.  Can be anything from username/password to a session ID.  When you see a welcome message, you can click 'hide forever'.  Doing this will store a cookie in your browser containing the information 'don't show this user the welcome message' and the message element won't be displayed.
 
+#Go
+
+`Packages` Every go file belongs to a package, which is just a collection of related files.  If you import a package, you'll be able to use the functions from that package that start with a capital letter.
+
+	//my_file1.go///////////////////////////////
+	package my_funcs
+	
+	func ftTocm(x int) int {
+		return x * 30.48;
+	}
+	
+<!-- tsk -->
+
+	//my_file2.go///////////////////////////////
+	package my_funcs
+	
+	import "fmt" 
+	
+	func GetHeightInCentimeters(x int) {
+		fmt.Println("Height in centimeters=", ;
+	}
+	
+Both of these files are in the my_funcs package.  GetHeightInCentimeters starts with a capital G, so its a public method; anyone who imports my\_funcs can call it.  ftTmcm starts with a lowercase f, so it is a private method.  A private method can only be called by files in my\_funcs.
+
+Someone else can import this package by stating import "my\_funcs", and they will be able to call GetHeightInCentimeters, but not ftTocm.  
+
 #Misc
 ![macshortcuts](pics/macshortcuts.png)
 
