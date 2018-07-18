@@ -667,6 +667,31 @@ http://lists.busybox.net/pipermail/busybox/2010-December/074114.html
 
 `/usr/local` everything here is for your 'local' user.  None of it is managed by a package manager.  You might want this for something like, I don't know, game files, photoshop, stuff like that?  Just stuff you don't want your package manager updating and potentially breaking.
 
+`Unix file permissions` typing `ls -l` in a terminal will give you the permissions of each file in your current directory.  There are 3 types of permissions:  you can read the file, you can write to the file, and you can execute (run) the file as a program.  Here is the general format of each line when you run ls -l:
+
+	drwxrwxrwx depth owner owners_group file_size modify_date file_name
+
+First part is the actual permissiosn.  The d means directory, r is read, w is write, x is execute.  The first rwx is for the owner/creator of the file, the second rwx is for the group.  Most users don't belong to a group.  The third rwx is for all users.
+
+Depth is how deep that folder subtree can go.
+
+Owner is the creator of the file.  Systen files will have the creator 'root'.
+
+Owners_group is the group that the owner belongs to.  It doesn't matter that much as far as I know.
+
+The last 3 parts should be self-explanatory.
+
+Here's an example of 2 typical lines:
+
+	-rw-r--r--     1 cool_user  staff     739 May 14 13:46 README.md
+	drw-------     3 root       staff      96 Jul  6 15:14 bin
+	
+Breaking this down, the first lines information is:  this is a file whose owner can read and write, and anyone else can only read.  Since it's a file and not a folder, it has directory level 1.  The user is cool_user, the group is staff, it is 739 bytes in size, it was last modified on May 14th at 1:36 pm, and the filename is README.md.
+
+The second line says: this is a directory, only the owner can read or write to it, and it has 3 sub-levels (2 subdirectories that contain files at maximum). 
+
+`symbolic link` Same thing as a desktop shortcut.  A file that is really just a pointer to another file.  If the original file gets deleted, the pointer will malfunction.
+
 `help <bash command>` help is for bash commands only.
 
 `man <something>` more general than help.  short for manuel.
@@ -703,6 +728,9 @@ Git is version control software.  When you make a project, whether it's code or 
 `HEAD` is the current commit you're on.
 
 `detached HEAD` If you check out a commit that isn't a leaf node in the git tree, you are in a detached HEAD state.  You won't be able to change anything, because that will be changing history.  If you want to change things based on an old commit, create a new branch off of that commit.
+
+`git branch <new name>` Creates a new branch off of HEAD named <new name>
+>`git branch -d <branch name>` deletes branch with name <branch name>
 
 `git remote` This is where you push all of your changes so that other people can get them.
 
@@ -1315,7 +1343,35 @@ For each rounded square block, look at the grid squares.  Each line of text in y
 
 If you can't make new shapes, try making a new layer and adding a shape.  Or try toggling some layers on and off.
 
+#Go
+
+`Packages` Every go file belongs to a package, which is just a collection of related files.  If you import a package, you'll be able to use the functions from that package that start with a capital letter.
+
+	//my_file1.go///////////////////////////////
+	package my_funcs
+	
+	func ftTocm(x int) int {
+		return x * 30.48;
+	}
+	
+<!-- tsk -->
+
+	//my_file2.go///////////////////////////////
+	package my_funcs
+	
+	import "fmt" 
+	
+	func GetHeightInCentimeters(x int) {
+		fmt.Println("Height in centimeters=", ;
+	}
+	
+Both of these files are in the my_funcs package.  GetHeightInCentimeters starts with a capital G, so its a public method; anyone who imports my\_funcs can call it.  ftTmcm starts with a lowercase f, so it is a private method.  A private method can only be called by files in my\_funcs.
+
+Someone else can import this package by stating import "my\_funcs", and they will be able to call GetHeightInCentimeters, but not ftTocm.  
+
 #Misc
+![macshortcuts](pics/macshortcuts.png)
+
 https://notes.shichao.io/
 
 check out this weebs notes.  not bad at all.
