@@ -492,22 +492,18 @@ For any grammar, the set of viable prefixes is a regular language.  Now we're go
 
 The stack will be full of prefixes.  if we have P_1 P_2 on the stack, we know we're going to reduce P_2 before P_1.  We also know that since P_1 is a prefix, there are some missing parts after it.  We also know that if those missing parts are a string, P_2 is a prefix of that string.  So X -> P_1 ABC..., and A->P_2....
 
-If we have P_1 P_2 P_3 on the stack then P_3 is a prefix of the missing part of P_2, and P_2 is a prefix of the missing part of P_1.  So P_2 concatenated with P_3 is also a prefix of P_1.  There's an inductive proof here.  So if X->P_1 (missing part), then X->P_1 P_2 (smaller missing part), and X-> P_1 P_2 P_3 (even smaller missing part).
+If we have P_1 P_2 P_3 on the stack then P_3 is a prefix of the missing part of P_2, and P_2 is a prefix of the missing part of P_1.  So P_2 concatenated with P_3 is also a prefix of P_1.  There's an inductive proof here.  So if X->P_1 (missing part), then X->* P_1 P_2 (smaller missing part), and X->* P_1 P_2 P_3 (even smaller missing part).  The ->* means 'in 1 or more steps', whereas -> means 'in 1 step.'
 
 This is because whenever you start ANYTHING in a context-free grammar, it ends before its enclosing thing ends.
 
 	Statement(expresion)
 	
-we know that this expression (which we'll call P_2), must end before the statement (which we'll call P_1).  It's LIFO.  Last in first out.  Or in this case, last started first finished.  
+we know that 'expression' (which we'll call P_2), must end before 'statement' (which we'll call P_1).  It's LIFO.  Last in first out.  Or in this case, last started first finished.  
 
 So now the algorithm.
 
 NFA states are the `items` of the grammar.  So take each production, and do a dot thing at each character.
-The NFA will always start at the bottom of the stack and work its way up to the top of the stack.  It will then say 'yes, this is a viable prefix, keep going', or it will say 'no, this is not a viable prefix, error out.'
-
-So the purpose of the NFA is to test for validity.  Then it tells you whether to shift or reduce.
-
-You transition states based on what is on the stack, not what is next in the input.(?). I think this is true for now, you'll have to augment this later with SLR parsing.
+At each step, the NFA starts at the start symbol, then reads the stack from bottom to top.  Each time it reads from the stack, it makes a state transition.  Since state transitions are from the stack, this means that each transition could be either a terminal or a non-terminal symbol.  If we get an item that results in an invalid transition, the NFA says 'false, this is not a valid program' or 'true, this is a valid program so far'.  Then you decide whether to shift or reduce, then run the stack through the NFA again.
 
 You know how in an NFA, you go to a state, and you are immediately in all the states that you can get to from an epsilon transition, right?  Don't discount the states that aren't on the end of the 'epsilon slide'.  Consider a state that has an epsilon transition and a non-epsilon transition.  It's still in that state, as well as all the child states.
 
@@ -515,20 +511,37 @@ In the NFA, if you're in a state like E->T., then its time to reduce.  This mean
 
 Also you were wondering 'won't S'->.E never take the E transition to S'->E.?'  It will, eventually.  Remember the NFA starts over at each shift/reduce, starting from the start symbol all over again.
 
+In the DFA, the transitions are 'ok, we're in this state, what items could potentially be on top of the stack?'  Then depending on what actually is on top of the stack, you take a different transition.  Each state is a list of what you could _potentially_ reduce to next, based on the last few things on the stack ('last few' can be different depending on which item you're looking at.)
+
+Another random note:  If a state has an item like 'T->(E).' and only a reduce item like that, it will have no transitions out.  The DFA is done when it realizes there is a reduction.  If there's a reduce item along with other items, we need the SLR parsing fix.
+
+I think the start state will just be all the items where . is in the front.  So it'll basically be every possible production, each one starting with a '.' in the front.  Wait, it'll only be the ones that could potentially lead back to the start symbol.  Wait, every symbol at some point should potentially lead back to the start symbol.
+
+So at each state, we have a list of potential reductions that could be next.  We look at the bottom of the stack.  Now that we know the thing at the bottom of the stack, we move to a different state, since now we know that not all of the things we saw in the first state could be what is going to be reduced to next.  Let's say we see a T at the bottom of the stack.  Then we know that we're not going to reduce to an S' or a T.  Now that we've seen the T at the bottom, we know that next up we can only reduce using either E->T or E->T+E.  So this means we should have a state that contains those 2 things (in item form), and a T transition from the start state to that state.
 
 
 
-algorithm is stack nfa, nfa->dfa, dfa is table driven.  We leave it as an nfa because it's simpler to write.
-Uses items for each state, I think.  The stack is a sequence of partial right-hand sides.
+Ok, the way the DFA works is this:  at each state, the things contained by the state are saying the following:  we've just seen _____ on the stack, next we are expecting _____.  For this state, we just saw a (, and we are expecting either a completed E, or some prefix of an E, like a T.  Since one of the things we could expect is a T, we should also expect some part of a T, like a (, or an int.  Once we go through the entire stack, we end up in some final state.
 
-Maybe explicitly say that you're going to skip all the weird definitions and just show the algorithm.
+Wait, let's start over.  How does the parser know which production to use?  Well, you know to use a production / reduction if that reduction can be traced back to the start symbol.  So when we create the parser, what we are creating is basically a giant directed graph, starting from the start symbol, and going to all productions where appropriate.  Here's a parser that can parse our E, T grammar:
 
-For the NFA, notice there are states
-
-	E->.T
-	E->.T+E
+	insert graph here
 	
-Both of these are allowed, since we are in an NFA.  We simply say that we are in both states until proven otherwise.  If you wanted a DFA, you would do what you did before:  combine the common parts into 1 element.
+Here are what each part of this graph means:
+
+	insert explanations here
+	
+Here is how we use it:
+
+	insert example of graph usage on simple input
+	
+Here is how that graph was created:
+
+	Insert step by step construction of graph.  Should have a pretty detailed explanation for each step that requires it.
+	
+
+
+---------------Old stuff
 
 But wait, how are we doing this using NFA's?  I thought only regular expressions could be NFA's?  Need to explain the prefix thing.  How does that work?  We MUST be leaving something out.  Try the nested parens example again.  Hm...the nfa is based on the stack, and the stack is implemented through your CFG.  So it's not your grammar that's being translated into an NFA, it's the grammar tree thing, I think.
 
@@ -632,6 +645,9 @@ https://stackoverflow.com/questions/14589346/is-c-context-free-or-context-sensit
 
 put the drop downs into > format.  Easier to keep it separate from the rest of the text.
 
+
+Layers: copy the whole thing or just do it incrementally?
+Definitely incrementally.  Imagine you had 1 node in layer 1.  Then you make 100 layers on top of it.  If you copy each layer, then change the position of node 1 in layer 100, none of the other layers get changed.  
 
 </details>
 

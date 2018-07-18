@@ -1295,6 +1295,26 @@ Opened in chrome by right clicking on a page then clicking inspect.
 
 `browser cookie` A piece of text that a browser stores on your computer in a known location.  Can be anything from username/password to a session ID.  When you see a welcome message, you can click 'hide forever'.  Doing this will store a cookie in your browser containing the information 'don't show this user the welcome message' and the message element won't be displayed.
 
+#Draw.io
+
+Create shapes by dragging them onto the paper.
+
+Layers can be seen on top of each other.
+
+You can connect things between different layers.
+
+You need some way to anchor shapes to other shapes.  This way, when you move 1 shape, the other shape moves as well.
+
+Nevermind, the node dependencies are just too much.  Just copy the layers.
+
+How to move cells from one layer to another?
+
+https://desk.draw.io/support/solutions/articles/16000042490-how-to-move-cells-from-one-layer-to-another-
+
+For each rounded square block, look at the grid squares.  Each line of text in your square bubble should get a big square on the background.  This sentence probably means very little.
+
+If you can't make new shapes, try making a new layer and adding a shape.  Or try toggling some layers on and off.
+
 #Misc
 https://notes.shichao.io/
 
