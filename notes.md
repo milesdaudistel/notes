@@ -5,6 +5,22 @@ You need money, right? Quick advice: invest in ETFs, put money into your 401k, t
 ![financechart](pics/financechart.jpg)
 </details>
 
+`Federal Taxes` below is a guide for how to do your federal taxes.  State taxes are a separate issue.
+
+https://www.artofmanliness.com/articles/taxes-for-beginners/
+
+`Tax Deductions` If you make 20k in total, and you write off your car repair costs (3k) as a tax deduction, you will only be taxed on 17k.  This is `itemized` tax deduction.  In order to do this, you need to keep the receipts.  Odds are you should just go with the `standard` tax deduction, which is 5.8k.
+
+`Tax Credit` For every dollar you pay towards X, you subtract that dollar from the dollars you have to pay to the US Government.  For stuff like paying back student loans.  Below is a link to the tax credits you might be eligible for.
+
+https://turbotax.intuit.com/tax-tips/tax-deductions-and-credits/the-5-biggest-tax-credits-you-might-qualify-for/L3o8qrNnC
+
+`Tax Refund`  Each paycheck you get, the government takes a portion of it immediately.  You don't get all of it, then every year the government asks for several thousand dollars.  Most (dumb or poor) people spend all their money as soon as they get it.  So everyone would be declaring bankruptcy all the time.  So the government has to guess how much money it should be taking from you.  Since you will be making 50 an hour 3 months out of the year, the government will probably be taking a much larger chunk of your money than you initially expected.  This is when you file for a tax refund.
+
+In other words, the government assumes certain things about your paycheck, and at the end of each year, you will correct their assumptions by showing that you actually made a lot less money than the government initially thought you did.
+
+`Mortgages and Housing` My current thoughts on saving for a house is that it is not worth doing for you specifically.  If you want maximum time to work on your projects, you can't be pre-occupied with saving for a house.  This is just the risk that you'll have to take if you want to be able to take on large projects like you want to.  I know it hurts to put money towards rent.  It feels like you're throwing that money away.  But compared to buying a house, it's not that much, at least in the short term.  And you can also live with other people.  Can't do that if you buy a house.  
+
 #Code Structures
 
 
