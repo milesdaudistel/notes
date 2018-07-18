@@ -700,6 +700,12 @@ The second line says: this is a directory, only the owner can read or write to i
 
 `info <something>` works mostly on GNU stuff.  Try man first.
 
+`find` command to search through file names.  Example:
+
+	find ./my_projects -name *.txt
+	
+This will search through the file tree rooted at 'my_projects'.  It will look for and return any file ending in '.txt'.
+
 `set` bash command that lets you set shell variables.  Doesn't seem useful on its own.  More useful with options
 >`-e` exit immediately if a command exits with non-zero status.
 
