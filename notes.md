@@ -635,6 +635,8 @@ When programs are compiled, linked, run, etc, how do they do various things like
 
 To write Hello World in C, the first thing you do is `#include <stdio.h>`.  How does the compiler know where stdio.h is?  It looks for the PATH variable in the environment list.  The PATH variable specifies where to find all your standard libraries.  On MacOS, the PATH variable is usually contained in `~/.bash_profile`.
 
+`CentOS`  completely free fork of RedHat.  Purely community backed.  Competes with Debian for use as server OS.
+
 #Bash and Unix
 
 Useful cheat sheet for any basic bash scripting stuff:  https://devhints.io/bash
@@ -1368,6 +1370,57 @@ If you can't make new shapes, try making a new layer and adding a shape.  Or try
 Both of these files are in the my_funcs package.  GetHeightInCentimeters starts with a capital G, so its a public method; anyone who imports my\_funcs can call it.  ftTmcm starts with a lowercase f, so it is a private method.  A private method can only be called by files in my\_funcs.
 
 Someone else can import this package by stating import "my\_funcs", and they will be able to call GetHeightInCentimeters, but not ftTocm.  
+
+#Security
+
+`rsa` For now, I'm not going to say much about RSA.  It's the thing with the big co-prime numbers.  You have a private key and a public key.  Someone can write you a message/file, use the public key to encrypt it, and send it to you.  The only way to decrypt the message is with the private key, which only you have.
+
+`ssh` An implementation of key security.  The names of your ssh key pairs default to `id_rsa` and `id_rsa.pub`.  You give out the id\_rsa.pub, and keep the id\_rsa to yourself.
+
+`ssh-keygen` Unix command to create a new ssh key pair.  Here's an example:
+
+	ssh-keygen -t rsa -b 4096 -C "used to connect my personal macbook to github.com"
+	
+-t stands for type, in this case rsa.  There are other encryption schemes you can use, like dsa and ecdsa.  I would stick with rsa.
+
+-b stands for bits.  4096 means your generated keys will be 4096 bits long.  More bits means more secure.  Fewer bits means smaller key.  Really you just make your key 'big enough'.
+
+-C stands for Comment.  This will put the characters between quotes at the end of your rsa keys.  Use a comment so that you know what each ssh key is used for.
+
+`Key ring / Keychain / ssh agent` When you make an ssh key, you can optionally give it a password.  Then whenever someone wants to use the private key, they need the password.  It's an extra layer of security.  You can keep your phassphrases in a keyring/chain/agent.  Otherwise, you'll need to enter your passphrase every time you use the ssh key.  The keychain is usually saved in the same folder as the keys.
+
+<details><summary>But if the passphrases are right next to the keys, how is that any more secure than no passphrase at all?</summary>
+
+If you accidently send your id\_rsa file to someone instead of your id\_rsa.pub file, or push it to github, or just in general your id\_rsa key gets out somehow, having a password associated with it will make it so that others still can't use it.  This will give you time to invalidate the key and create a new one.
+
+If a hacker actually has access to your computer, they can't use your keys unless they have execute access to your computer.  Most of the time, if a hacker gets into your computer, they usually only have read access.  If they have execute access, it's all over.  Your ssh keys being compromised are just one of many worries.
+
+</details>
+
+#Agile
+
+`Agile Development` A way to make software often used by large corporations.  There are different kinds of agile development.  The agile manifesto sums it up:
+
+	Individuals and interactions over processes and tools
+	Working software over comprehensive documentation
+	Customer collaboration over contract negotiation
+	Responding to change over following a plan
+
+The things on the left of the 'over' are more important than the things on the right.  This does NOT mean that you completely ignore what’s on the right.  It only means that you prioritize what’s on the left.
+
+You should also look into the principles behind the Agile Manifesto.  Maybe copy and paste it some other time.
+
+My personal thoughts are that agile development is good for companies, but is not something you want to follow when you’re making open source software on your own.  The first principle of agile development is “Our highest priority is to satisfy the customer through early and continuous delivery of valuable software.”  You don’t have a customer.  I mean, you do, but what’s important is that you have a language that is absolutely perfect in every way you can think of.  Agile is something you need to adhere to when developing software for a job.
+
+`Scrum` the most popular agile methodology.  Actually came before the term ‘agile’ was around.  A scrum team is 5-10 people with no leader.  They all talk to each other to decide how to solve problems.  There is also 1 ‘product owner’ who decides whether to accept incremental versions of the product.  They have a ‘backlog’ of stuff that they want in the product, and they decide the priority of each of those things.
+
+Scrum has a lot of keywords.  Here’s a list:  Product Owner, Scrum Master, Development Team, Scrum Events / Ceremonies, Sprint, Sprint Planning, Stand Up, Sprint Review, Retrospective, Scrum Artifacts, Product Backlog, Sprint Backlog, Increment, Scrum Rules.
+
+Sprints and standups are the only ones I hear at work, so I'll just define those. 
+
+`Sprint` designated coding time.  After the sprint is over, the work gets reviewed.  Usually somewhere between a week and 4 weeks.
+
+`Stand up` short meeting where everyone says what they’re doing for that day.
 
 #Misc
 ![macshortcuts](pics/macshortcuts.png)
