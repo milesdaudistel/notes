@@ -432,7 +432,7 @@ Useful cheat sheet for any basic bash scripting stuff:  https://devhints.io/bash
 
 `su <username>` stands for substitute user.  Can log into another user without logging out of your current session.  To get back to your original user, type either `exit` or Ctrl+d.  Don't su back into your original account, because then you'll have 2 substitutes.
 
-`sudo <command>` there are certain things you can't do with this, like cd'ing into a file that requires admin permissions.  sudo makes you admin, does the command, then makes you a regular user again.  So if you sudo into a folder that requires admin permissions, you just get booted back out.  Use sudo su instead.  Don't know why, but su prompts for password, but sudo su doesn't.
+`sudo <command>` Elevates your privileges for the single command.  There are certain things you can't do with this, like cd'ing into a file that requires admin permissions.  sudo would elevate your privileges, then cd you into the file, then makes you a regular user again.  Now that you're a regular user again, you don't have permission to be in that file, so you get kicked out again.  Use sudo su instead.  Don't know why, but su prompts for password, but sudo su doesn't.
 
 Why does sudo su let me become root, but su root asks me for a password?
 
@@ -540,7 +540,7 @@ Git is version control software.  When you make a project, whether it's code or 
 
 `clone`
 
-`https vs ssh`
+`https vs ssh` https is easier, ssh is more secure.  A hacker can more easily intercept your stuff over https than over ssh.  ssh isn't too difficult, so I would use that one.
 
 `merge <branch name>` Mash <branch name> into your branch.  If the same line has been edited on both branches, results in a merge conflict.  Have to go to the file and choose how it should look, 'resolving' the conflict.
 
@@ -549,9 +549,15 @@ Git is version control software.  When you make a project, whether it's code or 
 `git tag` 'tags' your commit as being special.  Usually used for stable releases.  I wouldn't worry about this too much right now.
 
 `git stash` for when want to save changes, but you're not sure if you want to keep them yet.  Maybe you're halfway through some experimental code that you haven't tested yet.  Don't want to commit it, so you can do git stash.  Note that this will put all the changes into a 'stash' and your working repo will go back to your last commit.  Also git automatically throws away old stashes.  It holds them somewhere between a week and a month.
->`git stash apply` reapply what you just stashed.
+>`git stash apply` reapply what you just stashed away.
 
 `squashing`
+
+`cherry pick`
+
+`diff`
+
+`autocompletion` can use tabs to have git guess what you're going to type.  Google it.
 
 
 
@@ -1225,9 +1231,3 @@ check out this weebs notes.  not bad at all.
 this is a record of you trying your best to learn.  even if it doesn't work out, at least you can say, with undenyable proof, that you tried.
 
 remember: learn top down, not bottom up.  what problem does this solve, how does it fit into the larger problem you're trying to solve, what are its keywords/components.
-
-Might want to retool your database stuff.  All those different examples could be turned into a slideshow.  A single example.  Don't make it a picture though.  Keeping it as text means its easier to modify.  Hm... keeping more things as text might be useful.  Maybe there's a way to do that with HTML for all your graphs.  
-
-su requires a password, which you don't have
-could do sudo su, then it doesn't require a password
-could also do sudo -i.  
