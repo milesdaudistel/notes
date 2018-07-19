@@ -344,9 +344,29 @@ Guess which one is best?
 
 #Databases
 
-<details><summary>Table</summary>
-A table stores data in rows and columns.  Each column is a type of data, and each row is a collection of that data.  Columns might be things like names, ages, jobs, etc.  Put these columns together and you have a table, where each row will give you the name, age, and job of a single person.
-</details>
+There are 2 types of databases:  relational (anything with SQL) and non-relational (NoSQL, like MongoDB).  The first section will talk about relational databases.
+
+`Tables` are the basic method of storing data.  Each `column` in the table is a type of data.  Here's an example of a table of cities:
+
+
+name      | population | area (km^2)
+---------------+---------+---------
+ Oakland  |      420k    |      201.7
+ San Francisco |      871k |      121.4
+ Barstow       |      24k |      107.2
+ 
+`Databases` are collections of related tables.  If the columns of 1 table are the rows of another table, those tables are related.  Here's a table that relates to the  city table:
+
+region         | cities
+---------------+---------
+ Bay Area       |     San Francisco, Oakland
+ Central Valley |      Sacramento, Chico
+ Desert       |      Barstow, Riverside
+ 
+ 
+This region table is related to the cities table because its second column contains some of the same data as column 1 of the cities table.  So if you want information on a region of california, you can look in the regions table.  Some of the stuff you find in the regions table can be used to look up further information in other tables.
+
+`SQL` is a programming language for finding and modifying data in a database.  It is made up of a very small number of operations, for example Create, Delete, and Select.  ISO and ANSI control the language specification, but don't actually implement any of it.  There is no implementation of SQL called 'SQL' that you can download.  The implementations that you can download include MySQL, PostgreSQL, and so on.  While each flavor of SQL has different functions, they all more or less implement the same basic components of SQL, 
 
 <details><summary>Database</summary>
 A database is just a bunch of tables put together.  Maybe you have a table containing information about neighborhoods.  There could be a column for street names, house addresses, and the people who live at each house.  Each of those people corresponds to a row in the previous example.
@@ -651,6 +671,8 @@ When programs are compiled, linked, run, etc, how do they do various things like
 
 To write Hello World in C, the first thing you do is `#include <stdio.h>`.  How does the compiler know where stdio.h is?  It looks for the PATH variable in the environment list.  The PATH variable specifies where to find all your standard libraries.  On MacOS, the PATH variable is usually contained in `~/.bash_profile`.
 
+`CentOS`  completely free fork of RedHat.  Purely community backed.  Competes with Debian for use as server OS.
+
 #Bash and Unix
 
 Useful cheat sheet for any basic bash scripting stuff:  https://devhints.io/bash
@@ -713,6 +735,12 @@ The second line says: this is a directory, only the owner can read or write to i
 `man <something>` more general than help.  short for manuel.
 
 `info <something>` works mostly on GNU stuff.  Try man first.
+
+`find` command to search through file names.  Example:
+
+	find ./my_projects -name *.txt
+	
+This will search through the file tree rooted at 'my_projects'.  It will look for and return any file ending in '.txt'.
 
 `set` bash command that lets you set shell variables.  Doesn't seem useful on its own.  More useful with options
 >`-e` exit immediately if a command exits with non-zero status.
@@ -1385,6 +1413,57 @@ Both of these files are in the my_funcs package.  GetHeightInCentimeters starts 
 
 Someone else can import this package by stating import "my\_funcs", and they will be able to call GetHeightInCentimeters, but not ftTocm.  
 
+#Security
+
+`rsa` For now, I'm not going to say much about RSA.  It's the thing with the big co-prime numbers.  You have a private key and a public key.  Someone can write you a message/file, use the public key to encrypt it, and send it to you.  The only way to decrypt the message is with the private key, which only you have.
+
+`ssh` An implementation of key security.  The names of your ssh key pairs default to `id_rsa` and `id_rsa.pub`.  You give out the id\_rsa.pub, and keep the id\_rsa to yourself.
+
+`ssh-keygen` Unix command to create a new ssh key pair.  Here's an example:
+
+	ssh-keygen -t rsa -b 4096 -C "used to connect my personal macbook to github.com"
+	
+-t stands for type, in this case rsa.  There are other encryption schemes you can use, like dsa and ecdsa.  I would stick with rsa.
+
+-b stands for bits.  4096 means your generated keys will be 4096 bits long.  More bits means more secure.  Fewer bits means smaller key.  Really you just make your key 'big enough'.
+
+-C stands for Comment.  This will put the characters between quotes at the end of your rsa keys.  Use a comment so that you know what each ssh key is used for.
+
+`Key ring / Keychain / ssh agent` When you make an ssh key, you can optionally give it a password.  Then whenever someone wants to use the private key, they need the password.  It's an extra layer of security.  You can keep your phassphrases in a keyring/chain/agent.  Otherwise, you'll need to enter your passphrase every time you use the ssh key.  The keychain is usually saved in the same folder as the keys.
+
+<details><summary>But if the passphrases are right next to the keys, how is that any more secure than no passphrase at all?</summary>
+
+If you accidently send your id\_rsa file to someone instead of your id\_rsa.pub file, or push it to github, or just in general your id\_rsa key gets out somehow, having a password associated with it will make it so that others still can't use it.  This will give you time to invalidate the key and create a new one.
+
+If a hacker actually has access to your computer, they can't use your keys unless they have execute access to your computer.  Most of the time, if a hacker gets into your computer, they usually only have read access.  If they have execute access, it's all over.  Your ssh keys being compromised are just one of many worries.
+
+</details>
+
+#Agile
+
+`Agile Development` A way to make software often used by large corporations.  There are different kinds of agile development.  The agile manifesto sums it up:
+
+	Individuals and interactions over processes and tools
+	Working software over comprehensive documentation
+	Customer collaboration over contract negotiation
+	Responding to change over following a plan
+
+The things on the left of the 'over' are more important than the things on the right.  This does NOT mean that you completely ignore what’s on the right.  It only means that you prioritize what’s on the left.
+
+You should also look into the principles behind the Agile Manifesto.  Maybe copy and paste it some other time.
+
+My personal thoughts are that agile development is good for companies, but is not something you want to follow when you’re making open source software on your own.  The first principle of agile development is “Our highest priority is to satisfy the customer through early and continuous delivery of valuable software.”  You don’t have a customer.  I mean, you do, but what’s important is that you have a language that is absolutely perfect in every way you can think of.  Agile is something you need to adhere to when developing software for a job.
+
+`Scrum` the most popular agile methodology.  Actually came before the term ‘agile’ was around.  A scrum team is 5-10 people with no leader.  They all talk to each other to decide how to solve problems.  There is also 1 ‘product owner’ who decides whether to accept incremental versions of the product.  They have a ‘backlog’ of stuff that they want in the product, and they decide the priority of each of those things.
+
+Scrum has a lot of keywords.  Here’s a list:  Product Owner, Scrum Master, Development Team, Scrum Events / Ceremonies, Sprint, Sprint Planning, Stand Up, Sprint Review, Retrospective, Scrum Artifacts, Product Backlog, Sprint Backlog, Increment, Scrum Rules.
+
+Sprints and standups are the only ones I hear at work, so I'll just define those. 
+
+`Sprint` designated coding time.  After the sprint is over, the work gets reviewed.  Usually somewhere between a week and 4 weeks.
+
+`Stand up` short meeting where everyone says what they’re doing for that day.
+
 #Misc
 ![macshortcuts](pics/macshortcuts.png)
 
@@ -1395,3 +1474,9 @@ check out this weebs notes.  not bad at all.
 this is a record of you trying your best to learn.  even if it doesn't work out, at least you can say, with undenyable proof, that you tried.
 
 remember: learn top down, not bottom up.  what problem does this solve, how does it fit into the larger problem you're trying to solve, what are its keywords/components.
+
+Might want to retool your database stuff.  All those different examples could be turned into a slideshow.  A single example.  Don't make it a picture though.  Keeping it as text means its easier to modify.  Hm... keeping more things as text might be useful.  Maybe there's a way to do that with HTML for all your graphs.  
+
+su requires a password, which you don't have
+could do sudo su, then it doesn't require a password
+could also do sudo -i.  
