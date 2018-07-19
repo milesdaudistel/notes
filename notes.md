@@ -23,8 +23,6 @@ In other words, the government assumes certain things about your paycheck, and a
 
 #Code Structures
 
-
-
 <details><summary>Interface</summary>
 
 Languages like Java and Go, and C++ all have very similar but not identical concepts called interfaces.
@@ -389,7 +387,7 @@ https://www.zdnet.com/article/whats-the-most-popular-linux-of-them-all/
 
 While this may not seem to relate directly to a comparison between linux distros, notice that based on Google Analytics, Ubuntu is by far the most searched for out of all linux flavors besides Android.  If you ever run into a problem with linux, most of the answers on the web will be solutions specifically for Ubuntu.
 
-Now consider that most people use Ubuntu for their servers.  Ubuntu is the most popular according to Amazon AWS.  You should just use what will work.  Wait.  Ubuntu isn't open source.  Ouch.
+Now consider that most people use Ubuntu for their servers.  Ubuntu is the most popular according to Amazon AWS.  You should just use what will work.  Wait.  Ubuntu isn't open source.  Ouch.  But maybe closed source isn't too bad.  It's not like Canonical will ever take away features, or pull the rug out from under you and start charging money for any use.  So the worst case scenario is that Canonical won't improve the features you care about, since those features are free, and therefore won't make Canonical much money.
 
 <details>
 <summary>Virtual Machine</summary>
@@ -424,17 +422,50 @@ To write Hello World in C, the first thing you do is `#include <stdio.h>`.  How 
 
 `CentOS`  completely free fork of RedHat.  Purely community backed.  Competes with Debian for use as server OS.
 
-#Bash and Unix
+#Development Tools and Environment
+
+`environment`  everything your program needs so it can run.  In order to know whether something is part of your programs environment, ask yourself this:  If I deleted this while my code was running, would my program still function correctly?
+
+The environment of the calculator app on your computer would include the C/Java source code that it's made from, the libraries it calls, graphical drivers to display it, kernel code, etc.  The parts of our environment that we care about are the parts that we might actually want to modify, like compiler options and downloaded libraries.
+
+`dev tools` anything that helps you write, run, monitor, and manage code.  Sublime, atom, intellij, and visual studio for writing code.  Compilers and interpreters for turning code into binary, like GCC, Clang, python Idle, and the Java Development Kit.
+
+`terminal` The black screen with green hacker text.  The most fundamental tool of any software developer.  All other tools run off the terminal.  Whenever you open file explorer, or an internet browser, that app is just a terminal with a fancy graphical disguise.  
+
+Let's say you mouse over something like a folder, hyperlink, or desktop icon, and click it.  That thing says 'can do', turns around, and just enters commands into a terminal that you can't see.
+
+<details><summary>Why use a terminal instead of a graphical application?</summary>
+
+Because most software development tools don't have a GUI at all, which means a terminal is your only option.
+
+Consider google docs.  All you ever want to do is type text, save text, and make text pretty.  There isn't much variation in what the user wants google docs to do.
+
+Now consider visual studio, an IDE for writing code.  Users of visual studio might want to write code, compile code, find code in a different file, replace a whole bunch of code in different files all at once, change compiler options, back up code to some other storage, debug code, add in some random tool that is constantly monitoring your code, etc etc etc.
+
+Visual studio's job is a lot more complicated than google docs.  Making a graphical interface for this app is a lot harder than making one for google docs.  If you want to create a tool that is simple to use, free of bugs, and doesn't take your entire life to create, it's much easier to create a command line app than a graphical app.
+
+Yes, there are plenty of graphical apps for software development.  But you _will_ run into plenty of instances in software development where you need to get something done, and an appropriate GUI app simply won't exist.  Even if there is a graphical app, it's almost certain that there is also a command line app that does the same thing that will be simpler to use.
+</details>
 
 Useful cheat sheet for any basic bash scripting stuff:  https://devhints.io/bash
 
+What is a terminal?  What is a shell?  Why do we use them?  The default shell for MacOS is 'Terminal' and for Ubuntu is 'GNOME shell'.  Both of these are BASH shells.  Maybe consider xterm.  It works on both macOS and Linux.  Or there's Terminator, which runs on windows, macOS, and Linux.  Why stop there?  Why not also choose a package manager that works on all 3 systems?  Be completely computer agnostic.  Think of a shell like this:  everything you see on your computer is just a shell in disguise; just wrapped up to look fancy and be easy.  When you click a button on your desktop, or on an app, what happens is the button just turns around and types that command into the terminal.  Maybe give them an example.  When you click google, what actually happens is this command:  asdasfsdf.  Then another terminal opens up.  It's the google chrome terminal.  Then you type stuff into the google chrome terminal.
+
+Bashrc vs bash_profile?
+
 `command prompt` If you have a dollar sign at the end of your command prompt, you're a normal user.  If it's a pound sign, you're admin.
 
-`su <username>` stands for substitute user.  Can log into another user without logging out of your current session.  To get back to your original user, type either `exit` or Ctrl+d.  Don't su back into your original account, because then you'll have 2 substitutes.
+`su <username>` stands for substitute user.  Logs into another user on top of your current user.  'su' with no arguments will make you root.  When you're done, use the `exit` command to go back to being a normal user.  Don't su back into your original account, because then you'll have user->root->user, which is confusing.  Also potentially slower?  You probably wouldn't notice it though.
 
-`sudo <command>` Elevates your privileges for the single command.  There are certain things you can't do with this, like cd'ing into a file that requires admin permissions.  sudo would elevate your privileges, then cd you into the file, then makes you a regular user again.  Now that you're a regular user again, you don't have permission to be in that file, so you get kicked out again.  Use sudo su instead.  Don't know why, but su prompts for password, but sudo su doesn't.
+`sudo <command>` Elevates your privileges for the single command.  Same thing as doing 'su', followed by '<command>', followed by 'exit'.
 
-Why does sudo su let me become root, but su root asks me for a password?
+<details><summary>Why am I getting 'command not found' errors when I do 'sudo cd <folder name>'?</summary>
+Because cd is a built in command, not an executable file.  sudo only works on executable files.  If you want to cd into a folder that requires root permissions, switch to root with su, then cd as a separate command.
+</details>
+
+`Ctrl+C` interrupts the currently running process, which usually kills it.  If something is running and you want it to stop, use Ctrl+C.
+
+`Ctrl+Z` suspends the current process, putting it to sleep.  The sleeping processes go on a LIFO stack, which you can wake up with the `fg` command.  You can also do `fg <sleeping process stack position>` to wake up that specific process.
 
 `Unix file system`
 
