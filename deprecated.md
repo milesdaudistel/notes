@@ -576,3 +576,248 @@ Why does the table say to shift at this step?  Why can't we reduce at this step?
 Let's see what would happen if rather than using the table, we reduced as much as possible, shifting only when there was nothing left to reduce.
 	asdfasdf
 Ok, now we're stuck.  So we can't just reduce whenever possible.  The purpose of the table is to tell us exactly what action to take, whether it's a shift or reduce.  Without the table, we would have to guess at which production to use next.  We could potentially use the wrong production and get stuck.
+
+<details><summary>PostgreSQL</summary>
+PostgreSQL is an extension of SQL.  There are many extensions for SQL like MySQL and SQLite, but PostgreSQL is considered the most modular and advanced one.  For instance, it has support for nesting, which no other SQL implementation has.
+
+<details><summary>Creating a table</summary>
+
+	CREATE TABLE weather (
+	    city            varchar(80),
+	    temp_lo         int,           -- low temperature
+	    temp_hi         int,           -- high temperature
+	    prcp            real,          -- precipitation
+	    date            date
+	);
+
+Here we make a new table called weather.  City, temp\_lo, temp\_hi, prcp, and date are column names, to the right are their types, and everything about the -- are comments.  Note that date is a type, as well as a name.  Also note that white space doesn't matter, this could all be on one line.
+</details>
+
+<details><summary>Deleting a table</summary>
+
+	DROP TABLE weather;
+	
+This will destroy the table in the previous example.
+</details>
+
+<details><summary>Entering new data</summary>
+
+	weather (
+	    city            varchar(80),
+	    temp_lo         int,           -- low temperature
+	    temp_hi         int,           -- high temperature
+	    prcp            real,          -- precipitation
+	    date            date
+	);
+	
+Using this table again, if we want to insert new information, we can do it like so:
+
+	INSERT INTO weather VALUES ('San Francisco', 46, 50, 0.25, '1994-11-27');
+	
+This will insert a row in the table that looks like so:
+
+	city: 'San Francisco'   temp_lo: 46    temp_hi: 50    prcp: 0.25    date: '1994-11-27'
+
+However, entering data like this means we have to remember the order of the columns in the table.  Explicitly name the data, and you don't have to remember the order:
+
+	INSERT INTO weather (city, temp_lo, temp_hi, prcp, date)
+    VALUES ('San Francisco', 43, 57, 0.0, '1994-11-29');
+    
+Let's say it rained one day, but you forgot to measure prcp.  It's ok, you can just omit it:
+
+	INSERT INTO weather (date, city, temp_hi, temp_lo)
+    VALUES ('1994-11-29', 'Hayward', 54, 37);
+
+</details>
+
+<details><summary>Getting data</summary>
+We'll use this table, again called weather, for our example:
+
+	city      | temp_lo | temp_hi | prcp |    date
+	---------------+---------+---------+------+------------
+	 San Francisco |      46 |      50 | 0.25 | 1994-11-27
+	 San Francisco |      43 |      57 |    0 | 1994-11-29
+	 Hayward       |      37 |      54 |      | 1994-11-29
+	 
+Use SELECT to print out columns.
+
+	SELECT city, temp_lo FROM weather;
+	
+Will print out:
+
+		city        | temp_lo |
+	---------------+---------+
+	 San Francisco |      46 |
+	 San Francisco |      43 |
+	 Hayward       |      37 |
+	 
+Use * to specify all columns, and WHERE to specify rows.
+
+	SELECT * FROM weather WHERE city = 'San Francisco'
+	
+Will print out:
+
+	city      | temp_lo | temp_hi | prcp |    date
+	---------------+---------+---------+------+------------
+	 San Francisco |      46 |      50 | 0.25 | 1994-11-27
+	 San Francisco |      43 |      57 |    0 | 1994-11-29
+	 
+You can combine information in different ways as well.
+
+	SELECT city, (temp_hi+temp_lo)/2 AS temp_avg, date FROM weather;
+	
+In this example, the AS keyword means that we take the temperature calculation and print it out in a new column called temp\_avg, as follows.
+
+	     city      | temp_avg |    date
+	---------------+----------+------------
+	 San Francisco |       48 | 1994-11-27
+	 San Francisco |       50 | 1994-11-29
+	 Hayward       |       45 | 1994-11-29
+
+
+</details>
+
+<details><summary>Join Queries</summary>
+
+	city      | temp_lo | temp_hi | prcp |    date
+	---------------+---------+---------+------+------------
+	 San Francisco |      46 |      50 | 0.25 | 1994-11-27
+	 San Francisco |      43 |      57 |    0 | 1994-11-29
+	 Hayward       |      37 |      54 |      | 1994-11-29
+	 
+	 	name      | location
+	---------------+---------
+	 San Francisco |   (-194, 53)
+	 
+Here we'll use the same weather table as before, and now we have a second table called cities.
+
+Before, we only asked for data from one table at a time.  Now we're going to ask for data from two tables to be combined.  Let's say we wanted to get all the information we had on the city of San Francisco.  Our data is spread over multiple tables, like above.  We could get all of San Francisco's data in a single output as follows:
+
+	SELECT * FROM weather, cities WHERE city = name;
+
+Will print out:
+
+	city      | temp_lo | temp_hi | prcp |    date    |     name      | location
+	---------------+---------+---------+------+------------+---------------+-----------
+	 San Francisco |      46 |      50 | 0.25 | 1994-11-27 | San Francisco | (-194,53)
+	 San Francisco |      43 |      57 |    0 | 1994-11-29 | San Francisco | (-194,53)
+
+So now we have the temperatures, prcp, date, and location all in one place.  Notice that the city and name column are the same.  We could get rid of the redundant name column with this query:
+
+	SELECT city, temp_lo, temp_hi, prcp, date, location
+	    FROM weather, cities
+	    WHERE city = name;
+
+</details>
+
+<details><summary>Join Qualifiers</summary>
+
+	city      | temp_lo | temp_hi | prcp |    date
+	---------------+---------+---------+------+------------
+	 San Francisco |      46 |      50 | 0.25 | 1994-11-27
+	 San Francisco |      43 |      57 |    0 | 1994-11-29
+	 Hayward       |      37 |      54 |      | 1994-11-29
+	 
+	 	city      | location
+	---------------+---------
+	 San Francisco |   (-194, 53)
+	 
+Here are the 2 tables from before, with 1 difference:  the name column of the cities table is now called city.  Now both tables have a column called city.  How do you join on them?  Qualifying just means appending the table name to the column name so that Postgres can tell the difference.  Here's an example:
+
+	SELECT weather.city, temp_lo, temp_hi,
+	       prcp, date, location
+	    FROM weather, cities
+	    WHERE cities.city = weather.city;
+	    
+Here, weather.city and cities.city are the qualified terms.  Nothing else has to be qualified (though supposedly it's good style) since the other names aren't shared between the tables.
+	    
+	    
+</details>
+
+<details><summary>Agregate Functions</summary>
+
+Aggregate functions let you get a single number from an entire column or row.  Things like max, sum, and avg.
+
+<details><summary>In the weather table, how would you get the highest temperature overall?</summary>
+
+	SELECT max(temp_hi) FROM weather;
+
+</details>
+
+<details><summary>What about the city corresponding to the highest temperature?</summary>
+Incorrect:
+
+	SELECT city FROM weather WHERE temp_hi = max(temp_hi);
+	
+This won't work because WHERE decides what rows to include, and WHERE is also calculated before and agregate functions, such as max.  In order for max to happen before WHERE, we do this:
+
+	SELECT city FROM weather WHERE temp_hi = (SELECT max(temp_hi) FROM weather);
+	
+With the parenthesis in place, first we get the maximum temperature.  At this point, we don't know the corresponding city.  Now that we have the highest temperature, we then look through the whole table again to see which city has a temperature identical to this.
+
+</details>
+
+
+</details>
+
+<details><summary>Views</summary>
+
+If you have a big table, and you find yourself making the same query over and over, you can turn it into a view of the table.  This just saves the query in a variable.  You could just make another table that contains only the information you want to see, but this takes up additional space.  Using a view means doing the query over and over again, which is less time efficient than making another table, but since most queries are pretty much instantaneous to users, time efficiency is not a concern.  However, if you have a bunch of really similar tables that you created from doing a bunch of queries, the space that those tables take up can increase really fast.
+
+Here's an example using our weather and cities tables:
+
+	CREATE VIEW myview AS
+	    SELECT city, temp_lo, temp_hi, prcp, date, location
+	        FROM weather, cities
+	        WHERE city = name;
+	
+	SELECT * FROM myview;
+
+</details>
+
+<details><summary>Foreign Keys</summary>
+Say you have the weather table, and cities table.  You want to make sure users can only add city data to the weather table if that city is already in the city table.  You can do this by first looking at every entry in the name/city column of the cities table and doing a comparison.  However, Postgres offers an easy solution:
+
+	CREATE TABLE cities (
+	        city     varchar(80) primary key,
+	        location point
+	);
+	
+	CREATE TABLE weather (
+	        city      varchar(80) references cities(city),
+	        temp_lo   int,
+	        temp_hi   int,
+	        prcp      real,
+	        date      date
+	);
+	
+So now city in the weather table will look in the cities table every time you try to insert new data into the weather table.  So whenever someone tries to insert a new city, say 'Berkeley', it will error out, as 'Berkeley' is a foreign key to the cities table, which only contains San Francisco and Hayward.
+
+</details>
+
+<details><summary>Transactions</summary>
+Remember atomicity from operating systems?  This is just that.  If we have a certain set of actions that we want to happen all or nothing, we label it as a transaction.  Consider the following example, where Alice gives Bob $100:
+
+	UPDATE accounts SET balance = balance - 100.00
+	    WHERE name = 'Alice';
+	UPDATE branches SET balance = balance - 100.00
+	    WHERE name = (SELECT branch_name FROM accounts WHERE name = 'Alice');
+	UPDATE accounts SET balance = balance + 100.00
+	    WHERE name = 'Bob';
+	UPDATE branches SET balance = balance + 100.00
+	    WHERE name = (SELECT branch_name FROM accounts WHERE name = 'Bob');
+	    
+	    
+It would be really bad if Alice lost 100, then the power got cut, and Bob didn't receive 100.  Or if Bob got 100, and Alice didn't lose 100.  Here's how to make the series of operations atomic:
+
+	BEGIN;
+	-- Insert transaction between Alice and Bob here
+	COMMIT;
+	
+Exactly how this works under the hood is covered in the concept of atomicity in Operating Systems.
+
+By default, all Postgres statements get wrapped with a BEGIN and COMMIT.
+
+</details>
+
+</details>
