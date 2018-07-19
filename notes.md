@@ -328,9 +328,29 @@ Guess which one is best?
 
 #Databases
 
-<details><summary>Table</summary>
-A table stores data in rows and columns.  Each column is a type of data, and each row is a collection of that data.  Columns might be things like names, ages, jobs, etc.  Put these columns together and you have a table, where each row will give you the name, age, and job of a single person.
-</details>
+There are 2 types of databases:  relational (anything with SQL) and non-relational (NoSQL, like MongoDB).  The first section will talk about relational databases.
+
+`Tables` are the basic method of storing data.  Each `column` in the table is a type of data.  Here's an example of a table of cities:
+
+
+name      | population | area (km^2)
+---------------+---------+---------
+ Oakland  |      420k    |      201.7
+ San Francisco |      871k |      121.4
+ Barstow       |      24k |      107.2
+ 
+`Databases` are collections of related tables.  If the columns of 1 table are the rows of another table, those tables are related.  Here's a table that relates to the  city table:
+
+region         | cities
+---------------+---------
+ Bay Area       |     San Francisco, Oakland
+ Central Valley |      Sacramento, Chico
+ Desert       |      Barstow, Riverside
+ 
+ 
+This region table is related to the cities table because its second column contains some of the same data as column 1 of the cities table.  So if you want information on a region of california, you can look in the regions table.  Some of the stuff you find in the regions table can be used to look up further information in other tables.
+
+`SQL` is a programming language for finding and modifying data in a database.  It is made up of a very small number of operations, for example Create, Delete, and Select.  ISO and ANSI control the language specification, but don't actually implement any of it.  There is no implementation of SQL called 'SQL' that you can download.  The implementations that you can download include MySQL, PostgreSQL, and so on.  While each flavor of SQL has different functions, they all more or less implement the same basic components of SQL, 
 
 <details><summary>Database</summary>
 A database is just a bunch of tables put together.  Maybe you have a table containing information about neighborhoods.  There could be a column for street names, house addresses, and the people who live at each house.  Each of those people corresponds to a row in the previous example.
@@ -1438,3 +1458,9 @@ check out this weebs notes.  not bad at all.
 this is a record of you trying your best to learn.  even if it doesn't work out, at least you can say, with undenyable proof, that you tried.
 
 remember: learn top down, not bottom up.  what problem does this solve, how does it fit into the larger problem you're trying to solve, what are its keywords/components.
+
+Might want to retool your database stuff.  All those different examples could be turned into a slideshow.  A single example.  Don't make it a picture though.  Keeping it as text means its easier to modify.  Hm... keeping more things as text might be useful.  Maybe there's a way to do that with HTML for all your graphs.  
+
+su requires a password, which you don't have
+could do sudo su, then it doesn't require a password
+could also do sudo -i.  
