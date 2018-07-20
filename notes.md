@@ -1233,7 +1233,7 @@ If a hacker actually has access to your computer, they can't use your keys unles
 
 </details>
 
-#Agile
+#Jargon
 
 `Agile Development` A way to make software often used by large corporations.  There are different kinds of agile development.  The agile manifesto sums it up:
 
@@ -1257,6 +1257,24 @@ Sprints and standups are the only ones I hear at work, so I'll just define those
 `Sprint` designated coding time.  After the sprint is over, the work gets reviewed.  Usually somewhere between a week and 4 weeks.
 
 `Stand up` short meeting where everyone says what they’re doing for that day.
+
+`Scaling` this term is used for software systems, business models, etc.  Let's say you run a website hosted on AWS that predicts the stock market.  People pay you to be able to browse the website and ask for stock market predictions.  Now let's say your website gets really popular.  It's getting slow, so. you need to do some upgrades to handle the increased traffic.  If you can just pay AWS more money to give you more servers for the increased traffic, then your website is easily scalable.  Now lets instead say the way your website is coded won't allow you to just add servers.  So before you pay for more servers, you need to change a whole bunch of stuff in your codebase so that the website can work with more servers.  In this case, your website is not easily scalable.
+
+Here's another example:  let's say we have a function in whatever programming language, f(x) = y.  f takes in x, does some calculations, and spits out y.  If the runtime of f is O(n), then as x gets bigger and bigger, the time it takes for f to calculate y will scale at the same rate as x.  I'd say this is pretty good scaling.  If f's runtime is O(log(n)), that's pretty great scaling.  If f has runtime O(2^n), that's some pretty bad scaling.
+
+`Vertical vs Horizontal Scaling` Horizontal scaling means you add more of what you have in order to scale.  Vertical scaling means you improve what you have in order to scale.  Let's say we're the head of a delivery business, with a fleet of delivery vans, and you can guarentee any delivery in 1 day.  Now lets say that suddenly you're getting 4x as many delivery requests each day.  You still want keep your 1 day delivery promise.  You could scale your company vertically by trading in the delivery vans for delivery semi-trucks, or you could scale horizontally by buying more delivery vans.
+
+Most of the time, horizontal scaling is quicker, easier, and cheaper than vertical scaling.
+
+`SaaS` stands for 'Software as a Service.'  In the past, you would buy software like microsoft word or a video game on a disk, put it in your computer, and run it.  The disk is a product.  You pay for it once, the software developer gets payed once.
+
+Now, rather than paying for a piece of software that (theoretically) works forever, we now pay for software services that get updated continuously with new features.  Services like spotify, netflix.  I'll call them spotflix.  Spotflix doesn't sell you a product containing all of their songs and movies.  They sell you a service where you request a song or movie, and you get that song or movie streamed to you.
+
+Since spotflix runs on a server, and you have to log in to that server, they can charge you continuously per month or year, rather than charging you once at the beginning.  This has proven to be much more profitable than the old model.  Additionally, since they're streaming media and not selling it outright, it's much more difficult to make a copy of that media and distribute it freely.  But hey, this way you continuously get new songs and movies while paying a flat rate.
+
+`Platform` kind of like the terms library, framework, or API, but more general.  The 3 previous terms usually mean code that you call, but a platform can be something like a website template that you can extend.  I feel like Reddit is a kind of platform for forums.   
+
+`PaaS` stands for platform as a service.  I think cloud stuff like AWS and Google Cloud is PaaS.  
 
 #Misc
 ![macshortcuts](pics/macshortcuts.png)
