@@ -411,22 +411,16 @@ Python VE's predate most container stuff that we know.  They're very similar, bu
 `vagrant`
 Allows you to make a VM, configure it, then share it with other people.  Requires virtualbox / vmware.  Used in businesses when you want everyone to run their code on the exact same system.  Solves the problem of 'but it runs on my machine'.  Why not just make a configuration in vmware / virtualbox, then share it with everyone?  Because then they can modify it (intentionally or not) which you don't want.  The whole point is to have everyone on the exact same system, and if they're able to modify their system, that defeats the purpose.
 
-`Environment List`
-When programs are compiled, linked, run, etc, how do they do various things like find standard libraries, know what shell it's being run in, who the current user is, etc?  Through the environment list, otherwise known as the program environment.  The environment list is passed to your program by whatever is running it (usually a shell), and is available globally.  Below is a diagram of a simpmlified environment list.  The real environment list contains dozens if not hundreds of name:value pairs.  Some other examples of environment variables might be SESSION=ubuntu, SSH\_AGENT\_PID=1508, etc.
-
-![endsin1](pics/environmentlist.png)
-
-`PATH variable`
-
-To write Hello World in C, the first thing you do is `#include <stdio.h>`.  How does the compiler know where stdio.h is?  It looks for the PATH variable in the environment list.  The PATH variable specifies where to find all your standard libraries.  On MacOS, the PATH variable is usually contained in `~/.bash_profile`.
-
 `CentOS`  completely free fork of RedHat.  Purely community backed.  Competes with Debian for use as server OS.
 
-
-The command line is a programmers home.  GUI applications full of buttons are slow, clunky, and prone to bugs.  Command line tools are fast and simple.  Good GUI applications just wrap around command line applications anyway.  A good example is how github wraps around git.
-
-All of the following bash commands can be called from a bash script.  You can string them together to do stuff.
 #Development Tools and Environment
+`Unix` All programs need to run on an operating system, like Windows, Mac, and Linux.  MacOS and Linux are both descendents of the Unix operating system.  Windows is often also made to emulate the Unix operating system.  Everything defined below, like file system, terminal, shell, bash, command line, path, etc, are the Unix file system, the Unix terminal, etc.  Whether you're on Windows, Mac, or Linux, they have basically the same file system, terminal, etc.
+
+`file system` everything in the Unix operating system is either a file, or a folder.  A folder is just a container for files.  A file can be anything.  A picture, an audio file, a bunch of text, or an app.
+
+`file permissions` there are 3 things you can do with a file:  you can read, write, or execute the file.  Executing a file means running it like an app.
+
+`users` a user is a person who logs into Unix.  Each user has certain permissions for each file.  The `root` user is the master user.  They can read, write, or execute any file.  When you log in to your computer for the first time, you create a new user whose name is probably your name.  There are certain files you have permissions for, and certain files you can't access.
 
 `environment`  everything your program needs so it can run.  In order to know whether something is part of your programs environment, ask yourself this:  If I deleted this while my code was running, would my program still function correctly?
 
@@ -434,13 +428,13 @@ The environment of the calculator app on your computer would include the C/Java 
 
 `dev tools` anything that helps you write, run, monitor, and manage code.  Sublime, atom, intellij, and visual studio for writing code.  Compilers and interpreters for turning code into binary, like GCC, Clang, python Idle, and the Java Development Kit.
 
-`terminal` The black screen with green hacker text.  The most fundamental tool of any software developer.  All other tools run off the terminal.  Whenever you open file explorer, or an internet browser, that app is just a terminal with a fancy graphical disguise.  
+`terminal` The black screen with green hacker text.  A programmers home.  All other tools run off the terminal.  Whenever you open file explorer, or an internet browser, that app is just a terminal with a fancy graphical disguise.  
 
 Let's say you mouse over something like a folder, hyperlink, or desktop icon, and click it.  That thing says 'can do', turns around, and just enters commands into a terminal that you can't see.
 
 <details><summary>Why use a terminal instead of a graphical application?</summary>
 
-Because most software development tools don't have a GUI at all, which means a terminal is your only option.
+Because GUI applications full of buttons are slow, clunky, and prone to bugs.  Command line tools are fast and simple.
 
 Consider google docs.  All you ever want to do is type text, save text, and make text pretty.  There isn't much variation in what the user wants google docs to do.
 
@@ -453,7 +447,30 @@ Yes, there are plenty of graphical apps for software development.  But you _will
 You shouldn't shun GUI apps though.  Most software devs do use GUI apps (mostly IDE's) to write code.  But at the same time, they still use the command line for basically everything else.
 </details>
 
+
+
+Terminals have tabs.  Each tab is a shell.  Each shell has certain state.  Who is the current user in this shell?  What folder are they in?  etc.
+Most shells are bash shells.  There are other shells, like c shells and korn shells.  The type of shell determines what commands you can give it.  Bash shells are by far the most popular, being nearly ubiquitous.  If you hear people talking about any kind of shell that isn't a bash shell, just ignore them.  It's not worth the trouble.
+MacOS and Linux both use bash shells by default.  You can also download bash shells for windows, but who programs on windows these days?
+
+The way a shell actually works is like file explorer.  You are a user who navigates through the file heirarchy.  
+Bash shells have a lot of command line tools you can use 
+
+
+
+`Environment List`
+When programs are compiled, linked, run, etc, how do they do various things like find standard libraries, know what shell it's being run in, who the current user is, etc?  Through the environment list, otherwise known as the program environment.  The environment list is passed to your program by whatever is running it (usually a shell), and is available globally.  Below is a diagram of a simpmlified environment list.  The real environment list contains dozens if not hundreds of name:value pairs.  Some other examples of environment variables might be SESSION=ubuntu, SSH\_AGENT\_PID=1508, etc.
+
+![endsin1](pics/environmentlist.png)
+
+`PATH variable`
+
+To write Hello World in C, the first thing you do is `#include <stdio.h>`.  How does the compiler know where stdio.h is?  It looks for the PATH variable in the environment list.  The PATH variable specifies where to find all your standard libraries.  On MacOS, the PATH variable is usually contained in `~/.bash_profile`.
+
 Useful cheat sheet for any basic bash scripting stuff:  https://devhints.io/bash
+
+All of the following bash commands can be called from a bash script.  You can string them together to do stuff.
+
 
 What is a terminal?  What is a shell?  Why do we use them?  The default shell for MacOS is 'Terminal' and for Ubuntu is 'GNOME shell'.  Both of these are BASH shells.  Maybe consider xterm.  It works on both macOS and Linux.  Or there's Terminator, which runs on windows, macOS, and Linux.  Why stop there?  Why not also choose a package manager that works on all 3 systems?  Be completely computer agnostic.  Think of a shell like this:  everything you see on your computer is just a shell in disguise; just wrapped up to look fancy and be easy.  When you click a button on your desktop, or on an app, what happens is the button just turns around and types that command into the terminal.  Maybe give them an example.  When you click google, what actually happens is this command:  asdasfsdf.  Then another terminal opens up.  It's the google chrome terminal.  Then you type stuff into the google chrome terminal.
 
