@@ -424,7 +424,13 @@ To write Hello World in C, the first thing you do is `#include <stdio.h>`.  How 
 
 `CentOS`  completely free fork of RedHat.  Purely community backed.  Competes with Debian for use as server OS.
 
-#Bash and Unix
+#Command line tools:  Vim, Bash Scripts, etc
+
+The command line is a programmers home.  GUI applications full of buttons are slow, clunky, and prone to bugs.  Command line tools are fast and simple.  Good GUI applications just wrap around command line applications anyway.  A good example is how github wraps around git.
+
+Bash vs other shells.  What kind of shell are you running in MacOS?  What about Linux?  Are they both Bash?  What does a normal path variable look like?
+
+All of the following bash commands can be called from a bash script.  You can string them together to do stuff.
 
 Useful cheat sheet for any basic bash scripting stuff:  https://devhints.io/bash
 
