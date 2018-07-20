@@ -444,7 +444,9 @@ Now consider visual studio, an IDE for writing code.  Users of visual studio mig
 
 Visual studio's job is a lot more complicated than google docs.  Making a graphical interface for this app is a lot harder than making one for google docs.  If you want to create a tool that is simple to use, free of bugs, and doesn't take your entire life to create, it's much easier to create a command line app than a graphical app.
 
-Yes, there are plenty of graphical apps for software development.  But you _will_ run into plenty of instances in software development where you need to get something done, and an appropriate GUI app simply won't exist.  Even if there is a graphical app, it's almost certain that there is also a command line app that does the same thing that will be simpler to use.
+Yes, there are plenty of graphical apps for software development.  But you _will_ run into plenty of instances in software development where you need to get something done, and an appropriate GUI app simply won't exist.  Even if there is a graphical app, it's almost certain that there is also a command line app that does the same thing that will be simpler to use.  As a beginner software developer, all you do is move files around and type text.  It may feel like using the command line is harder.  But that feeling won't last more than a few years.
+
+You shouldn't shun GUI apps though.  Most software devs do use GUI apps (mostly IDE's) to write code.  But at the same time, they still use the command line for basically everything else.
 </details>
 
 Useful cheat sheet for any basic bash scripting stuff:  https://devhints.io/bash
