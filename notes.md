@@ -185,7 +185,7 @@ If a method is asynchronous, calling it will spawn another thread or process.  I
 
 An event is just 'something that has happened'; a mouse click, a keyboard input, a new email, etc.  Since these things happen all the time, we need asynchronous methods that can run concurrently in order to catch and handle all these events.
 
-But we don't just want async methods to catch events, we also want to tell them what to do with the events.  We can do this by passing the async method a callback function as a parameter.  An example is when you set onClick in an html tag.  The thing that you set onClick to is the callback function.  
+But we don't just want async methods to catch events, we also want to tell them what to do with the events.  We can do this by passing the async method a callback function as a parameter.  An example is when you set onClick in an html tag.  The thing that you set onClick to is the callback function.  Maybe your callback function plays an animation, or redirects the user to another page through a link.
 
 You might wonder 'Why do we need to pass a callback in as a parameter?  Why not just put that code directly into the asynchronous function?'  To answer that, think about this scenario:  you have a website that has a whole bunch of different clickable buttons.  Some buttons link you to other pages, some buttons open drop down menus, some display images.  All of these buttons have asynchronous functions behind them, waiting for clicks.  But when they get a click, they all do different things.  If you had to program all these buttons, it would be much easier to write the part of the program that listens for clicks once, rather than copying and pasting it again and again for every single button.  So the reason callback functions are so common is that asynchronous functions often just listen for events, so passing in the 'what to do after you get the event' logic as a parameter is easier than writing it directly into the asynchronous method.
 
@@ -326,8 +326,6 @@ Right now, you could say that 'backend' code like Go or backbone.js make the mod
 
 Here, worker is the template method, whose work submethod gets replaced for each different worker.  The term `hook` is often used for the parts of the template that the user fills in.
 
-`Framework` is just a bunch of template methods put together.  A framework is constricting to the user, offering them less flexibility, in return for making implementation a lot less of a hassle.  The term framework is usually used in web / enterprise programming.  I wouldn't say a single library is a framework because a library is a tool for a kind of _computational_ task.  A framework is for ... I'll say product-creation tasks for now.  Web framework, graphical framework, etc.
-
 `Pagination` Lets say you have some application, and a user makes a really big request, for 1000 pictures, let's say.  The apps UI would take forever to render 1000 pictures all at once.  You could either 
 
 a) go through with the request and make the user wait a few minutes
@@ -337,8 +335,6 @@ b) not give the user what they explicitly asked for
 c) paginate the request, giving them a little bit of what they asked for (say a page of 10 pictures), to which the user could then request the next 10 pages, then the next 10, etc.
 
 Guess which one is best?
-
-`API` stands for application programming interface.  If you use a library, say numpy, the functions of the library that you call are part of the API.  The functions that are potentially called in the background (as in not called by you) are not part of the API.  If you make a phone app that potentially uses the camera, you shouldn't have to write any functions that would open up the camera app.  Instead, the camera app should have an api that will allow you to just call it from within your own app.  In terms of web servers and services, an API is the part of that service that receives/reads requests and sends responses.
 
 #Databases
 
@@ -1258,6 +1254,10 @@ Sprints and standups are the only ones I hear at work, so I'll just define those
 
 `Stand up` short meeting where everyone says what they’re doing for that day.
 
+`Framework` is just a bunch of template methods put together.  A framework is constricting to the user, offering them less flexibility, in return for making implementation a lot less of a hassle.  The term framework is usually used in web / enterprise programming.  I wouldn't say a single library is a framework because a library is a tool for a kind of computational task.  A framework is for ... I'll say product-creation tasks for now.  Web framework, graphical framework, etc.
+
+`API` stands for application programming interface.  If you use a library, say numpy, the functions of the library that you call are part of the API.  The functions that are potentially called in the background (as in not called by you) are not part of the API.  If you make a phone app that potentially uses the camera, you shouldn't have to write any functions that would open up the camera app.  Instead, the camera app should have an api that will allow you to just call it from within your own app.  In terms of web servers and services, an API is the part of that service that receives/reads requests and sends responses.
+
 `Scaling` this term is used for software systems, business models, etc.  Let's say you run a website hosted on AWS that predicts the stock market.  People pay you to be able to browse the website and ask for stock market predictions.  Now let's say your website gets really popular.  It's getting slow, so. you need to do some upgrades to handle the increased traffic.  If you can just pay AWS more money to give you more servers for the increased traffic, then your website is easily scalable.  Now lets instead say the way your website is coded won't allow you to just add servers.  So before you pay for more servers, you need to change a whole bunch of stuff in your codebase so that the website can work with more servers.  In this case, your website is not easily scalable.
 
 Here's another example:  let's say we have a function in whatever programming language, f(x) = y.  f takes in x, does some calculations, and spits out y.  If the runtime of f is O(n), then as x gets bigger and bigger, the time it takes for f to calculate y will scale at the same rate as x.  I'd say this is pretty good scaling.  If f's runtime is O(log(n)), that's pretty great scaling.  If f has runtime O(2^n), that's some pretty bad scaling.
@@ -1285,4 +1285,7 @@ check out this weebs notes.  not bad at all.
 
 this is a record of you trying your best to learn.  even if it doesn't work out, at least you can say, with undenyable proof, that you tried.
 
-remember: learn top down, not bottom up.  what problem does this solve, how does it fit into the larger problem you're trying to solve, what are its keywords/components.
+remember: learn top down, not bottom up.
+
+'you should try and understand what is happening before you try to fix it' justin's advice to you.  
+This actually applies to a lot more than just software engineering.  
