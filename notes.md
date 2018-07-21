@@ -443,11 +443,11 @@ Yes, there are plenty of graphical apps for software development.  But you _will
 You shouldn't shun GUI apps though.  Most software devs do use GUI apps (mostly IDE's) to write code.  But at the same time, they still use the command line for basically everything else.
 </details>
 
-`Shell` Terminals have tabs.  Each tab is a shell.  Each shell has certain state.  Who is the current user in this shell?  What folder are they in?  Stuff like that.
+`Shell` Terminals have tabs.  Each tab is a shell.  Each shell has certain state.  Who is the current user in this shell?  What folder are they in?  Stuff like that is kept in state.
 
-You can have one shell who is user root and at folder /, and another user who is a regular user and whose folder is /etc.
+You could have one shell who is user root and at folder /, and another user who is a regular user and whose folder is /etc.
 
-`Bash` Most shells are bash shells.  There are other shells, like c shells and korn shells.  The type of shell determines what commands you can give it.  Bash shells are by far the most popular, being nearly ubiquitous.  Ignore people who use hipster stuff like c or korn shells.  It's not worth the trouble to learn about them.
+`Bash` Most shells are bash shells.  There are other shells, like c shells, korn shells, z shells.  The type of shell determines what commands you can give it.  Bash shells are by far the most popular, being nearly ubiquitous.  Ignore people who use hipster stuff like c or korn shells.  It's not worth the trouble to learn about them.
 MacOS and Linux both use bash shells by default.  You can also download bash shells for windows, but who programs on windows these days?
 
 <details><summary>So there's xterm, MacOS Terminal, terminator, gnome shell, etc.  What is the difference?</summary>
@@ -461,17 +461,30 @@ When programs are compiled, linked, run, etc, how do they do various things like
 
 `PATH variable`
 
-To write Hello World in C, the first thing you do is `#include <stdio.h>`.  How does the compiler know where stdio.h is?  It looks for the PATH variable in the environment list.  The PATH variable specifies where to find all your standard libraries.  On MacOS, the PATH variable is usually contained in `~/.bash_profile`.
+To write Hello World in C, the first thing you do is `#include <stdio.h>`.  How does the compiler know where stdio.h is?  It looks for the PATH variable in the environment list.  The PATH variable specifies where to find all your standard libraries.  On MacOS, the PATH variable is usually handled in .bash_profile.  On other OS's like Linux, it's handled in .bashrc.  
+
+Here's the contents of my bash_profile right now:
+
+	export PATH="$PATH:/usr/local/opt/bison/bin"
+	
+PATH is our path variable.  It's a magic variable name that our terminal will know what to do with.  `export` is a command that makes the path available to subprocesses of our shell.  If we don't have export, only subshells will be able to see our path, not subprocesses.  Check out this stackoverflow post:  
+
+https://stackoverflow.com/questions/1158091/defining-a-variable-with-or-without-export
+
+The actual contents of the path mean 'the path variable is now equal to it's previous value ($PATH) combined with the thing to the left of the colon: /usr/local/opt/bison/bin'.  Bison is a parser generator.  Not that it matters.
+
+As to whether you should use quotes or not, look at this other stack overflow post:
+
+https://stackoverflow.com/questions/33318499/should-i-use-quotes-in-environment-path-names
+
+Honestly, the reasons behind a lot of this bash stuff is to be compatible with legacy software.  Don't try to reason through it too much, because there's no good reason behind it.
 
 `.bash_profile` is a file that is for each `login shell`.  A log in shell is the first shell you make when you fire up a terminal.  Making a new tab with another shell is a `non-login shell`.  Put things in your bash profile that you only need run once.  You don't need that reset every time you open a new terminal, so you define it in your bash_profile file.
 
-`.bashrc` is a file that is run for all shells.  Things like what you want your path variable set to.  When you open a new shell, the path variable is
+`.bashrc` is a file that is run for all shells.  Things like what you want your path variable set to.  For each shell, you want to set up your path variable.  If your path variable is in .bash_profile, any secondary shell you open up won't have the path variable.  The exception to this is the MacOS terminal.  Whenever you open up a new shell, it pretends you're opening up a new terminal.  Less performance, 'easier'.  I would suggest just putting everything in your bashrc, and just having your bash_profile do nothing but run your bashrc.
 
-<details><summary></summary>
-
-</details>
-
-###Bash commands
+`brew` package manager for MacOS
+>`brew leaves` shows you the packages that are not depended on.  If you see something in brew leaves that you don't understand, delete it.  It's just clutter.
 
 Useful cheat sheet for any basic bash scripting stuff:  https://devhints.io/bash
 
@@ -568,6 +581,39 @@ ctl stands for control.  systemctl controls systemd, allowing you do do various 
 
 `daemon` A background process that the user doesn't interact with.  Mostly a Unix term, but applies pretty consistently to all of computing.
 
+<details><summary>Do not use vim.  I'm leaving all this text here for historical reasons.  You've wasted so many hours on vim and tmux.  Stop.  Just stop.  'Oh but i just need vim in order to ssh into the whatever and look at stuff'.  No.  Find a workaround.  Do not use vim.</summary>
+
+Just learn vim.  You use it, even if you have a better editor.  You still use it sometimes.  Find a nice vim config.  Don’t try to learn vim-fu.  Just learn the essentials.  Also finally figure out how the hell to copy and paste properly.  Maybe just make it have the functionality of atom or sublime.  What exactly is it that you need?  A shell, a git config, and a vim.  That’s really all you need in order to write code.  Also you need all that stuff in the appropriate places in your bash_profile and bashrc.
+
+
+vim: https://dougblack.io/words/a-good-vimrc.html
+
+choose colors / fonts for each language
+
+syntax enable
+
+didn't get nerdtree because vim plugin whatever didn't work.  also nerdtree doesn't seem all that helpful since you'll have to switch out of your vim anyway unless you do some crazy shit.
+
+spaces and tabs.
+	wait.  you tab in.  oh look, it did like 12 spaces, just like i wanted.  then you backspace.  oh no, it did 12 spaces, i only wanted 4 spaces to end this scope.  you should just turn tabs into spaces.  Actually, just make it 4.  Tabs are visually 4 spaces.  Tabs are actually 4 spaces.  4.  4 is perfect.  Then just have some shortcut that indents it 12 or 16 or whatever the previous line was.
+	
+set number
+
+change cursor to not be a block.  Just a normal cursor like this one.
+
+set showmatch.  want to highlight the other parenthesis.
+
+remap escape to jf.  getting into / out of insert mode is important.
+
+set hlsearch.  highlight matches when searching text.
+also need to figure out the unhighlight part.
+
+you need the silver searcher.  for geoff.
+
+the tmux thing will also be useful.
+
+</details>
+
 #Git
 Git is version control software.  When you make a project, whether it's code or an essay or a painting, you start with nothing, and gradually make changes until you get a final product.  You add changes, you remove changes, you start over, etc.  Without version control, all you have is the current version of your project.  There's no way to see the history of your project; what it looked like yesterday, a week ago, whatever.  With git, you can do this.  You can also split a project into 2 different projects and track both of them at the same time.  
 
@@ -609,8 +655,6 @@ Git is version control software.  When you make a project, whether it's code or 
 `diff`
 
 `autocompletion` can use tabs to have git guess what you're going to type.  Google it.
-
-
 
 #Json
 
@@ -1306,4 +1350,7 @@ this is a record of you trying your best to learn.  even if it doesn't work out,
 remember: learn top down, not bottom up.
 
 'you should try and understand what is happening before you try to fix it' justin's advice to you.  
-This actually applies to a lot more than just software engineering.  
+This actually applies to a lot more than just software engineering. 
+
+#TODO
+makefiles 
