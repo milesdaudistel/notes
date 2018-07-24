@@ -462,6 +462,10 @@ Here's how we actually made this graph:
 
 You also need to explain how this gets turned into that really complicated table.
 
+Also instead of S\` you should just have S, which goes to E followed by dollar sign (end of input).  I don't know why Aiken wasn't explicit on that part.
+
+Need to explain how epsilon productions work in your DFA:  remember that its an epsilon production, not an epsilon transition.  So you know to make the transitions based on what is immediately to the right of the '.'.  But For epsilon transitions, you make transitions for everything in their follow set.
+
 #Misc
 
 http://trevorjim.com/python-is-not-context-free/
@@ -480,23 +484,6 @@ It's important to keep our grammars as close to context free as we can, since th
 I feel like if you explain simply why LL(k) grammars don't matter, and more generally why you only ever need 1 token of lookahead, then all the rest of this stuff should fall into place.  Just simply explain why 1 token of lookahead should be all that is necessary.  Then, once you understand that only 1 token of lookahead is ever needed, explain why that's not entirely true, and that you USUALLY only ever need 1 token of lookahead.  GLR parsers USUALLY only look ahead 1 token.  And cut down on the definitions.
 Once you compare all of these definitions and really hone in on what this stuff is, you should be able to figure out the perfect tools and implementation for your grammar.
 
-Give a really quick overview of the parts of a compiler.  Lexer, parser, semantic analyzer, code generation.
-Explain that assembly is binary.  Recall your 61C project where you made a processor that ran on binary.
-
-explain regex and automata.  "in your head, you separate the tokens like this:  (for) (x) (in) ... but for all the computer knows the tokens should be separated like this: (f) (or x) (i)(n) ..."
-
-Need good image manipulation software.  Much easier than the slideshow you made.
-
-explain recursive descent
-
-recursive descent algorithm limitation (logical or shortcircuitting)
-
-left recursion
-
-left factoring
-
-first and follow sets
-
 Consider trying to figure out some kind of step-by-step for certain things.  Like examples.  Consider the follow set example.
 
 Oh, the first and follow set examples:  maybe give them the way to do it by hand?  No need to show them the computer code to do it.
@@ -511,17 +498,56 @@ Is there a specific name for the kinds of things a regular grammar can't accompl
 
 https://cs.stackexchange.com/questions/51189/ambiguity-vs-context-sensitivity
 https://en.wikipedia.org/wiki/Ambiguous_grammar
-https://stackoverflow.com/questions/14589346/is-c-context-free-or-context-sensitive
+https://stackoverflow.com/questions/14589346/is-c-context-free-or-context-sensitive 
 
-put the drop downs into > format.  Easier to keep it separate from the rest of the text.
+Current problems with the slideshows:  take up a lot of space.  Cumbersome to create.  Can't focus on the actual content of the slides.  Spend too much time formatting.  Your step by steps are often divided into portions, but these portions sometimes get visually moved around, which is annoying.  You wouldn't need draw.io if you could just draw the pictures yourself while also guarenteeing that subsequent slides maintain the same proportions as the previous ones.  Wait, actually figuring out the layers thing might be best.  Maybe file a bug report to draw.io?  Maybe they would appreciate it.  Ah shit, just thought of a much simpler way to do it that would include the layers.  Your problem is the boxes grow as you make them, so you would have to turn off and turn on some layers.  How to get around it:  just 'grow' the box always in the same place.  Then when the box is done growing, put it somewhere, and put another square thing on top of one that is finished growing.  Now you don't have to turn off and turn on select layers.  Just label it 'state being created.'
 
+Also want to ask:  'why is top down parser easier to debug?'  reference the above stack exchange thing.  Both top down and bottom up are written using backus nar form.
 
-Layers: copy the whole thing or just do it incrementally?
-Definitely incrementally.  Imagine you had 1 node in layer 1.  Then you make 100 layers on top of it.  If you copy each layer, then change the position of node 1 in layer 100, none of the other layers get changed.  
+look at python's full grammar specification.
+
+create a 'build-up' and 'independent' template for draw.io.
 
 </details>
 
 
+<div>
+	picture 1
+	picture 2
+	picture 3
+</div>
+
+<script>
+
+function createSlideShows() {
+	var i;
+	var slideShows = document.getElementsByClassName("slideShow");
+	for (i = 0; i < slideShows.length; i++) {
+		slides[i].style.display = "none";
+	}
+}
+
+</script>
+
+<script>
+var slideIndex = 1;
+showSlidesSLIDESHOWNAME(slideIndex);
+
+function plusSlidesSLIDESHOWNAME(n) {
+  showSlidesSLIDESHOWNAME(slideIndex += n);
+}
+
+function showSlidesSLIDESHOWNAME(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlidesSLIDESHOWNAME");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  slides[slideIndex-1].style.display = "block";
+}
+</script>
 
 
 
