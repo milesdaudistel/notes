@@ -1221,23 +1221,10 @@ Opened in chrome by right clicking on a page then clicking inspect.
 
 #Draw.io
 
-Create shapes by dragging them onto the paper.
+For 'interactive diagrams', you custom link won't work unless every individual action works.  For instance, let's say you want to hide 2 buttons, button A and button B.  Button A is already hidden, button B is not.  Creating a custom link to hide them will not work because A is already hidden, breaking the link.
 
-Layers can be seen on top of each other.
+Wait, no. Shit is just fucked.  Might want to file a bug report.  Can't toggle layers based on tags.  Can only use IDs.  
 
-You can connect things between different layers.
-
-You need some way to anchor shapes to other shapes.  This way, when you move 1 shape, the other shape moves as well.
-
-Nevermind, the node dependencies are just too much.  Just copy the layers.
-
-How to move cells from one layer to another?
-
-https://desk.draw.io/support/solutions/articles/16000042490-how-to-move-cells-from-one-layer-to-another-
-
-For each rounded square block, look at the grid squares.  Each line of text in your square bubble should get a big square on the background.  This sentence probably means very little.
-
-If you can't make new shapes, try making a new layer and adding a shape.  Or try toggling some layers on and off.
 
 #Go
 
@@ -1354,3 +1341,5 @@ This actually applies to a lot more than just software engineering.
 
 #TODO
 makefiles 
+
+![plswork](pics/fuckingretarded.svg)
