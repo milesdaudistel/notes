@@ -1323,7 +1323,14 @@ Since spotflix runs on a server, and you have to log in to that server, they can
 
 `Platform` kind of like the terms library, framework, or API, but more general.  The 3 previous terms usually mean code that you call, but a platform can be something like a website template that you can extend.  I feel like Reddit is a kind of platform for forums.   
 
-`PaaS` stands for platform as a service.  I think cloud stuff like AWS and Google Cloud is PaaS.  
+`PaaS` stands for platform as a service.  I think cloud stuff like AWS and Google Cloud is PaaS.
+
+#Jupyter Notebooks
+A `jupyter notebook` combines code and `rich text`.  Rich text just means fancy stuff like markdown, latex, tables, etc.
+
+Notebooks have 2 parts.  `Kernels` are programs that run code segments in a notebook.  A compiler or interpreter, modified to be able to interface with the your notebook.  The `dashboard` is the GUI of jupyter notebooks.
+
+
 
 #Misc
 ![macshortcuts](pics/macshortcuts.png)
