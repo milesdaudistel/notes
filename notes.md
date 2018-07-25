@@ -834,6 +834,8 @@ This is a javascript method embedded in the same document as the above div eleme
 
 </details>
 
+`modal box` or just modal is a pop up box on a web page.  Not always bad.  Useful for giving the user context-sensitive input without redirecting them to another page or putting a bunch of new context inline with the rest of the page (kind of like how you're doing with the drop down menus).
+
 #Javascript
 <details><summary>keywords</summary>
 The `function` keyword can be used to define a function.
@@ -852,7 +854,7 @@ Fat Arrows (`=>`) are a way to create anonymous functions.  Example:
 
 	const z = (x, y) => { x * y };
 	
-Now z refers to an anonymous multiply function that takes in parameters x and y.  Note the function gives back x * y; the return keyword is omitted.  The last line of a fat arrow function is implicitly returned.  Another feature of fat arrows is that they don't provide a binding for the keyword this, and so this will retain its definition from the outer scope.
+Now z refers to an anonymous multiply function that takes in parameters x and y.  The last line of a fat arrow function is always returned.  In this cse, x * y.  Another feature of fat arrows is that they don't provide a binding for the keyword this, and so this will retain its definition from the outer scope.
 	
 Unlike the rest of javascript, the 'this' keyword is dynamically scoped for some reason.  On a global scope, it refers to the global object (the window).  In a class, it refers to the object of the class that is calling the method.  But what if you pass this as an argument to another function outside of that class?  The clock class component in the react.js section is a good example of this.  
 
@@ -874,6 +876,19 @@ Unlike the rest of javascript, the 'this' keyword is dynamically scoped for some
 In this example, we pass the tick function of clock to setInterval, which is a function outside of clock.  Simply passing this.tick to setInterval will not work, because setInterval is a built in global method, so this will refer to the global object.  To fix this, we should instead pass `() => this.tick()` to setInterval, which is just a fat arrow function that passes in no parameters. 
 	
 </details>
+
+`Spread operator` lets you pull apart iterables.  It looks like `...`.
+
+    const x = { y: 1, z: 2 };
+    const { y, ...rest1 } = x; 
+    const { a, ...rest2 } = x;
+    
+    console.log(y);        //should print 1
+    console.log(rest1.y);  //should print undefined
+    console.log(rest1.z);  //should print 2
+    console.log(a);        //should print undefined
+    console.log(rest2.y);  //should print 1
+    console.log(rest2.z);  //should print 2
 
 <details><summary>important functions</summary>
 
@@ -975,7 +990,7 @@ This is not javascript, and it is not html.  It's jsx, which can be read by reac
 	  document.getElementById('root')
 	);
 	
-jsx looks a lot like javascript.  Most of this stuff is just regular javascript.  The element part could have been written as `const element = <h1> Hello, {formatName(user)}!</h1>;` but it's a little big to be on one line.  If you want your html portion to be on multiple lines, put it in parenthesis.  Also note that formatName(user) is in curly braces.  This indicates that we should treat it like regular javascript.
+jsx looks a lot like javascript.  Most of this stuff is just regular javascript.  The element part could have been written as `const element = <h1> Hello, {formatName(user)}!</h1>;` but it's a little big to be on one line.  If you want your html portion to be on multiple lines, put it in parenthesis.  Also note that 'formatName(user)' and 'user' are in curly braces.  This indicates that we should treat it like regular javascript.
 
 Just like you can put javascript into html with jsx, you can put html into your javascript.
 
@@ -999,7 +1014,7 @@ Tag attributes can also be javascript stuff in curly braces.
 </details>
 
 <details><summary>elements</summary>
-jsx creates react elements, the basic building block of react, which get rendered to the DOM.  Elements describe what you want to see on the screen.
+Just like in html, jsx has elements, which are things between tags.  They get rendered to the DOM.  Elements describe what you want to see on the screen.
 
 	const element = <h1>Hello, world</h1>;
 	ReactDOM.render(element, document.getElementById('root'));
@@ -1010,7 +1025,7 @@ React elements can't be updated, they are static.  In order to change a react we
 </details>
 
 <details><summary>components</summary>
-Components jsx wrappers to javascript functions.  They take in props (short for properties, same thing as parameters), and return react elements.  Props are strings, ints, elements, or other componenets.  Components cannot modify the value of their props.
+Think of components as classes, where the objects created from them are react elements.  For instance, you could call a Clock component that you could call like this:  `<Clock />`.  This could display all kinds of crazy stuff that we've put elsewhere in our code.  Components take in `props` just like classes take in parameters on creation.  Props can be strings, ints, elements, or other components.  Components can't mutate their props.
 
 Here's an example component, Welcome:
 
@@ -1344,9 +1359,52 @@ this is a record of you trying your best to learn.  even if it doesn't work out,
 remember: learn top down, not bottom up.
 
 'you should try and understand what is happening before you try to fix it' justin's advice to you.  
-This actually applies to a lot more than just software engineering. 
+This actually applies to a lot more than just software engineering.
 
+That feeling you get when you 'get something but not really.'  The feeling like you know that tomorrow you won't understand it.  That's the feeling of you not having a simple way to remember what you've just learned.  You've gotten past the 'doing it' part of learning, but you haven't gotten to the 'explaining it' part of learning.  The way to learn things and keep them learned, you need to be able to reduce what you've learned to a single phrase, sentence, or concept.  Then, for this simple concept, if there is a part of it you don't understand, you should be able to ask yourself 'what does this part really mean?' and through that question, break it up into smaller pieces.  Chunking.  It's like a parse tree.  It is a parse tree.  It's actually easier to remember the parse tree than it is to just remember the leaves at the end, because really you're not actually remembering all of the tree.  You're only remembering the steps it took to derive that tree.  If you have the root of the tree, you can turn it into the next 2 steps, then the next 2 steps, etc.  Here's an example:
+
+React is a UI tool that combines html and javascript into 1 thing.
+To which you would ask 'how?'
+
+With jsx files.  You have elements, which are like html elements, and components, which are like javascript functions.
+
+Then you would ask 'how do elements work?' or 'how do components work?'
+
+And the parse tree continues.  You could also ask things like 'what is html, or javascript?'  These would be like going up the parse tree.
+
+You should also find an example of Richard Feynmann explaining something very simply.  He uses the chunking method.  Also, thanks Barbara.
+
+Use a complex math example.  Like 'what is a probability distribution?'  Your leaf nodes don't need to be the basics of math.  You can stop whenever, and just say 'this is a leaf node, but you could keep going with it if you actually don't know what something is'.  'Here is what to do when you have no idea what to do.'
+
+#Python
+By default, MacOS has Python 2.7.  If you want multiple versions of python, you'll have to use python virtual environments.  
+
+`pip` is the package manager specifically for python.  Don't use brew or apt for python.
+
+`conda` is an alternative package manager for python.  While pip is specifically for python, conda aims to also support things that aren't python, but are closely tied with python, like MKL and LLVM.
+
+`anaconda` is conda + virtual environments.  So anaconda will let you manage your python versions as well as your packages.  Some people call it a `distribution`.  I think they use this term because anaconda is similar to a virtual machine, but lighter weight.  Kind of like a container.  Jupyter notebooks recommend using anaconda, so you should use them.
+
+<details><summary>What if I install something in pip, will conda know what it is?  Do they interact in any way?</summary>
+I can't say for certain what will happen if you're running both pip and conda directly on the same machine, but if you use conda through anaconda, they will not interact.  Anaconda is basically a virtual machine, so it's separate from the rest of the OS.
+</details>
+
+`jupyter notebooks additional stuff to be merged`
+after you've downloaded anaconda and jupyter notebook, you open it by typing the command 'jupyter notebook' on the command line.  This will run it in a web browser (but it will only be running locally on your computer).
+
+Do you need to be in your anaconda environment to launch jupyter notebooks?  Yes, I think so.
+
+What opens is the dashboard.  the dashboard lets you make new notebooks and change what kernels are running.  If you go to file->new->Python_something, this will open up a new notebook and also potentially a python kernel.  
+
+Why does a terminal open when I make a new notebook?  It's there so you can have interactive terminal sessions.  Not sure why you would need that.  Notebooks seem interactive enough.
+
+A kernel isn't just a compiler/interpreter.  It's a process that runs your compiler / interpreter.
+
+If you save something in jupyter notebook, it's just saved to your local machine.
+
+How do I get new libraries for jupyter notebooks?  I think you can just use conda.  Need to figure out if jupyter depends on anaconda.
+
+do I create virtual environments through conda or anaconda?  I thought anaconda _was_ a virtual environment, not something that _made_ virtual environments.  I don't know.  We'll figure it out later.
+ 
 #TODO
-makefiles 
-
-![plswork](pics/fuckingretarded.svg)
+makefiles
