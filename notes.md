@@ -967,10 +967,8 @@ React is a javascript library for UI stuff, and only UI stuff.  Node.js is for m
 	
 This is not javascript, and it is not html.  It's jsx, which can be read by react and translated into javascript.  It can do everything javascript can do.  Remember how javascript can be embedded in html?  You write html, then you write javascript, then you reference the js file in your html.  Markup(html) and logic(js) are separate.  In jsx, they are not separate, and that makes it easier to read and write UI stuff.
 
+Here's a code example:
 
-
-<details><summary>basic syntax</summary>
-	
 	function formatName(user) {
 	  return user.firstName + ' ' + user.lastName;
 	}
@@ -991,42 +989,11 @@ This is not javascript, and it is not html.  It's jsx, which can be read by reac
 	  document.getElementById('root')
 	);
 	
-jsx looks a lot like javascript.  Most of this stuff is just regular javascript.  The element part could have been written as `const element = <h1> Hello, {formatName(user)}!</h1>;` but it's a little big to be on one line.  If you want your html portion to be on multiple lines, put it in parenthesis.  Also note that 'formatName(user)' and 'user' are in curly braces.  This indicates that we should treat it like regular javascript.
+The formatName function and user are just javascript.  The stuff in element is regular html with javascript embedded.  The way it's put together is what makes it react, by setting the html equal to element and throwing it in the react dom.  Notice in element that you can call javascript by wrapping it in curly braces.
 
-Just like you can put javascript into html with jsx, you can put html into your javascript.
+`elements` are things between tags, just like in html.  They're displayed by the dom.  The 'element' in the example above gets rendered as the root.  Everything else in react will be contained by it.
 
-	function getGreeting(user) {
-	  if (user) {
-	    return <h1>Hello, {formatName(user)}!</h1>;
-	  }
-	  return <h1>Hello, Stranger.</h1>;
-	}
-	
-This javascript-like function returns html stuff.
-
-To specify a tag attribute, put it in quotes.
-
-	const element = <div tabIndex="0"></div>;
-	
-Tag attributes can also be javascript stuff in curly braces.
-
-	const element = <img src={user.avatarUrl}/>;
-
-</details>
-
-<details><summary>elements</summary>
-Just like in html, jsx has elements, which are things between tags.  They get rendered to the DOM.  Elements describe what you want to see on the screen.
-
-	const element = <h1>Hello, world</h1>;
-	ReactDOM.render(element, document.getElementById('root'));
-
-This element is turned into a DOM root node by the render function.  Specifying to react that an element is a root node means that the react-specific DOM will take care of the root, and all of its children.  For most commercial apps, you'll need a combination of react and non-react stuff, so a root node doesn't just mean 'everything in this file'.
-
-React elements can't be updated, they are static.  In order to change a react web page, the element must be rerendered.
-</details>
-
-<details><summary>components</summary>
-Think of components as classes, where the objects created from them are react elements.  For instance, you could call a Clock component that you could call like this:  `<Clock />`.  This could display all kinds of crazy stuff that we've put elsewhere in our code.  Components take in `props` just like classes take in parameters on creation.  Props can be strings, ints, elements, or other components.  Components can't mutate their props.
+`components` are like classes, where the objects created from them are react elements.  For instance, you could create a Clock component that you could call like this:  `<Clock />`.  This could display all kinds of crazy stuff that we've put elsewhere in our code.  Components take in `props` just like classes take in parameters on creation.  Props can be strings, ints, elements, or other components.  Components can't mutate their props.	
 
 Here's an example component, Welcome:
 
@@ -1040,11 +1007,11 @@ Here's an example component, Welcome:
 	  document.getElementById('root')
 	);
 
-Welcome takes in props, and returns a new element saying Hello, name.  Then const element is set to the return value of Welcome when passed the prop "Sara".
+You can hand a component anything as a prop, but if you want it to work right, look at what props it's using.  Welcome uses a prop called 'name', so when we use the Welcome component, we should hand it a prop called 'name'.
 
-An important note is that components must start with an upper case letter.  If they don't, jsx will not recognize them as components.
+Components must start with an upper case letter, just like class names.
 
-Now we're going to look at why components are useful.  They can encapsulate more than a simple jsx function is capable of.  Consider the following example of a clock function:
+There's a right way to make components, and a wrong way.  Here's an example of the wrong way:
 
 	function Clock(props) {
 	  return (
@@ -1055,6 +1022,17 @@ Now we're going to look at why components are useful.  They can encapsulate more
 	  );
 	}
 	
+We'll say this is in Clock.jsx, a library you downloaded.  If you wanted to actually use this component, you would probably do it like this:
+
+	var Clock = require('/path/to/whatever/Clock'); 
+	<Clock date={new Date()} />
+	
+The Date function would be called, and the clock would display the current time, but it wouldn't tick.  I mean, it would if the user was clicking the page refresh button over and over, but that's stupid.
+
+To actually make the clock tick on its own, you would have to do this:
+	
+	var Clock = require('/path/to/whatever/Clock');
+	
 	function tick() {
 	  ReactDOM.render(
 	    <Clock date={new Date()} />,
@@ -1064,16 +1042,11 @@ Now we're going to look at why components are useful.  They can encapsulate more
 	
 	setInterval(tick, 1000);
 	
-The setInterval function will call tick every 1 second (1000 milliseconds).  The tick function will render a new clock, with a new date.  
+The setInterval function will call tick every second (1000 milliseconds).  The tick function will rerender the page with a new clock, displaying the new time.
 
-This will run, but it would be better if tick and setInterval were defined and called inside the clock.  If someone wanted to use the clock function outside of the file it was defined in, they would have to call setInterval(tick, 1000) in their own code.  Ideally, we would want users to be able to create a new clock like this:
+So you got it to work, but it shouldn't be this hard.  All clocks work the same.  You should be able to call something like `<Clock />` and be done with it.  You shouldn't need to create a tick function, or know what the setInterval method is.
 
-	ReactDOM.render(
-	  <Clock />,
-	  document.getElementById('root')
-	);
-	
-This way, they can create a clock without needing to know about setInterval or tick.  To do this, we will create clock as a class component, rather than a function component.  Here is how it is done:
+Here's how to create a clock component the right way:
 
 	class Clock extends React.Component {
 	  constructor(props) {
@@ -1108,20 +1081,38 @@ This way, they can create a clock without needing to know about setInterval or t
 	  }
 	}
 	
+
+	
+To which you could render the clock like so:
+
+	var Clock = require('/path/to/whatever/Clock');
+
 	ReactDOM.render(
 	  <Clock />,
 	  document.getElementById('root')
 	);
 	
-In the constructor of a class component, we must always call super on our props.  Also, date is no longer a prop, which means we don't need a user to pass it in as a parameter.  Finally, this.state has a special meaning.  The state of a class component is meant to hold things that change frequently, and change consistantly (in a way that is predictable, like time, or when a user clicks on something).  Not everything should go in this.state, as we'll soon see.
+This component is created using an actual class rather than a function.  This way we can put other functions in it.
 
-The componentDidMount and componentWillUnmount are called lifecycle hooks.  componentDidmount is called once at the first rendering.  It passes the tick function to setInterval, and makes it tick every second.  Notice that we put the value returned by setInterval into this.timerID, which is not a part of state.  This is because the timer object returned by setInterval will never change.  Since state is made to house attributes that change frequently, and the timers ID will never change, it should not go in state.
+In the constructor, we always have to call super on our props.  I don't know why they don't just do this implicitly.  `this.state` is special.  State holds data that can change.  Things like the current time, or the number of mouse clicks on a button that displays how many times it's been clicked.
 
-componentWillUnmount will be called if the clock is ever removed from the DOM (the screen).  Removing the clock from the DOM doesn't stop the every-second updates, it just stops the user from seeing the clock.  If we didn't completely destroy the clock, a user who navigates to the page with the clock multiple times will end up updating a whole bunch of clocks that they can't see, potentially slowing down their system.
+`componentDidMount` is called implicitly the first time the clock is rendered.  TimerID is not part of state because it never changes.  The weird way we pass this.tick is because of how the this keyword works.  Find that in the javascript section.
 
-tick and render are the same as before.
+`componentWillUnmount` is called implicitly when we leave the clock web page.  If it doesn't call the clearInterval function, setInterval will continue in the background.  If the user were to refresh their page 10 times, they would have 10 setIntervals running.  They would have to kill their browser to kill the setInterval processes.
 
-Finally, we have ReactDOM.render (which will call Clock's render function).  Notice that now all you have to do to set up a new clock is say `<Clock />`.  No need to explicitly call setInterval or reference tick.
+`render` is a special function that gives ReactDOM.render instructions for rendering a Clock component.
+
+`Component State` is tricky, since it's the part of a component that can change.  You can't update state directly unless it's in the constructor.  Otherwise, use the `setState` method.  
+
+The setState method doesn't immediately change the state.  It puts the wanted changes onto a queue.  Then react optimizes the queue.  It may combine similar updates, drop updates if 1 is identical to another, etc.  
+
+
+In order to optimize state updates, we don't change state directly; we put state updates on a queue.  Then react can perform optimizations on those updates.  This can lead to problems.  Take this example:
+
+	this.setState({
+	  counter: this.state.counter + this.props.increment,
+	});
+	
 
 <details><summary>Component State</summary>
 
@@ -1159,8 +1150,6 @@ If you pass setState a function, it behaves differently.  setState will give the
 	}));
 	
 Only providing 2 parameters is fine, context will just be ignored.
-
-</details>
 
 </details>
 
