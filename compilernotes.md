@@ -459,6 +459,11 @@ There's also another problem:  the runtime of this algorithm.  Our parser starts
 Here's how we actually made this graph:
 
 	insert whole 'ShiftReduceStepByStep' xml file here.
+	
+<details><summary>Here's how we actually made this graph</summary>
+
+<img src="pics/test.svg">
+</details>
 
 You also need to explain how this gets turned into that really complicated table.
 
@@ -509,45 +514,6 @@ look at python's full grammar specification.
 create a 'build-up' and 'independent' template for draw.io.
 
 </details>
-
-
-<div>
-	picture 1
-	picture 2
-	picture 3
-</div>
-
-<script>
-
-function createSlideShows() {
-	var i;
-	var slideShows = document.getElementsByClassName("slideShow");
-	for (i = 0; i < slideShows.length; i++) {
-		slides[i].style.display = "none";
-	}
-}
-
-</script>
-
-<script>
-var slideIndex = 1;
-showSlidesSLIDESHOWNAME(slideIndex);
-
-function plusSlidesSLIDESHOWNAME(n) {
-  showSlidesSLIDESHOWNAME(slideIndex += n);
-}
-
-function showSlidesSLIDESHOWNAME(n) {
-  var i;
-  var slides = document.getElementsByClassName("mySlidesSLIDESHOWNAME");
-  if (n > slides.length) {slideIndex = 1}    
-  if (n < 1) {slideIndex = slides.length}
-  for (i = 0; i < slides.length; i++) {
-      slides[i].style.display = "none";  
-  }
-  slides[slideIndex-1].style.display = "block";
-}
-</script>
 
 
 

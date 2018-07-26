@@ -1291,25 +1291,31 @@ Since spotflix runs on a server, and you have to log in to that server, they can
 `PaaS` stands for platform as a service.  I think cloud stuff like AWS and Google Cloud is PaaS.
 
 #Jupyter Notebooks
+http://jupyter-notebook.readthedocs.io/en/stable/notebook.html
+Check out this guide.  Easy.
+
 A `jupyter notebook` combines code and `rich text`.  Rich text just means fancy stuff like markdown, latex, tables, etc.
 
-Notebooks have 2 parts.  `Kernels` are programs that run code segments in a notebook.  A compiler or interpreter, modified to be able to interface with the your notebook.  The `dashboard` is the GUI of jupyter notebooks.
+Notebooks have 2 parts.  A `kernel` is a process that runs code segments in a notebook.  The `dashboard` is the GUI of jupyter notebooks.
 
-After you've downloaded anaconda and jupyter notebook, you open it by typing the command 'jupyter notebook' on the command line.  This will run it in a web browser (but it will only be running locally on your computer).
+After you've downloaded anaconda and jupyter notebook (read about that in the python section), you open it by typing the command 'jupyter notebook' on the command line.  This will run it in a web browser (but it will only be running locally on your computer).
 
-Do you need to be in your anaconda environment to launch jupyter notebooks?  Yes, I think so.
+Jupyter notebooks have a `.ipynb` file extension.  All files will be saved on your local machine.  
 
-What opens is the dashboard.  the dashboard lets you make new notebooks and change what kernels are running.  If you go to file->new->Python_something, this will open up a new notebook and also potentially a python kernel.  
+To edit a cell, click it.  If the cell is green, you're in `editor mode`.  If the cell is blue, you're in `command mode`.  Press `shift+enter` to run a code cell.
 
-Why does a terminal open when I make a new notebook?  It's there so you can have interactive terminal sessions.  Not sure why you would need that.  Notebooks seem interactive enough.
+`Helpful stuff` is helpful.
+>`Kernel -> Restart` will restart your kernel if you accidently kill it.  Here's an example program that will segfault and crash your kernel:
 
-A kernel isn't just a compiler/interpreter.  It's a process that runs your compiler / interpreter.
+	import time
+	time.sleep(10)
 
-If you save something in jupyter notebook, it's just saved to your local machine.
+>`Cell -> Run All (Above | Below)` with this command, you can run all the cells, or run all the cells above/below your currently selected cell.
+>`Cell -> Cell Type` lets you choose what kind of code you want.  Python, markdown, plain text, etc.
+>`Large outputs` If the output of your code is large, click to the left of it to collapse it.
+>`Command mode + dd` deletes a cell.
 
-How do I get new libraries for jupyter notebooks?  I think you can just use conda.  Need to figure out if jupyter depends on anaconda.
-
-do I create virtual environments through conda or anaconda?  I thought anaconda _was_ a virtual environment, not something that _made_ virtual environments.  I don't know.  We'll figure it out later.
+`Markdown` is used often in jupyter notebooks.  You can use `Latex` in your notebook inline by putting it between dollar signs, or on its own with double dollar signs.  Again, can't just type dollar sign because of dumb macdown formatting issues.
 
 #Python
 By default, MacOS has Python 2.7.  If you want multiple versions of python, you'll have to use python virtual environments.  
@@ -1356,3 +1362,6 @@ You should also find an example of Richard Feynmann explaining something very si
 Use a complex math example.  Like 'what is a probability distribution?'  Your leaf nodes don't need to be the basics of math.  You can stop whenever, and just say 'this is a leaf node, but you could keep going with it if you actually don't know what something is'.  'Here is what to do when you have no idea what to do.'
 
 makefiles
+
+
+trying with sliders, but fuckery.  In macdown, i can't use the arrow keys.  in jupyter notebook, i can use the arrow keys, but 
