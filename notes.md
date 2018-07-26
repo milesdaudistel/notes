@@ -1112,46 +1112,6 @@ In order to optimize state updates, we don't change state directly; we put state
 	this.setState({
 	  counter: this.state.counter + this.props.increment,
 	});
-	
-
-<details><summary>Component State</summary>
-
-As we saw in the clock example, only things that get modified frequently and consistently should go in the state.
-
-Do not modify the state directly.  For example, this will not re-render a component:
-
-	// Wrong
-	this.state.comment = 'Hello';
-
-Instead, use setState():
-
-	// Correct
-	this.setState({comment: 'Hello'});
-
-The only place where you can assign this.state is the constructor.
-
-`React state updates are asynchronous`  
-this.props and this.state may be updated asynchronously. you should not rely on their values for calculating the next state.
-
-For example, this code may fail to update the counter:
-
-	// Wrong
-	this.setState({
-	  counter: this.state.counter + this.props.increment,
-	});
-
-Think of calling setState as enquing an update, not necessarily performing it right away.  If this.state.counter = 0, and this.props.increment = 1, you would expect that calling this.setState 10 times would result in this.state.counter = 10.  However, it is possible that the addition this.state.counter + this.props.increment may happen without reassigning to counter right away.  Then you will have enqued 10 call to make this.state.counter = 0 + 1, and the final result will be 1.
-
-If you pass setState a function, it behaves differently.  setState will give the triplet (state, props, context) to your function.  state, etc are potentially different from this.state, etc, as they are handed to your function from the previous function in the queue.
-
-	// Correct
-	this.setState((prevState, props) => ({
-	  counter: prevState.counter + props.increment
-	}));
-	
-Only providing 2 parameters is fine, context will just be ignored.
-
-</details>
 
 `preventDefault`
 Stops the default behavior of most things.  The default behavior of clicking a link is to redirect to that page.  You can prevent this and do something else when the link is clicked.
