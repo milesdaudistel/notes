@@ -1101,56 +1101,31 @@ In the constructor, we always have to call super on our props.  I don't know why
 
 `render` is a special function that gives ReactDOM.render instructions for rendering a Clock component.
 
-`Component State` is tricky, since it's the part of a component that can change.  You can't update state directly unless it's in the constructor.  Otherwise, use the `setState` method.  
+`Component State` is tricky, since it's the part of a component that can change.  You can't update state directly unless it's in the constructor.  Otherwise, use the `setState` method.   
 
-The setState method doesn't immediately change the state.  It puts the wanted changes onto a queue.  Then react optimizes the queue.  It may combine similar updates, drop updates if 1 is identical to another, etc.  
-
-
-In order to optimize state updates, we don't change state directly; we put state updates on a queue.  Then react can perform optimizations on those updates.  This can lead to problems.  Take this example:
+setState doesn't change state directly; it puts state updates on a queue.  This way react can perform optimizations on those updates.  This can lead to problems.  Take this example:
 
 	this.setState({
 	  counter: this.state.counter + this.props.increment,
 	});
 	
+Let's say the counter is initially 0.  If we enqueue this update 10 times for instance, you would expect the counter to be 10.  But react may evaluate the expression for each update before applying them.  So each update would become
 
-<details><summary>Component State</summary>
-
-As we saw in the clock example, only things that get modified frequently and consistently should go in the state.
-
-Do not modify the state directly.  For example, this will not re-render a component:
-
-	// Wrong
-	this.state.comment = 'Hello';
-
-Instead, use setState():
-
-	// Correct
-	this.setState({comment: 'Hello'});
-
-The only place where you can assign this.state is the constructor.
-
-`React state updates are asynchronous`  
-this.props and this.state may be updated asynchronously. you should not rely on their values for calculating the next state.
-
-For example, this code may fail to update the counter:
-
-	// Wrong
 	this.setState({
-	  counter: this.state.counter + this.props.increment,
+	  counter: 0 + 1, 
 	});
+	
+Really it would be optimized to `counter: 1` but this seems clearer.  Anyway, now you're just assigning counter to be '1' 10 times.
 
-Think of calling setState as enquing an update, not necessarily performing it right away.  If this.state.counter = 0, and this.props.increment = 1, you would expect that calling this.setState 10 times would result in this.state.counter = 10.  However, it is possible that the addition this.state.counter + this.props.increment may happen without reassigning to counter right away.  Then you will have enqued 10 call to make this.state.counter = 0 + 1, and the final result will be 1.
+You can solve this issue by passing setState a function.  When setState gets a function, it behaves differently.  Here's an example:
 
-If you pass setState a function, it behaves differently.  setState will give the triplet (state, props, context) to your function.  state, etc are potentially different from this.state, etc, as they are handed to your function from the previous function in the queue.
-
-	// Correct
 	this.setState((prevState, props) => ({
 	  counter: prevState.counter + props.increment
 	}));
 	
-Only providing 2 parameters is fine, context will just be ignored.
+When passed a function, setState will put the previous state in the queue as the argument to prevState.  When the item in the queue is ready to be applied, the current props are passed in.
 
-</details>
+Why not the props from the previous state?  Couldn't tell you.
 
 `preventDefault`
 Stops the default behavior of most things.  The default behavior of clicking a link is to redirect to that page.  You can prevent this and do something else when the link is clicked.
