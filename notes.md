@@ -397,6 +397,17 @@ A container is like a virtual machine, but lighter weight.  While a VM requires 
 So, VMs are big and slow.  Containers are small and fast.  However, the more you modify in a container, the bigger it gets, and the more like a VM it becomes.
 
 Of course, python virtual environments also solve this problem, but that's just for python.  Containers work for any piece of software you can think of.
+
+You should find that one article you've linked somewhere 'containers are not like VMs'.  Also, simpler explanation: whenever you download a program and want to run it, it changes your computers environment.  It could change, update, or delete just about anything on your operating system so that it can run.  So you might potentially break an old program by installing a new one.  How do you stop this from happening?  A lot of people used virtual machines.  If you mess something up in a virtual machine, you can just uninstall it or make another vm, whatever.
+
+The problem is that virtual machines are big.  You have a whole other operating system on top of yours.  It would be faster / easier to make a copy of just the files you needed.  This is where containers come in.  When you make a container, you make a special folder.  Let's say you download Java 10.4.  Java 10.4 needs file X.  Then you download C++17.  C++17 needs file X too, but modified.  If you do it in a container, C++17 will make a copy of file X, modify it, and keep it.  No one outside the container can see modified X.  
+
+If you did this using VMs, you would have 3 operating systems, totaling 48GB, and running a lot slower.
+If you do it with containers, you have 1 operating system, totaling 16GB + whatever is needed for modified X.
+Maybe with this above example, you should emphasize that it makes sure things don't break, and is simpler than a VM first.  This is just a positive consequence of those things.
+
+Now instead of having 3 operating systems, you have 1 operating system, + 1 extra copy of file
+Think of it like version control (git) but for files on your operating system.  Also think of it like smart files.  The files might have symlinks to other files, but they never modify them.
 </details>
 
 <details>
@@ -961,7 +972,7 @@ In this example, we have a Worker class, and an Engineer class that inherits fro
 
 
 #React.js
-React is a javascript library for UI stuff, and only UI stuff.  Node.js is for making a server (the client/server paradigm).  Angular is for both making a server and making a UI.  
+React is a javascript library for UI stuff, and only UI stuff.  Node.js is for making a server (the client/server paradigm).  Angular is for both making a server and making a UI.  It's not a framework.  It usually needs to be extended.
 
 	const element = <h1>Hello, world!</h1>;
 	
@@ -1132,59 +1143,12 @@ Why not the props from the previous state?  Couldn't tell you.
 `preventDefault`
 Stops the default behavior of most things.  The default behavior of clicking a link is to redirect to that page.  You can prevent this and do something else when the link is clicked.
 
-`Synthetic Event`
+`synthetic event`
 Events are different depending on what browser you're using.  Synthetic events wrap around these different events to make a uniform interface.
 
-<details><summary>controlled components</summary>
+`controlled components` are for html `form elements`.  A form element has user input.  A textbox, a radio button, a drop down menu, a submit button.  If we instead have react handle the form, it's a controlled component.  If we let html handle the form element, it's an `uncontrolled component`.  Controlled components are recommended.
 
-html form elements like input and select have their own state.  We want react to control the state to make this simple.  In react, these are called controlled components.
-
-In pure html:
-
-	<form>
-	  <label>
-	    Name:
-	    <input type="text" name="name" />
-	  </label>
-	  <input type="submit" value="Submit" />
-	</form>
-	
-In react:
-
-	class NameForm extends React.Component {
-	  constructor(props) {
-	    super(props);
-	    this.state = {value: ''};
-	
-	    this.handleChange = this.handleChange.bind(this);
-	    this.handleSubmit = this.handleSubmit.bind(this);
-	  }
-	
-	  handleChange(event) {
-	    this.setState({value: event.target.value});
-	  }
-	
-	  handleSubmit(event) {
-	    alert('A name was submitted: ' + this.state.value);
-	    event.preventDefault();
-	  }
-	
-	  render() {
-	    return (
-	      <form onSubmit={this.handleSubmit}>
-	        <label>
-	          Name:
-	          <input type="text" value={this.state.value} onChange={this.handleChange} />
-	        </label>
-	        <input type="submit" value="Submit" />
-	      </form>
-	    );
-	  }
-	}
-	
-</details>
-
-`context` If you have a lot of props and a really big component tree, it can be annoying to continually pass down props from one level to the next.  If there's stuff that every single thing in the component tree should have (like a UI theme), put it in the context.  Then all the children can access it without you having to explicity pass it.
+`this.context` If you have a lot of props and a really big component tree, it can be annoying to continually pass down props from one level to the next.  If there's stuff that every single thing in the component tree should have (like a UI theme), put it in the context.  Then all the children can access it without you having to explicity pass it.
 
 #Chrome Devtools
 
@@ -1204,8 +1168,7 @@ Opened in chrome by right clicking on a page then clicking inspect.
 
 For 'interactive diagrams', you custom link won't work unless every individual action works.  For instance, let's say you want to hide 2 buttons, button A and button B.  Button A is already hidden, button B is not.  Creating a custom link to hide them will not work because A is already hidden, breaking the link.
 
-Wait, no. Shit is just fucked.  Might want to file a bug report.  Can't toggle layers based on tags.  Can only use IDs.  
-
+Wait, no. Something is wrong.  Might want to file a bug report.  Can't toggle layers based on tags.  Can only use IDs.  
 
 #Go
 
@@ -1284,7 +1247,7 @@ Sprints and standups are the only ones I hear at work, so I'll just define those
 
 `Stand up` short meeting where everyone says what they’re doing for that day.
 
-`Framework` is just a bunch of template methods put together.  A framework is constricting to the user, offering them less flexibility, in return for making implementation a lot less of a hassle.  The term framework is usually used in web / enterprise programming.  I wouldn't say a single library is a framework because a library is a tool for a kind of computational task.  A framework is for ... I'll say product-creation tasks for now.  Web framework, graphical framework, etc.
+`Frameworks` are libraries that should contain everything you need to accomplish task X.  Regular libraries may need more extensions or dependencies, but a framework is a complete package.  A framework makes coding easier, but less flexible.  The term framework is usually used in web / enterprise programming.  Usually, a library is a tool for a kind of computational task.  A framework is for ... I'll say product-creation tasks for now.  Web framework, graphical framework, etc.  React is a library, since you need to extend it with other stuff usually.  Node is a framework, since you don't need to extend it with stuff.
 
 `API` stands for application programming interface.  If you use a library, say numpy, the functions of the library that you call are part of the API.  The functions that are potentially called in the background (as in not called by you) are not part of the API.  If you make a phone app that potentially uses the camera, you shouldn't have to write any functions that would open up the camera app.  Instead, the camera app should have an api that will allow you to just call it from within your own app.  In terms of web servers and services, an API is the part of that service that receives/reads requests and sends responses.
 
@@ -1346,7 +1309,10 @@ By default, MacOS has Python 2.7.  If you want multiple versions of python, you'
 I can't say for certain what will happen if you're running both pip and conda directly on the same machine, but if you use conda through anaconda, they will not interact.  Anaconda is basically a virtual machine, so it's separate from the rest of the OS.
 </details>
 
+#linear algebra
+`vectors` are lists of numbers.  In regular algebra, you used `scalar` numbers to describe things.  4 apples.  1 person.  3 slices of pie.  In linear algebra, you use vectors to describe things.  Each number in the list describes some characteristic of the thing you're describing.  We could say an apple is described by a vector where the first number describes the apples weight, the second describes its volume, the third describes its caloric content, and the fourth describes its acid content.
 
+In physics, vectors are often thought of as arrows in space, usually 2d or 3d space.  Each number in these vectors describes one of the d's (dimensions) in those spaces.  Really, it's the same either way.  You could interpret a physics vector as just a list of numbers, and you could interpret an apple vector as an arrow in 4-dimensional apple space.
 
 #Misc
 ![macshortcuts](pics/macshortcuts.png)
@@ -1379,5 +1345,7 @@ Use a complex math example.  Like 'what is a probability distribution?'  Your le
 
 makefiles
 
+You should write something about your experience with this assignment.  You've wasted so much time.  You just completely forgot that the debugger existed.  What were you supposed to do about that?  No one knew to tell you to use the debugger because it's the most obvious thing for DEBUGGING A PROGRAM.
 
-trying with sliders, but fuckery.  In macdown, i can't use the arrow keys.  in jupyter notebook, i can use the arrow keys, but 
+Read all the code.  You're taking 2 weeks to do this thing.  Reading all the code will not take 2 weeks.  It will pretty much always save you a lot of time.
+Don't read ALL the code.  Find the top level of the thing you're trying to do, maybe go through it with a debugger to find all the related files.  Then read all of those files.  Maybe try making a tree of functions?  Just the functions in your code, not built in functions.  Maybe the built in functions if it's stuff like the constructor, or special methods like render that you define.  The bottom line is read all the code.  Not reading all the code is trying to save time.  It never saves time.  It just takes away time.  Also maybe think about the file names and how the files relate to each other?
