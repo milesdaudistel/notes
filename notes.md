@@ -1309,11 +1309,6 @@ By default, MacOS has Python 2.7.  If you want multiple versions of python, you'
 I can't say for certain what will happen if you're running both pip and conda directly on the same machine, but if you use conda through anaconda, they will not interact.  Anaconda is basically a virtual machine, so it's separate from the rest of the OS.
 </details>
 
-#linear algebra
-`vectors` are lists of numbers.  In regular algebra, you used `scalar` numbers to describe things.  4 apples.  1 person.  3 slices of pie.  In linear algebra, you use vectors to describe things.  Each number in the list describes some characteristic of the thing you're describing.  We could say an apple is described by a vector where the first number describes the apples weight, the second describes its volume, the third describes its caloric content, and the fourth describes its acid content.
-
-In physics, vectors are often thought of as arrows in space, usually 2d or 3d space.  Each number in these vectors describes one of the d's (dimensions) in those spaces.  Really, it's the same either way.  You could interpret a physics vector as just a list of numbers, and you could interpret an apple vector as an arrow in 4-dimensional apple space.
-
 #Misc
 ![macshortcuts](pics/macshortcuts.png)
 
