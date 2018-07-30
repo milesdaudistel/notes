@@ -420,6 +420,18 @@ Allows you to make a VM, configure it, then share it with other people.  Require
 
 `CentOS`  completely free fork of RedHat.  Purely community backed.  Competes with Debian for use as server OS.
 
+`race conditions` are when 2 or more threads share data and the outcome depends on the order the threads execute.  Here's an example from stack overflow:
+
+	if (x == 5) // The "Check"
+	{
+	   y = x * 2; // The "Act"
+	
+	   // If another thread changed x in between "if (x == 5)" and "y = x * 2" above,
+	   // y will not be equal to 10.
+	}
+	
+Say thread 1 checks if x is 5, and it's true, so it goes into the if scope.  Then the scheduler switches to thread 2, which changes x to be 10.  Then thread 1 is back on, and it sets y to 2 times x, so 20.  But it just checked that x was 5, so it probably thinks that it just set y to 10.  Many problems arise from this, and are solved by using locks.
+
 #Development Tools and Environment
 `Unix` All programs need to run on an operating system, like Windows, Mac, and Linux.  MacOS and Linux are both descendents of the Unix operating system.  Windows is often also made to emulate the Unix operating system.  Everything defined below, like file system, terminal, shell, bash, command line, path, etc, are the Unix file system, the Unix terminal, etc.  Whether you're on Windows, Mac, or Linux, they have basically the same file system, terminal, etc.
 
