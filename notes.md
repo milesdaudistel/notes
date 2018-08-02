@@ -336,9 +336,18 @@ c) paginate the request, giving them a little bit of what they asked for (say a 
 
 Guess which one is best?
 
-#Databases
+#SQL
+`SQL` stands for Structed Query Language.  It's used to do stuff with data from databases.  You can't write pure sql, only an implementation, like MySQL, SQL Server, PostgreSQL, etc.  It's kind of like this: SQL is like the Linux kernel, and all of its flavors are like the different distributions; Ubuntu, Debian, etc.  They each have different bells and whistles, but they all implement the same core functionality of SQL.  Everything below applies to all types of SQL.
 
-There are 2 types of databases:  relational (anything with SQL) and non-relational (NoSQL, like MongoDB).  The first section will talk about relational databases.
+Which flavor do I pick?  Unlike Linux servers, it does kind of matter which one you choose.  I think postgres is the cool one right now.
+
+Why does making a query not save anything?  Imagine all the queries you could do.  It's like the superset of all your data.  Like columns^rows amount of data.  If you saved that data separately, you'd quickly run out of space on any computer.
+But won't it be slow?  Technically, yes.  It will be much slower.  But a single database transaction takes very little time from a humans perspective.  Retrieving data is fast.  Manipulating data (as in manipulating numbers) is slow.  Say your database takes 1 second to return all the data you need.  But if you optimized, it could take 0.01 seconds.  But lets say your big data program that crunches numbers takes 100 seconds to run.  Now it doesn't seem like such a big deal that your database is 100x slower than it could be.
+The point of all this is: the time it takes to retrieve data from a database is pretty much always negligable compared to whatever else you're doing.  It doesn't matter how fast it could potentially be.  What matters is that we keep the data size small, and also to keep SQL as simple as possible.  So when working with SQL, forget about runtime.  What matters is keeping things conceptually simple and clean.  I would say as long as your database queries take less than half a second to run, you're good.
+
+What is a good way to format data?  How do you keep your tables straight?
+
+`Tables` store data.  Each `field` (column) in the table is a type of data, and each `record` (row) is a data point.  Call them fields and records, not rows and columns.  Easier to keep it straight that way.  So each record has all the same fields, and each its own values for that field.  Think of each record as a single item, like a person, and each column as an attribute/trait of that person.
 
 `Tables` are the basic method of storing data.  Each `column` in the table is a type of data.  Here's an example of a table of cities:
 
