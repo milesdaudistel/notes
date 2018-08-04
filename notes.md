@@ -347,7 +347,64 @@ The point of all this is: the time it takes to retrieve data from a database is 
 
 What is a good way to format data?  How do you keep your tables straight?
 
-`Tables` store data.  Each `field` (column) in the table is a type of data, and each `record` (row) is a data point.  Call them fields and records, not rows and columns.  Easier to keep it straight that way.  So each record has all the same fields, and each its own values for that field.  Think of each record as a single item, like a person, and each column as an attribute/trait of that person.
+Maybe a good example would be literal transactions at a store.  Customer, each item they bought, amount they payed, and the date.  Then you could query for how much a certain customer bought in a day.  Or maybe there's 1 table that contains customer, time, and all the stuff they bought.  Another table contains items, and their prices.  So you could find out how much 1 person bought on a certain day by joining the tables and etc etc.  And it would also make sense as to why you would want to keep those tables separate.  Imagine if we put all the money values for each item as a column for each individual thing a customer bought.  We would have a lot of redundant cash values.  Oh look, Cindy bought apples.  Oh, Malcolm bought apples too.
+
+`Tables` store data.  Each `field` (column) in the table is a type of data, and each `record` (row) is a data point.  Call them fields and records, not rows and columns.  Easier to keep it straight that way.  Each record as a single item, like a person, a house, a song, whatever, and each field is an attribute/trait of that item.
+
+`Databases` are just a bunch of related tables.
+
+SQL syntax differs between implementations.  For most, keywords like select and from are case-insensitive.  Some implementations require semicolons (;), but not all.  Just figure it out on a case by case basis.
+
+For all the below examples, use this interactive SQL thing to test them out: https://www.w3schools.com/sql/trysql.asp?filename=trysql_select_all
+
+Example 1:
+
+	SELECT * FROM Customers
+
+The `SELECT` keyword says what you want to get from a table.  
+
+The `*` means 'everything' in a table.
+
+`FROM` tells the database which table you want to look in.
+
+So example 1 gets everything from the customers table and displays it.
+
+Example 2:
+
+	SELECT CustomerName, City FROM Customers
+	
+This does the same as above, but only selects the name and city fields from the customers table.
+
+Example 3:
+
+	SELECT Country FROM Customers
+	
+This gets a list of all the countries the customers are from.  Notice there are a lot of duplicates.  Like there are 2 Mexicos, 2 Germanys, and 2 Frances near the top.  We don't need all that.
+
+Example 4:
+
+	SELECT DISTINCT Country FROM Customers
+	
+The `DISTINCT` keyword will combine all identical records into 1 record.
+
+Now what if we wanted to just count how many countries there were?
+
+Example 5:
+
+	SELECT COUNT(DISTINCT Country) FROM Customers;
+	
+`COUNT` counts up the number of records.
+
+What if we want to filter things in some way that is more complex than just getting rid of duplicates?
+
+
+
+
+
+
+
+
+
 
 `Tables` are the basic method of storing data.  Each `column` in the table is a type of data.  Here's an example of a table of cities:
 
@@ -440,6 +497,20 @@ Allows you to make a VM, configure it, then share it with other people.  Require
 	}
 	
 Say thread 1 checks if x is 5, and it's true, so it goes into the if scope.  Then the scheduler switches to thread 2, which changes x to be 10.  Then thread 1 is back on, and it sets y to 2 times x, so 20.  But it just checked that x was 5, so it probably thinks that it just set y to 10.  Many problems arise from this, and are solved by using locks.
+
+#Licensing
+
+`GPL` is the GNU General Public License.  If app X is licensed as GPL, that means you can read X's source code, you can give it away to other people, and you can change it however you like.  If you make app Y that is a modified X, or uses X in some way, then Y automatically also have the GPL license.  This means you have to share Y's source code and give it away for free, basically.  Well, you are allowed to sell Y, but you also have to give it away for free.
+
+`LGPL` is GPL, but the first L stands for lesser.  Let's say app X is LGPL.  You make app Y that uses X.  Y doesn't automatically get the LGPL license, which means you can keep Y's code secret, and sell it.  However, let's now say to make Y work, you modified the source code of X a little.  In this case, you can still keep Y secret, but the modifications you made to X get the LGPL license, so the mods must be free and open source.
+
+`BSD` is more permissive that LGPL.  If app X is licensed as BSD, your app Y that depends on X doesn't inherit BSD, and your modifications to X also don't inherit BSD.  I think you could even sell X under a different name without showing the source code, but of course you would be a complete ass for doing so.
+
+<details><summary>If Linux is under GPL license, that means any software derived from it must also have the same license, right?  If that's the case, how come every server uses Linux?  For instance, how can AWS run so much stuff on top of Linux without making all of its source code public?</summary>
+Because the software written for use in AWS doesn't 'link to' the Linux kernel, it links to whatever compiler Amazon used to write the programs, and most compilers use either the LGPL or BSD licenses.
+
+Here's a real life example:  C++'s two most popular compilers are GCC and Clang.  GCC is under the GPL license, and Clang is under the University of Illinois/NCSA software license, which is basically the same as a BSD license.  Apple was originally using the GCC compiler, but due to licensing issues they switched to using Clang, since their license was more permissive.
+</details>
 
 #Development Tools and Environment
 `Unix` All programs need to run on an operating system, like Windows, Mac, and Linux.  MacOS and Linux are both descendents of the Unix operating system.  Windows is often also made to emulate the Unix operating system.  Everything defined below, like file system, terminal, shell, bash, command line, path, etc, are the Unix file system, the Unix terminal, etc.  Whether you're on Windows, Mac, or Linux, they have basically the same file system, terminal, etc.
@@ -922,6 +993,11 @@ In this example, we pass the tick function of clock to setInterval, which is a f
     console.log(a);        //should print undefined
     console.log(rest2.y);  //should print 1
     console.log(rest2.z);  //should print 2
+    
+
+The line `const { y, ...rest1 } = x;` is saying 'x has a y field, put that into it's own local variable (also called y), and put everything else from x into rest1'.
+
+The line `const { a, ...rest1 } = x;` is saying 'x has a a field, put that into it's own local variable (also called a), and put everything else from x into rest2'.  Since x doesn't actually have an 'a' field, a will remain undefined.
 
 <details><summary>important functions</summary>
 
