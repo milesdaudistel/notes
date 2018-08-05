@@ -25,6 +25,8 @@ In other words, the government assumes certain things about your paycheck, and a
 
 <details><summary>Interface</summary>
 
+This should really separated into different languages.  If something is common between all languages, put it here.  If it's not here, check whatever language you're using.
+
 Languages like Java and Go, and C++ all have very similar but not identical concepts called interfaces.
 
 An interface is roughly equivalent to an abstract class.  You can't create a variable with that specific type, but you can create classes that inherit from it.  Any class that inherits from this abstract class is said to 'implement its interface'.  In the below example, we have an interface called TimeMachine, and a PhaseShiftor and HyperCube class that implement it (since obviously shifting your phase and using a hybercube are 2 different ways to time travel).  You 
@@ -335,6 +337,48 @@ b) not give the user what they explicitly asked for
 c) paginate the request, giving them a little bit of what they asked for (say a page of 10 pictures), to which the user could then request the next 10 pages, then the next 10, etc.
 
 Guess which one is best?
+
+#C++
+
+`extern` variables let you use a global variable in another file.  Here's an example:
+
+	//in cool.h
+	extern int the_greatest_variable_of_all_time;
+	
+<!-- tsk -->
+
+	//in cool.cpp
+	int the_greatest_variable_of_all_time = 4; //note that this needs to be at file scope
+	
+<!-- tsk -->
+
+	//in stealingyocool.cpp
+	#include <iostream>
+	#include "cool.h"
+	
+	void perform_the_ultimate_sacrifice() {
+    std::cout << the_greatest_variable_of_all_time << std::endl;
+	}
+	
+I don't like them.
+
+`#define` keyword is for creating macros.
+
+	#include<iostream>
+	 
+	//macro definition
+	#define LIMIT 5
+	int main()
+	{
+	    for(int i=0; i < LIMIT; i++)
+	    {
+	        std::cout<<i<<"\n";
+	    }
+	     
+	    return 0;
+	}
+	
+
 
 #SQL
 `SQL` stands for Structed Query Language.  It's used to do stuff with data from databases.  You can't write pure sql, only an implementation, like MySQL, SQL Server, PostgreSQL, etc.  It's kind of like this: SQL is like the Linux kernel, and all of its flavors are like the different distributions; Ubuntu, Debian, etc.  They each have different bells and whistles, but they all implement the same core functionality of SQL.  Everything below applies to all types of SQL.

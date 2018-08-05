@@ -821,3 +821,115 @@ By default, all Postgres statements get wrapped with a BEGIN and COMMIT.
 </details>
 
 </details>
+
+`Shift Reduce Parsing`
+
+There are a few techniques for parsing, but we're only going to learn about shift reduce parsing since that's the kind of parser that Bison generates.
+
+SR parsers look through the tokens 1 at a time.  An SR parser keeps a stack of `items`.  Each item either a terminal (token) or non-terminal.  At each step of parsing, we do 1 of 2 things:  
+
+1 We could take a token from the token stream and put it on our item stack.  This is called a `shift`.
+
+2 We could use a production rule to combine multiple stack items into a single item.  This is a `reduce`.  Every time we reduce, we add a new node to our parse tree.
+
+An SR parser shifts and reduces over and over until it can't shift or reduce anymore.  If there is no more input, and the only item on our stack is the start symbol, we have successfully created a parse tree.
+
+Exactly how the SR parser decides whether to shift or reduce will remain mysterious for now.  Just know that sometimes the parser could either shift or reduce, and it always chooses the 'right' one to do.
+
+Below is an SR parsing example.  In our example grammar, T and E are non-terminals, and int, *, and + are terminals (tokens).  Our example input to the parser is 'int * int + int'.  The vertical bar character | is used show where we are in our parse.  For instance, 'int * int | + int' means that our parser has looked at the 3 tokens 'int * int' and has put them on the item stack.  The parser has not yet looked at '+ int', and it has not yet reduced anything.  Whenever a shift move occurs, we put another token onto our stack, and move the | over by 1.  When we do a reduce move, some things to the left of the | will be changed, and we won't look at another token of input for that step.
+
+def slideshow(slideNum):
+    return SVG(filename='./SR-Parser/SR-Parser-Page-' + str(slideNum) + '.svg')
+
+wg.interact(slideshow, slideNum=wg.IntSlider(min=1,max=11,step=1));
+
+<details>
+<summary>
+Reductions seem backwards.  If Production 1:  T -> int has the arrow going from T to int, why are we turning ints into Ts?
+</summary>
+
+To answer this question, I have to explain some history.  The first parsers did not use the shift reduce algorithm.  They instead used `recursive descent`.  Rather than taking tokens and combining them into non-terminals, they started at the start symbol non-terminal, and broke up the start symbol into its child terminals and non-terminals.  For example, it would start at E, and break that up into T using production 4.  Sometimes (most of the time) it would choose the wrong production.  So it would have to undo all of its work and break E up into T + E using production 5.
+
+Since recursive descent parsers came first, backus nar form has the arrows going from non-terminals to the parts that you break it up into.
+
+Recursive descent parsing is slow.  It can be sped up by using special kinds of CFGs, called LL(k) grammars.  If you use an LL(k) grammar, recursive descent is as fast as shift reduce.  However, LL(k) grammars are annoying to create.
+
+Interestingly, GCC and Clang (the two most popular C/C++ compilers) both use hand-coded recursive descent compilers.  They don't use bison, and they don't use shift reduce.  Supposedly it's easier to maintain your code if you do everything by hand.  But there are other languages like Ruby that do use parser generators like Bison.  Right now, I would recommend using a parser generator like Bison.  It's much less work.  C/C++ have to use hand-written because they're bloated from years of committees of people piling on features that were always conflicting with eachother.  It's a giant mess. 
+</details>
+
+<details><summary>Why does the parse tree end with a bunch of non-terminal symbols on it?  I thought it was supposed to only have terminal symbols.</summary>
+You are correct.  After we create the parse tree, we will remove all of the nonterminal symbols.  Exactly how we do this will come after we learn how the parser decides whether to shift or reduce. 
+</details>
+
+
+So how does the parser know which production to use?  Well, you know to use a production if that production can be traced back to the start symbol.
+
+The whole parser is a giant graph of shifts/reduces that can be traced back to the start symbol.  Here's a parser that can parse our E, T grammar:
+
+<img src="./ShiftReduceStepByStep/ShiftReduceStepByStep-Page-35.svg" />
+
+Here's how the graph works:
+
+Remember that our parser works in steps.  At each step, the parser decides whether to shift or reduce.  It decides by looking through the stack, bottom to top.  At each item in the stack, it makes a transition in the graph.
+
+Before explaining each part of the graph, let's first go through an example.
+
+Let's say we're parsing `int * int + int`, and the parse stack is `int * | int + int`, so 'int' and '*' are on the stack.  Now the parser decides what's next:  shift the next 'int', or reduce something on the stack?
+
+The parser looks at its graph, always starting in the start state.  Then it looks at the bottom of the stack, sees an 'int', and travels to state 4.  Then it sees a '*' and travels to state 8.  Now that the parser has gone through the entire stack, the final state is 8, and the shift/reduce decision is based on state 8.
+
+Each state has a bunch of `items` in it.  An item looks like a production with a . somewhere on its right hand side.  An item says 'This is a potential production that we could reduce by.  This dot tells us how much of the production we have seen so far.'  
+
+So in the start state, the item S\` -> .E says:  We haven't seen anything yet, because there's nothing to the left of the '.'.  If the next item on the stack is an E, we can transform that E into an S\`.
+
+An item says to shift if there's at least 1 thing to the right of its '.'.  If there is nothing to the right of the '.', then the item says to reduce.
+
+If the parser ended in state 10, it would decide to shift.  If the parser ended in state 11, it would decide to reduce by the production `T->(E)`.
+
+But most of these states have multiple items; how do we decide for those states?  First, notice that all the items are shift items for most of these states, like State 1, State 5, and State 6.  They all tell you to shift, and unlike reducing, there's only 1 way to shift an item.
+
+Here's how we actually made this graph:
+
+	
+    
+def slideshow(slideNum):
+    return SVG(filename='./ShiftReduceStepByStep/ShiftReduceStepByStep-Page-' + str(slideNum) + '.svg')
+
+wg.interact(slideshow, slideNum=wg.IntSlider(min=1,max=35,step=1));
+
+However, there is a problem.  States 3 and 4 both have 1 shift item and 1 reduce item.  This is a `shift/reduce conflict`.  As our graph is now, the parser can't decide whether to shift or reduce.  We can alleviate this problem by using follow sets, which I don't feel like explaining properly.  Basically, we just peek at the next thing on the stack without putting it on the stack.  If the next thing in the input is a '+', we shift.  If it's not a '+', we reduce.  There are also `reduce/reduce conflicts` which are also solved with follow sets.
+
+There's also another problem:  the runtime of this algorithm.  Our parser starts at the start state at every shift/reduce decision.  We can improve this by putting things on the stack along with the state that we finished on.  So instead of `int * | int + int`, we would have `(int 4) (* 8) | int + int`.  The things on the stack say 'we shifted an int because state 4 told us to, and \* because state 8 told us to'.  Now at the next shift/reduce decision, our parser looks at the thing at the top of the stack, (* 8), and starts in state 8.
+
+
+
+<details><summary>How do you tell where shift/reduce and reduce/reduce conflicts are just by looking at some productions?  How do you tell when a production is ambiguous?  What is the difference between a shift|reduce/reduce conflict and an ambiguity?</summary>
+
+Conflicts are a specific kind of easily resolvable ambiguity.  A conflict is where the compiler says 'I have these 2 paths and don't know which one to take' and you explicitly tell it 'just take this one'.  This 'resolves' the ambiguity without actually making the grammar unambiguous.  It's a cheat rule, a patch, however you want to think of it.
+
+Shift reduce conflicts are things like dangling elses.  They're pretty normal, and easy to resolve.  Reduce/reduce conflicts mean there is probably something wrong with your grammar.  Here's a reduce/reduce conflict in Bison:
+
+sequence:
+  %empty         { printf ("empty sequence\n"); }
+| maybeword
+| sequence word  { printf ("added word %s\n", $2); }
+;
+
+maybeword:
+  %empty    { printf ("empty maybeword\n"); }
+| word      { printf ("single word %s\n", $1); }
+;
+
+If you get a word, do you reduce by maybeword's production 2, or sequence's production 3?  A reduce/reduce conflict means that there is some redundancy in your grammar.
+
+
+</details>
+
+If doing the whole follow set thing doesn't work, then your grammar isn't `SLR`.  Also LALR.  Also ambiguity.
+If you make sure every element in the follow set of every thing corresponds to a unique production, you might not have to worry about LALR, since I think having this 'unique element' thing would make your grammar SLR.
+
+You also need to explain how this gets turned into that really complicated table.
+
+Also instead of S\` you should just have S, which goes to E followed by dollar sign (end of input).  I don't know why Aiken wasn't explicit on that part.
+
+Need to explain how epsilon productions work in your DFA:  remember that its an epsilon production, not an epsilon transition.  So you know to make the transitions based on what is immediately to the right of the '.'.  But For epsilon transitions, you make transitions for everything in their follow set.
