@@ -6,7 +6,7 @@ You need money, right? Quick advice: invest in ETFs, put money into your 401k, t
 </details>
 
 `Federal Taxes` below is a guide for how to do your federal taxes.  State taxes are a separate issue.
-
+ 
 https://www.artofmanliness.com/articles/taxes-for-beginners/
 
 `Tax Deductions` If you make 20k in total, and you write off your car repair costs (3k) as a tax deduction, you will only be taxed on 17k.  This is `itemized` tax deduction.  In order to do this, you need to keep the receipts.  Odds are you should just go with the `standard` tax deduction, which is 5.8k.
@@ -304,7 +304,9 @@ Seems pretty simple.  But what if the makers of the API wanted to add new types?
 		Vehicle buyVehicle(vType):
 			myVehicle = manufactor(vType)
 			
-So our API code gets more complicated, but it's easier for the user now.  There could be a million different vehicle types and the user wouldn't need to change their implementation.  And since there's hopefully going to be a lot more users of the API than creators of the API, this should save a lot of typing for most people.
+Our API code gets more complicated, but it's easier for the user now.  There could be a million different vehicle types and the user wouldn't need to change their implementation.  And since there's hopefully going to be a lot more users of the API than creators of the API, this should save a lot of typing for most people.
+
+So a factory method is a method that can return many different types of objects.  Which type of object it returns is specified by a parameter.
 
 `Design patterns: singleton` A singleton is a class that you should only ever need 1 object of.  For instance, if you are playing some game app, there's probably a class called game that contains everything else.  You don't want more than 1 game running at a time, so you would make that class a singleton.  It's pretty simple to implement.  Here's a java example:
 
