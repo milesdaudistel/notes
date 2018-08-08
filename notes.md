@@ -395,7 +395,7 @@ Maybe a good example would be literal transactions at a store.  Customer, each i
 
 `Tables` store data.  Each `field` (column) in the table is a type of data, and each `record` (row) is a data point.  Call them fields and records, not rows and columns.  Easier to keep it straight that way.  Each record as a single item, like a person, a house, a song, whatever, and each field is an attribute/trait of that item.
 
-`Databases` are just a bunch of related tables.
+`Databases` are a bunch of related tables.
 
 SQL syntax differs between implementations.  For most, keywords like select and from are case-insensitive.  Some implementations require semicolons (;), but not all.  Just figure it out on a case by case basis.
 
@@ -440,41 +440,6 @@ Example 5:
 `COUNT` counts up the number of records.
 
 What if we want to filter things in some way that is more complex than just getting rid of duplicates?
-
-
-
-
-
-
-
-
-
-
-`Tables` are the basic method of storing data.  Each `column` in the table is a type of data.  Here's an example of a table of cities:
-
-
-name      | population | area (km^2)
----------------+---------+---------
- Oakland  |      420k    |      201.7
- San Francisco |      871k |      121.4
- Barstow       |      24k |      107.2
- 
-`Databases` are collections of related tables.  If the columns of 1 table are the rows of another table, those tables are related.  Here's a table that relates to the  city table:
-
-region         | cities
----------------+---------
- Bay Area       |     San Francisco, Oakland
- Central Valley |      Sacramento, Chico
- Desert       |      Barstow, Riverside
- 
- 
-This region table is related to the cities table because its second column contains some of the same data as column 1 of the cities table.  So if you want information on a region of california, you can look in the regions table.  Some of the stuff you find in the regions table can be used to look up further information in other tables.
-
-`SQL` is a programming language for finding and modifying data in a database.  It is made up of a very small number of operations, for example Create, Delete, and Select.  ISO and ANSI control the language specification, but don't actually implement any of it.  There is no implementation of SQL called 'SQL' that you can download.  The implementations that you can download include MySQL, PostgreSQL, and so on.  While each flavor of SQL has different functions, they all more or less implement the same basic components of SQL.
-
-To actually use SQL, just look at the W3C tutorials on SQL. 
-
-
 
 #Operating Systems
 <details>
@@ -551,7 +516,7 @@ Say thread 1 checks if x is 5, and it's true, so it goes into the if scope.  The
 `BSD` is more permissive that LGPL.  If app X is licensed as BSD, your app Y that depends on X doesn't inherit BSD, and your modifications to X also don't inherit BSD.  I think you could even sell X under a different name without showing the source code, but of course you would be a complete ass for doing so.
 
 <details><summary>If Linux is under GPL license, that means any software derived from it must also have the same license, right?  If that's the case, how come every server uses Linux?  For instance, how can AWS run so much stuff on top of Linux without making all of its source code public?</summary>
-Because the software written for use in AWS doesn't 'link to' the Linux kernel, it links to whatever compiler Amazon used to write the programs, and most compilers use either the LGPL or BSD licenses.
+Because the software written for use in AWS doesn't 'link to' the Linux kernel, it links to whatever compiler Amazon used to write the programs, and most compilers use either the LGPL or BSD licenses.  If your application runs in user land on top of Linux, it's not subject to the GPL license.
 
 Here's a real life example:  C++'s two most popular compilers are GCC and Clang.  GCC is under the GPL license, and Clang is under the University of Illinois/NCSA software license, which is basically the same as a BSD license.  Apple was originally using the GCC compiler, but due to licensing issues they switched to using Clang, since their license was more permissive.
 </details>
@@ -590,7 +555,7 @@ Yes, there are plenty of graphical apps for software development.  But you _will
 You shouldn't shun GUI apps though.  Most software devs do use GUI apps (mostly IDE's) to write code.  But at the same time, they still use the command line for basically everything else.
 </details>
 
-`Shell` Terminals have tabs.  Each tab is a shell.  Each shell has certain state.  Who is the current user in this shell?  What folder are they in?  Stuff like that is kept in state.
+`Shell` Terminals have tabs.  Each tab is a shell.  Each shell has certain state.  Who is the current user in this shell?  What folder are they in?  Stuff like that is kept in each shells state.
 
 You could have one shell who is user root and at folder /, and another user who is a regular user and whose folder is /etc.
 
@@ -1463,6 +1428,8 @@ remember: learn top down, not bottom up.
 
 'you should try and understand what is happening before you try to fix it' justin's advice to you.  
 This actually applies to a lot more than just software engineering.
+You try to solve a problem without ever knowing what's causing it.  Or even knowing what the problem is, for that matter.
+You jump the gun.  Every.  Single.  Time.
 
 That feeling you get when you 'get something but not really.'  The feeling like you know that tomorrow you won't understand it.  That's the feeling of you not having a simple way to remember what you've just learned.  You've gotten past the 'doing it' part of learning, but you haven't gotten to the 'explaining it' part of learning.  The way to learn things and keep them learned, you need to be able to reduce what you've learned to a single phrase, sentence, or concept.  Then, for this simple concept, if there is a part of it you don't understand, you should be able to ask yourself 'what does this part really mean?' and through that question, break it up into smaller pieces.  Chunking.  It's like a parse tree.  It is a parse tree.  It's actually easier to remember the parse tree than it is to just remember the leaves at the end, because really you're not actually remembering all of the tree.  You're only remembering the steps it took to derive that tree.  If you have the root of the tree, you can turn it into the next 2 steps, then the next 2 steps, etc.  Here's an example:
 
@@ -1479,9 +1446,3 @@ You should also find an example of Richard Feynmann explaining something very si
 
 Use a complex math example.  Like 'what is a probability distribution?'  Your leaf nodes don't need to be the basics of math.  You can stop whenever, and just say 'this is a leaf node, but you could keep going with it if you actually don't know what something is'.  'Here is what to do when you have no idea what to do.'
 
-makefiles
-
-You should write something about your experience with this assignment.  You've wasted so much time.  You just completely forgot that the debugger existed.  What were you supposed to do about that?  No one knew to tell you to use the debugger because it's the most obvious thing for DEBUGGING A PROGRAM.
-
-Read all the code.  You're taking 2 weeks to do this thing.  Reading all the code will not take 2 weeks.  It will pretty much always save you a lot of time.
-Don't read ALL the code.  Find the top level of the thing you're trying to do, maybe go through it with a debugger to find all the related files.  Then read all of those files.  Maybe try making a tree of functions?  Just the functions in your code, not built in functions.  Maybe the built in functions if it's stuff like the constructor, or special methods like render that you define.  The bottom line is read all the code.  Not reading all the code is trying to save time.  It never saves time.  It just takes away time.  Also maybe think about the file names and how the files relate to each other?
