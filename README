@@ -1,29 +1,7 @@
-Markdown stuff
-
-If a subsection is small enough, surround it with backticks
-
-`subsection header`
-subsection contents
-subsection contents
-
-If it's really large, put it between details tags
-<details><summary>subsection header</summary>
-subsection contents
-subsection contents
-</details>
-
-the slideTemplate file can be used to make ugly slideshows.  Currently have to copy and paste for each slideshow you want
-
 Latex sometimes doesn't work if there's a space after your $
 
 https://www.tablesgenerator.com/markdown_tables#
 Markdown table generator.  I usually check off compact mode.
 
-http://ironcreek.net/phpsyntaxtree/?
-for making syntax tree examples
-
 http://jsmachines.sourceforge.net/machines/lr1.html
 
-Ask questions.  Ask questions that you don't understand.  Then ask questions about those questions.  Don't know where to start?  Ask the question: 'Why are we doing this?'
-
-You've used up pretty much every spare moment of your summer learning compilers.  You've spent nearly every moment of your time learning compilers on your time learning shift reduce parsers.  You are not going to use a shift reduce parser.  But you know what?  I don't think you could have done it any other way.  You needed to experience first hand what is useful, and what is not useful.  Sure, you could have just stuck with a recursive descent parser, but then you probably would have wondered if shift reduce was faster, and tried it anyway.  So now you know to never use shift reduce.  Nobody uses it, so you shouldn't either.  And you learned this lesson pretty fast.  It should stick with you.  Hopefully.

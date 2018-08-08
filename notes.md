@@ -1422,27 +1422,17 @@ https://notes.shichao.io/
 
 check out this weebs notes.  not bad at all.
 
-this is a record of you trying your best to learn.  even if it doesn't work out, at least you can say, with undenyable proof, that you tried.
+#Advice to yourself
 
-remember: learn top down, not bottom up.
+This is a record of you attempting to learn.  Even if it doesn't work out, at least you can say, with undenyable proof, that you tried your best.
+That sounds sad.  But it's true.
+
+Learn top down, not bottom up.
 
 'you should try and understand what is happening before you try to fix it' justin's advice to you.  
 This actually applies to a lot more than just software engineering.
 You try to solve a problem without ever knowing what's causing it.  Or even knowing what the problem is, for that matter.
 You jump the gun.  Every.  Single.  Time.
-
-That feeling you get when you 'get something but not really.'  The feeling like you know that tomorrow you won't understand it.  That's the feeling of you not having a simple way to remember what you've just learned.  You've gotten past the 'doing it' part of learning, but you haven't gotten to the 'explaining it' part of learning.  The way to learn things and keep them learned, you need to be able to reduce what you've learned to a single phrase, sentence, or concept.  Then, for this simple concept, if there is a part of it you don't understand, you should be able to ask yourself 'what does this part really mean?' and through that question, break it up into smaller pieces.  Chunking.  It's like a parse tree.  It is a parse tree.  It's actually easier to remember the parse tree than it is to just remember the leaves at the end, because really you're not actually remembering all of the tree.  You're only remembering the steps it took to derive that tree.  If you have the root of the tree, you can turn it into the next 2 steps, then the next 2 steps, etc.  Here's an example:
-
-React is a UI tool that combines html and javascript into 1 thing.
-To which you would ask 'how?'
-
-With jsx files.  You have elements, which are like html elements, and components, which are like javascript functions.
-
-Then you would ask 'how do elements work?' or 'how do components work?'
-
-And the parse tree continues.  You could also ask things like 'what is html, or javascript?'  These would be like going up the parse tree.
-
-You should also find an example of Richard Feynmann explaining something very simply.  He uses the chunking method.  Also, thanks Barbara.
-
-Use a complex math example.  Like 'what is a probability distribution?'  Your leaf nodes don't need to be the basics of math.  You can stop whenever, and just say 'this is a leaf node, but you could keep going with it if you actually don't know what something is'.  'Here is what to do when you have no idea what to do.'
+When you don't know what to do, just ask yourself questions.  Write down those questions in some form.  If those questions lead to other questions, write those down too.
+Keep coming up with questions until you ask a question that you know you can answer yourself.  That's where you start.
 
