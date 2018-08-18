@@ -14,3 +14,6 @@ y="hello, my favorite number is $x$".
 y="hello, my favorite number is #x#".
 Read the Go Faq.  It answers so much about the design choices of Go.
 Also, the Go source code seems pretty reasonable.  Check out the 'frontend', the recursive descent parser.
+
+http://nautil.us/issue/17/big-bangs/how-i-rewired-my-brain-to-become-fluent-in-math
+This was written by Barbara Oakley.  The gist is that repetition, deliberate practice, etc are what we need more of.  It's the 'kumon method'.  You were wrong, and Malcolm was right.  Also, Kumon is the name of the guy who made the learning method.  He was Japanese.  Malcolm is a weeb.
